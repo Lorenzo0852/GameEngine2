@@ -8,7 +8,7 @@
 class Logger
 {
 private:
-	// Create a file rotating logger with 5mb size max and 3 rotated files
+	// Create a file rotating logger with 5mb size max and 1 rotated file
 	const int max_size = 1048576 * 5;
 	const int max_files = 1;
 public:

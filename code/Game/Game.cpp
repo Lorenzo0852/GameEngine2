@@ -12,12 +12,6 @@
 
 void Game::Initialize(bool fullScreen, unsigned displayIndex)
 { 
-
-	// Create a file rotating logger with 5mb size max and 3 rotated files
-	auto max_size = 1048576 * 5;
-	auto max_files = 3;
-	auto file_logger = spdlog::rotating_logger_mt("Logger", "logs/logs.txt", max_size, max_files);
-
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) //This will return != 0 if it can't initialize
 	{
 		file_logger->error("Error initializing SDL");

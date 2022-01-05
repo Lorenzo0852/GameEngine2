@@ -5,6 +5,11 @@
 
 #include <bitset>
 #include <vector>
+#include <unordered_map>
+#include <typeindex>
+#include <set>
+
+#include "../Pool/Pool.h"
 
 /****************************************************************************************\
  *  ENTITY
@@ -22,6 +27,10 @@ const unsigned int MAX_COMPONENTS = 32;
 /// </summary>
 typedef std::bitset<MAX_COMPONENTS> Signature;
 
+
+
+
+
 /****************************************************************************************\
  *  ENTITY
 \****************************************************************************************/
@@ -35,9 +44,19 @@ private:
 
 public:
 	Entity(unsigned id) : id(id) {};
-	//Not gonna change any value of internal member variables or attributes, so const.
-	unsigned GetId() const { return id; };
+	//Not gonna change any value of internal member variables or attributes, so the method is const.
+	unsigned GetId() const { return id; }
+	bool operator <  (const Entity& other) const { return id < other.id; }
+	bool operator >  (const Entity& other) const { return id > other.id; }
+	bool operator <=  (const Entity& other) const { return id <= other.id; }
+	bool operator >=  (const Entity& other) const { return id >= other.id; }
+	bool operator == (const Entity& other) const { return id == other.id; }
+	bool operator != (const Entity& other) const { return id != other.id; }
+	Entity& operator = (const Entity& other) = default;
 };
+
+
+
 
 
 /****************************************************************************************\
@@ -81,6 +100,10 @@ class Component : public IComponent {
 	}
 };
 
+
+
+
+
 /****************************************************************************************\
  *  SYSTEM
 \****************************************************************************************/
@@ -105,7 +128,7 @@ public:
 	void AddEntityToSystem(Entity entity);
 	void RemoveEntityFromSystem(Entity entity);
 	std::vector<Entity> GetSystemEntities() const { return entities; };
-	Signature& GetComponentSignature() const;
+	const Signature& GetComponentSignature() const;
 
 	/// <summary>
 	/// Defines the component type that entities must have to be considered by the system.
@@ -114,12 +137,56 @@ public:
 	template <typename TComponent> void RequireComponent();
 };
 
+
+
+
+
+/****************************************************************************************\
+ *  REGISTRY
+\****************************************************************************************/
+/*
+* The registry manages the creation and destruction of entities, adds systems, and components.
+* Also called World, Manager... in different architectures.
+*/
 /// <summary>
 /// Base registry/manager class. Used to coordinate the different ECS implementations.
 /// </summary>
 class Registry {
+private:
+	//Keeps track of how many entities were added to the scene.
+	size_t numEntities = 0;
+
+	/// <summary>
+	/// Vector of component pools, each pools contains all the data for a certain component type.
+	/// [Vector index	=	component type id]
+	/// [Pool index		=	entity id]
+	/// componentPools[0][123] returns component with ID "0" of the entity "123"
+	/// </summary>
+	std::vector<IPool*> componentPools;
+	/// <summary>
+	/// Vector of component signatures per entity, saying which component is turned "on" for a certain entity.
+	/// </summary>
+	std::vector<Signature> entityComponentSignatures;
+	std::unordered_map<std::type_index, System*> systems;
+
+	std::set<Entity> entitiesToBeAdded;
+	std::set<Entity> entitiesToBeKilled;
+	
+public:
+	Registry() = default;
+
+	Entity CreateEntity();
+	void Update();
 
 };
+
+
+
+
+
+/****************************************************************************************\
+ *  GENERICS
+\****************************************************************************************/
 
 template <typename TComponent>
 void System::RequireComponent(){
