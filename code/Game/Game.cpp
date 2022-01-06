@@ -3,18 +3,33 @@
 \******************************************/
 
 #include "Game.h"
-#include "../ECS/ECS.h"
 #include <iostream>
 #include <sdl2/SDL.h>
 #include <sdl2/SDL_image.h>
 #include <glm/glm.hpp>
 #include <spdlog/sinks/rotating_file_sink.h>
 
+#include "../ECS/ECS.h"
+#include "../Components/TransformComponent.h"
+#include "../Components/RigidBodyComponent.h"
+#include "../Components/SpriteComponent.h"
+
+#include "../Systems/MovementSystem.h"
+#include "../Systems/RenderSystem.h"
+
+Game::Game()
+{
+	isRunning = false;
+	registry = std::make_unique<Registry>();
+
+	gameLogger->info("Game constructor called");
+}
+
 void Game::Initialize(bool fullScreen, unsigned displayIndex)
 { 
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) //This will return != 0 if it can't initialize
 	{
-		file_logger->error("Error initializing SDL");
+		gameLogger->error("Error initializing SDL");
 		return;
 	}
 
@@ -33,7 +48,7 @@ void Game::Initialize(bool fullScreen, unsigned displayIndex)
 
 	if (!window)
 	{
-		file_logger->error("Error creating SDL window.");
+		gameLogger->error("Error creating SDL window.");
 		return;
 	}
 
@@ -41,7 +56,7 @@ void Game::Initialize(bool fullScreen, unsigned displayIndex)
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
 	if (!renderer)
 	{
-		file_logger->error("Error creating SDL renderer.");
+		gameLogger->error("Error creating SDL renderer.");
 		return;
 	}
 
@@ -82,19 +97,29 @@ void Game::ProcessInput()
 	}
 }
 
-glm::vec2 playerPosition;
-glm::vec2 playerVelocity;
-
 void Game::SetupScene()
 {
+	registry->AddSystem<MovementSystem>();
+	registry->AddSystem<RenderSystem>();
 
+	Entity tank = registry->CreateEntity();
+	gameLogger-> info("Entity ID: " + std::to_string(tank.GetId()));
+
+	tank.AddComponent<TransformComponent>(glm::vec3(2000, 500, 0), glm::vec3(1.0, 1.0, 1.0), 0);
+	tank.AddComponent<RigidbodyComponent>(glm::vec3(50.0, 0.0, 0.0));
+	tank.AddComponent<SpriteComponent>(100, 100);
 }
 
 void Game::Update()
 {
 	double deltaTime = (static_cast<double>(SDL_GetTicks64()) - millisecondsPreviousFrame) * 0.001;
-	
 	millisecondsPreviousFrame = SDL_GetTicks64();
+
+	//Ask systems to update
+	registry->GetSystem<MovementSystem>().Update(deltaTime);
+
+	//Update registry to process the entities that are waiting
+	registry->Update();
 }
 
 /// <summary>
@@ -104,6 +129,9 @@ void Game::Render()
 {
 	SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
 	SDL_RenderClear(renderer);
+
+	//Ask systems to render
+	registry->GetSystem<RenderSystem>().Update(renderer);
 
 	// Render game objects...
 

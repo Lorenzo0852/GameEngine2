@@ -40,12 +40,21 @@ typedef std::bitset<MAX_COMPONENTS> Signature;
 /// </summary>
 class Entity {
 private:
-	unsigned id;
+	int id;
 
 public:
-	Entity(unsigned id) : id(id) {};
+	Entity() = default;
+	Entity(int id) : id(id) {};
 	//Not gonna change any value of internal member variables or attributes, so the method is const.
-	unsigned GetId() const { return id; }
+	int GetId() const { return id; }
+
+	template <typename TComponent, typename ...TArgs> void AddComponent(TArgs&& ...args);
+	template <typename TComponent> void RemoveComponent();
+	template <typename TComponent> bool HasComponent() const;
+	template <typename TComponent> TComponent& GetComponent() const;
+
+	//Forward declaration so we can use it prior to its implementation.
+	class Registry* registry;
 
 	//We need comparison operator overloads as std::set needs comparators to work with the type it's managing.
 	bool operator <  (const Entity& other) const { return id < other.id; }
@@ -93,6 +102,7 @@ protected:
 /// </summary>
 template <typename TComponent>
 class Component : public IComponent {
+public:
 	/// <summary>
 	/// Returns the unique ID of the component
 	/// </summary>
@@ -157,7 +167,7 @@ public:
 class Registry {
 private:
 	//Keeps track of how many entities were added to the scene.
-	size_t numEntities = 0;
+	int numEntities = 0;
 
 	/// <summary>
 	/// Vector of component pools, each pools contains all the data for a certain component type.
@@ -165,32 +175,14 @@ private:
 	/// [Pool index		=	entityId]
 	/// componentPools[0][123] returns component with ID "0" of the entity "123"
 	/// </summary>
-	std::vector<IPool*> componentPools;
+	std::vector<std::shared_ptr<IPool>> componentPools;
+
 	/// <summary>
 	/// Vector of component signatures per entity, saying which component is turned "on" for a certain entity.
 	/// [index		=	entityId]
 	/// </summary>
 	std::vector<Signature> entityComponentSignatures;
-	std::unordered_map<std::type_index, System*> systems;
-	
-	/// <summary>
-	/// Add a component of type TComponent to a given entity.
-	/// There can be components where we might want (or need) to pass certain additional information 
-	/// to add them, so we support that using a variadic template.
-	/// 
-	/// Example: AddComponent -TransformComponent- (entity, position, rotation).
-	/// </summary>
-	/// <typeparam name="TComponent">Component to add</typeparam>
-	/// <typeparam name="...TArgs">Additional arguments</typeparam>
-	/// <param name="entity">Entity that holds this component</param>
-	/// <param name="...args">Additional arguments</param>
-	template <typename TComponent, typename ...TArgs>
-		void AddComponent(Entity entity, TArgs&& ...args);
-	// Why TArgs&&??:
-	//  https://stackoverflow.com/questions/61234704/can-someone-help-me-enlighten-this-template/61237996#61237996
-	//  https://en.cppreference.com/w/cpp/language/reference#Forwarding_references
-	//  https://www.geeksforgeeks.org/lvalue-and-rvalue-in-c-language/
-	//  https://docs.microsoft.com/en-us/cpp/cpp/lvalues-and-rvalues-visual-cpp?view=msvc-160
+	std::unordered_map<std::type_index, std::shared_ptr<System>> systems;
 
 	std::set<Entity> entitiesToBeAdded;
 	std::set<Entity> entitiesToBeKilled;
@@ -206,10 +198,32 @@ public:
 	/*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*
 	* Component management
 	*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*/
+
+	/// <summary>
+	/// Add a component of type TComponent to a given entity.
+	/// There can be components where we might want (or need) to pass certain additional information 
+	/// to add them, so we support that using a variadic template.
+	/// 
+	/// Example: AddComponent -TransformComponent- (entity, position, rotation).
+	/// </summary>
+	/// <typeparam name="TComponent">Component to add</typeparam>
+	/// <typeparam name="...TArgs">Additional arguments</typeparam>
+	/// <param name="entity">Entity that holds this component</param>
+	/// <param name="...args">Additional arguments</param>
+	template <typename TComponent, typename ...TArgs>
+	void AddComponent(Entity entity, TArgs&& ...args);
+	// Why TArgs&&??:
+	//  https://stackoverflow.com/questions/61234704/can-someone-help-me-enlighten-this-template/61237996#61237996
+	//  https://en.cppreference.com/w/cpp/language/reference#Forwarding_references
+	//  https://www.geeksforgeeks.org/lvalue-and-rvalue-in-c-language/
+	//  https://docs.microsoft.com/en-us/cpp/cpp/lvalues-and-rvalues-visual-cpp?view=msvc-160
+
 	template<typename TComponent>
-		bool HasComponent(Entity entity);
+		bool HasComponent(Entity entity) const;
 	template<typename TComponent>
 		void RemoveComponent(Entity entity);
+	template <typename TComponent>
+		TComponent& GetComponent(Entity entity) const;
 
 	/*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*
 	* System management
@@ -262,11 +276,14 @@ void Registry::AddComponent(Entity entity, TArgs&& ...args)
 	//We check if there is any component in the index we are checking. If there isn't, create it.
 	if (!componentPools[componentId])
 	{
-		Pool<TComponent>* newComponentPool = new Pool<TComponent>();
+		// Only deallocate this when all the references go out of scope
+		// It's a shared_ptr as we immediately assign it to a different variable, with a different scope.
+		// The object of the shared ptr will destroy when everything that makes reference to it goes out of scope.
+		std::shared_ptr<Pool<TComponent>> newComponentPool = std::make_shared<Pool<TComponent>>();
 		componentPools[componentId] = newComponentPool;
 	}
 
-	Pool<TComponent> componentPool = componentPools[componentId];
+	std::shared_ptr<Pool<TComponent>> componentPool = std::static_pointer_cast<Pool<TComponent>>(componentPools[componentId]);
 
 	if (entityId >= componentPool->GetSize())
 	{
@@ -279,10 +296,19 @@ void Registry::AddComponent(Entity entity, TArgs&& ...args)
 }
 
 template <typename TComponent>
-bool Registry::HasComponent(Entity entity)
+bool Registry::HasComponent(Entity entity) const
 {
 	auto componentId = Component<TComponent>::GetId();
 	return entityComponentSignatures[entity.GetId()].test(componentId);
+}
+
+template <typename TComponent>
+TComponent& Registry::GetComponent(Entity entity) const
+{
+	const auto componentId = Component<TComponent>::GetId();
+	const auto entityId = entity.GetId();
+	auto componentPool = std::static_pointer_cast<Pool<TComponent>>(componentPools[componentId]);
+	return componentPool->Get(entityId);
 }
 
 template <typename TComponent>
@@ -295,7 +321,7 @@ void Registry::RemoveComponent(Entity entity)
 template <typename TSystem, typename ...TArgs>
 void Registry::AddSystem(TArgs&& ...args)
 {
-	TSystem* newSystem(new TSystem(std::forward<TArgs>(args)...));
+	std::shared_ptr<TSystem> newSystem = std::make_shared<TSystem>(std::forward<TArgs>(args)...);
 	systems.insert(std::make_pair(std::type_index(typeid(TSystem)), newSystem));
 }
 
@@ -323,4 +349,29 @@ TSystem& Registry::GetSystem() const
 	//We need to dereference it so it doesn't return a memory address, but its content.
 	return *(std::static_pointer_cast<TSystem>(system->second));
 }
+
+template <typename TComponent, typename ...TArgs>
+void Entity::AddComponent(TArgs&& ...args)
+{
+	registry->AddComponent<TComponent>(*this, std::forward<TArgs>(args)...);
+}
+
+template <typename TComponent>
+bool Entity::HasComponent() const
+{
+	return registry->HasComponent<TComponent>(*this);
+}
+
+template <typename TComponent>
+TComponent& Entity::GetComponent() const
+{
+	return registry->GetComponent<TComponent>(*this);
+}
+
+template <typename TComponent>
+void Entity::RemoveComponent()
+{
+	registry->RemoveComponent<TComponent>(*this);
+}
+
 

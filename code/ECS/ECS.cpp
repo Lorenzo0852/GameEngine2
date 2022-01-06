@@ -54,10 +54,15 @@ const Signature& System::GetComponentSignature() const{
 }
 
 Entity Registry::CreateEntity() {
-	size_t entityId = numEntities++;
+	unsigned entityId = numEntities++;
 	Entity entity(entityId);
-
+	entity.registry = this;
 	entitiesToBeAdded.insert(entity);
+
+	if (entityId >= static_cast<int>(entityComponentSignatures.size()))
+	{
+		entityComponentSignatures.resize(entityId + 1);
+	}
 	return entity;
 }
 
@@ -79,5 +84,9 @@ void Registry::AddEntityToSystems(Entity entity){
 }
 
 void Registry::Update(){
-	
+	for (auto entity : entitiesToBeAdded)
+	{
+		AddEntityToSystems(entity);
+	}
+	entitiesToBeAdded.clear();
 }

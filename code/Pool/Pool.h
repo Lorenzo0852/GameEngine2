@@ -28,10 +28,10 @@ public:
 	Pool(int size = 100) { data.resize(100); }
 	virtual ~Pool() = default;
 	bool isEmpty() const {
-		return data.empty;
+		return data.empty();
 	}
-	unsigned GetSize() const {
-		return data.size;
+	int GetSize() const {
+		return static_cast<int>(data.size());
 	}
 	void Resize(int n) {
 		data.resize(n);
@@ -43,7 +43,11 @@ public:
 		data.push_back(object);
 	}
 	T& Get(int index) {
-		return static_cast<T>(data[index]);
+		return static_cast<T&>(data[index]);
+	}
+	void Set(int index, T object)
+	{
+		data[index] = object;
 	}
 	std::vector<T> operator[](unsigned int index) {
 		return data[index];

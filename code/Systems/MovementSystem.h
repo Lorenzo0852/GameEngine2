@@ -1,22 +1,29 @@
 #pragma once
 
+#include "../ECS/ECS.h"
+#include "../Components/TransformComponent.h"
+#include "../Components/RigidbodyComponent.h"
+
 class MovementSystem : public System
 {
 public:
 	MovementSystem()
 	{
 		// We specify the components that our system is interested in.
-		// RequireComponent<TransformComponent>();
+		RequireComponent<TransformComponent>();
+		RequireComponent<RigidbodyComponent>();
 	}
 
-	void Update()
+	void Update(double deltaTime)
 	{
-		//TODO: Update entity position based on its veclocity
-		// every frame of the game loop.
+		for (auto entity : GetSystemEntities())
+		{
+			auto& transform = entity.GetComponent<TransformComponent>();
+			const auto& rigidbody = entity.GetComponent<RigidbodyComponent>();
 
-		//for (auto entity : GetEntities())
-		//{
-
-		//}
+			transform.position.x += static_cast<float>(rigidbody.velocity.x * deltaTime);
+			transform.position.y += static_cast<float>(rigidbody.velocity.y * deltaTime);
+			transform.position.z += static_cast<float>(rigidbody.velocity.z * deltaTime);
+		}
 	}
 };
