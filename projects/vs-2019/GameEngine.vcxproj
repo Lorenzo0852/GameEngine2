@@ -99,11 +99,15 @@
     <ClCompile Include="..\..\code\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\code\Components\RigidbodyComponent.h" />
+    <ClInclude Include="..\..\code\Components\SpriteComponent.h" />
     <ClInclude Include="..\..\code\Components\TransformComponent.h" />
     <ClInclude Include="..\..\code\ECS\ECS.h" />
     <ClInclude Include="..\..\code\Game\Game.h" />
     <ClInclude Include="..\..\code\Logger\Logger.h" />
+    <ClInclude Include="..\..\code\Pool\Pool.h" />
     <ClInclude Include="..\..\code\Systems\MovementSystem.h" />
+    <ClInclude Include="..\..\code\Systems\RenderSystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
