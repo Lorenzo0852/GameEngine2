@@ -3,12 +3,12 @@
  *  Copyright (c) Lorenzo Herran - 2021   *
 \******************************************/
 
+#include <memory>
 #include <bitset>
 #include <vector>
 #include <unordered_map>
 #include <typeindex>
 #include <set>
-
 #include "../Pool/Pool.h"
 
 /****************************************************************************************\
@@ -46,10 +46,13 @@ public:
 	Entity(unsigned id) : id(id) {};
 	//Not gonna change any value of internal member variables or attributes, so the method is const.
 	unsigned GetId() const { return id; }
+
+	//We need comparison operator overloads as std::set needs comparators to work with the type it's managing.
 	bool operator <  (const Entity& other) const { return id < other.id; }
 	bool operator >  (const Entity& other) const { return id > other.id; }
 	bool operator <=  (const Entity& other) const { return id <= other.id; }
 	bool operator >=  (const Entity& other) const { return id >= other.id; }
+
 	bool operator == (const Entity& other) const { return id == other.id; }
 	bool operator != (const Entity& other) const { return id != other.id; }
 	Entity& operator = (const Entity& other) = default;
@@ -91,10 +94,10 @@ protected:
 template <typename TComponent>
 class Component : public IComponent {
 	/// <summary>
-	/// Returns the unique ID of component<T>
+	/// Returns the unique ID of the component
 	/// </summary>
-	/// <returns></returns>
-	static int GetId() {
+	/// <returns>unsigned ID of component</returns>
+	static unsigned GetId() {
 		static auto id = nextId++;
 		return id;
 	}
@@ -159,15 +162,35 @@ private:
 	/// <summary>
 	/// Vector of component pools, each pools contains all the data for a certain component type.
 	/// [Vector index	=	component type id]
-	/// [Pool index		=	entity id]
+	/// [Pool index		=	entityId]
 	/// componentPools[0][123] returns component with ID "0" of the entity "123"
 	/// </summary>
 	std::vector<IPool*> componentPools;
 	/// <summary>
 	/// Vector of component signatures per entity, saying which component is turned "on" for a certain entity.
+	/// [index		=	entityId]
 	/// </summary>
 	std::vector<Signature> entityComponentSignatures;
 	std::unordered_map<std::type_index, System*> systems;
+	
+	/// <summary>
+	/// Add a component of type TComponent to a given entity.
+	/// There can be components where we might want (or need) to pass certain additional information 
+	/// to add them, so we support that using a variadic template.
+	/// 
+	/// Example: AddComponent -TransformComponent- (entity, position, rotation).
+	/// </summary>
+	/// <typeparam name="TComponent">Component to add</typeparam>
+	/// <typeparam name="...TArgs">Additional arguments</typeparam>
+	/// <param name="entity">Entity that holds this component</param>
+	/// <param name="...args">Additional arguments</param>
+	template <typename TComponent, typename ...TArgs>
+		void AddComponent(Entity entity, TArgs&& ...args);
+	// Why TArgs&&??:
+	//  https://stackoverflow.com/questions/61234704/can-someone-help-me-enlighten-this-template/61237996#61237996
+	//  https://en.cppreference.com/w/cpp/language/reference#Forwarding_references
+	//  https://www.geeksforgeeks.org/lvalue-and-rvalue-in-c-language/
+	//  https://docs.microsoft.com/en-us/cpp/cpp/lvalues-and-rvalues-visual-cpp?view=msvc-160
 
 	std::set<Entity> entitiesToBeAdded;
 	std::set<Entity> entitiesToBeKilled;
@@ -175,9 +198,39 @@ private:
 public:
 	Registry() = default;
 
+	/*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*
+	* Entity management
+	*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*/
 	Entity CreateEntity();
-	void Update();
 
+	/*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*
+	* Component management
+	*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*/
+	template<typename TComponent>
+		bool HasComponent(Entity entity);
+	template<typename TComponent>
+		void RemoveComponent(Entity entity);
+
+	/*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*
+	* System management
+	*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*/
+	template <typename TSystem, typename ...TArgs>
+		void AddSystem(TArgs&& ...args);
+	template <typename TSystem>
+		void RemoveSystem();
+	template <typename TSystem>
+		bool HasSystem() const;
+	template <typename TSystem>
+		TSystem& GetSystem() const;
+
+	// Checks the component signature of an entity and add the entity to the systems
+	//that are interested in it.
+	void AddEntityToSystems(Entity entity);
+
+	/*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*
+	* Game management
+	*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*/
+	void Update();
 };
 
 
@@ -193,3 +246,81 @@ void System::RequireComponent(){
 	const auto componentId = Component<TComponent>::GetId();
 	componentSignature.set(componentId);
 }
+
+template <typename TComponent, typename ...TArgs>
+void Registry::AddComponent(Entity entity, TArgs&& ...args)
+{
+	const auto componentId = Component<TComponent>::GetId();
+	const auto entityId = entity.GetId();
+
+	//We resize the pool if needed
+	if (componentId >= componentPools.size())
+	{
+		componentPools.resize(componentId + 1, nullptr);
+	}
+
+	//We check if there is any component in the index we are checking. If there isn't, create it.
+	if (!componentPools[componentId])
+	{
+		Pool<TComponent>* newComponentPool = new Pool<TComponent>();
+		componentPools[componentId] = newComponentPool;
+	}
+
+	Pool<TComponent> componentPool = componentPools[componentId];
+
+	if (entityId >= componentPool->GetSize())
+	{
+		componentPool->Resize(numEntities);
+	}
+
+	TComponent newComponent(std::forward<TArgs>(args)...);
+	componentPool->Set(entityId, newComponent);
+	entityComponentSignatures[entityId].set(componentId);
+}
+
+template <typename TComponent>
+bool Registry::HasComponent(Entity entity)
+{
+	auto componentId = Component<TComponent>::GetId();
+	return entityComponentSignatures[entity.GetId()].test(componentId);
+}
+
+template <typename TComponent>
+void Registry::RemoveComponent(Entity entity)
+{
+	auto componentId = Component<TComponent>::GetId();
+	entityComponentSignatures[entity.GetId()].set(componentId, false);
+}
+
+template <typename TSystem, typename ...TArgs>
+void Registry::AddSystem(TArgs&& ...args)
+{
+	TSystem* newSystem(new TSystem(std::forward<TArgs>(args)...));
+	systems.insert(std::make_pair(std::type_index(typeid(TSystem)), newSystem));
+}
+
+template <typename TSystem>
+void Registry::RemoveSystem()
+{
+	auto system = systems.find(std::type_index(typeid(TSystem)));
+	systems.erase(system);
+}
+
+template <typename TSystem>
+bool Registry::HasSystem() const
+{
+	//.end() in an unordered map is the element following the last element,
+	//returned if it can't find the key.
+	return systems.find(std::type_index(typeid(TSystem))) != systems.end();
+}
+
+template <typename TSystem>
+TSystem& Registry::GetSystem() const
+{
+	//.end() in an unordered map is the element following the last element.
+	auto system = systems.find(	std::type_index(	typeid(TSystem)	)	);
+	//.find() returns a pair, where ->first is the first element and ->second the second one.
+	//We need to dereference it so it doesn't return a memory address, but its content.
+	return *(std::static_pointer_cast<TSystem>(system->second));
+}
+

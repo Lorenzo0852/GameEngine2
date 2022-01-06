@@ -4,6 +4,9 @@
  *  Copyright (c) Lorenzo Herran - 2021   *
 \******************************************/
 
+// Everytime you have a static variable, we need to initialize that variable.
+int IComponent::nextId = 0;
+
 void System::AddEntityToSystem(Entity entity){
 	entities.push_back(entity);
 }
@@ -51,14 +54,30 @@ const Signature& System::GetComponentSignature() const{
 }
 
 Entity Registry::CreateEntity() {
-	int entityId = numEntities++;
+	size_t entityId = numEntities++;
 	Entity entity(entityId);
 
 	entitiesToBeAdded.insert(entity);
 	return entity;
 }
 
-void Registry::Update()
-{
+void Registry::AddEntityToSystems(Entity entity){
+	const auto entityId = entity.GetId();
+	const auto& entityComponentSignature = entityComponentSignatures[entityId];
+
+	for (auto& system : systems)
+	{
+		const auto& systemComponentSignature = system.second->GetComponentSignature();
+
+		bool isInterested = (entityComponentSignature & systemComponentSignature) == systemComponentSignature;
+
+		if (isInterested)
+		{
+			system.second->AddEntityToSystem(entity);
+		}
+	}
+}
+
+void Registry::Update(){
 	
 }
