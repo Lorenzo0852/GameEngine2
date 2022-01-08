@@ -1,5 +1,9 @@
 #pragma once
 
+/******************************************\
+ *  Copyright (c) Lorenzo Herran - 2021   *
+\******************************************/
+
 #include "../ECS/ECS.h"
 #include "../Components/TransformComponent.h"
 #include "../Components/RigidbodyComponent.h"

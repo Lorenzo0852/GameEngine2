@@ -1,5 +1,9 @@
 #pragma once
 
+/******************************************\
+ *  Copyright (c) Lorenzo Herran - 2021   *
+\******************************************/
+
 #include <glm/glm.hpp>
 
 /// <summary>

@@ -1,12 +1,16 @@
 /******************************************\
  *  Copyright (c) Lorenzo Herran - 2021   *
 \******************************************/
-
 #pragma once
+
+/******************************************\
+ *  Copyright (c) Lorenzo Herran - 2021   *
+\******************************************/
 
 #include <sdl2/SDL.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include "../ECS/ECS.h"
+#include "../AssetManager/AssetManager.h"
 
 class Game
 {
@@ -23,6 +27,7 @@ private:
 		spdlog::rotating_logger_mt("GameLogger", "logs/GameLogs.txt", max_size, max_files);
 
 	std::unique_ptr<Registry> registry;
+	std::unique_ptr<AssetManager> assetManager;
 
 public:
 	Game();

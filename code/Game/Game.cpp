@@ -21,7 +21,7 @@ Game::Game()
 {
 	isRunning = false;
 	registry = std::make_unique<Registry>();
-
+	assetManager = std::make_unique<AssetManager>();
 	gameLogger->info("Game constructor called");
 }
 
@@ -102,12 +102,15 @@ void Game::SetupScene()
 	registry->AddSystem<MovementSystem>();
 	registry->AddSystem<RenderSystem>();
 
+	assetManager->AddTexture(renderer, "tank-image", "../../../assets/images/tank-panther-right.png");
+	assetManager->AddTexture(renderer, "tank-image", "../../../assets/images/truck-ford-right.png");
+
 	Entity tank = registry->CreateEntity();
 	gameLogger-> info("Entity ID: " + std::to_string(tank.GetId()));
 
 	tank.AddComponent<TransformComponent>(glm::vec3(2000, 500, 0), glm::vec3(1.0, 1.0, 1.0), 0);
 	tank.AddComponent<RigidbodyComponent>(glm::vec3(50.0, 0.0, 0.0));
-	tank.AddComponent<SpriteComponent>(100, 100);
+	tank.AddComponent<SpriteComponent>("tank-image", 100, 100);
 }
 
 void Game::Update()
