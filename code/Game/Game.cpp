@@ -17,6 +17,9 @@
 #include "../Systems/MovementSystem.h"
 #include "../Systems/RenderSystem.h"
 
+#include <glad.h>
+#include <gltk/Camera.hpp>
+
 Game::Game()
 {
 	isRunning = false;
@@ -103,14 +106,21 @@ void Game::SetupScene()
 	registry->AddSystem<RenderSystem>();
 
 	assetManager->AddTexture(renderer, "tank-image", "../../../assets/images/tank-panther-right.png");
-	assetManager->AddTexture(renderer, "tank-image", "../../../assets/images/truck-ford-right.png");
+	assetManager->AddTexture(renderer, "truck-image", "../../../assets/images/truck-ford-right.png");
 
 	Entity tank = registry->CreateEntity();
 	gameLogger-> info("Entity ID: " + std::to_string(tank.GetId()));
 
-	tank.AddComponent<TransformComponent>(glm::vec3(2000, 500, 0), glm::vec3(1.0, 1.0, 1.0), 0);
+	tank.AddComponent<TransformComponent>(glm::vec3(2000, 500, 0), glm::vec3(5.0, 5.0, 5.0), 0);
 	tank.AddComponent<RigidbodyComponent>(glm::vec3(50.0, 0.0, 0.0));
-	tank.AddComponent<SpriteComponent>("tank-image", 100, 100);
+	tank.AddComponent<SpriteComponent>("tank-image", 32, 32);
+
+	Entity truck = registry->CreateEntity();
+	gameLogger->info("Entity ID: " + std::to_string(truck.GetId()));
+
+	truck.AddComponent<TransformComponent>(glm::vec3(1800, 500, 0), glm::vec3(5.0, 5.0, 5.0), 0);
+	truck.AddComponent<RigidbodyComponent>(glm::vec3(50.0, 0.0, 0.0));
+	truck.AddComponent<SpriteComponent>("truck-image", 32, 32);
 }
 
 void Game::Update()
@@ -134,7 +144,7 @@ void Game::Render()
 	SDL_RenderClear(renderer);
 
 	//Ask systems to render
-	registry->GetSystem<RenderSystem>().Update(renderer);
+	registry->GetSystem<RenderSystem>().Update(renderer, assetManager);
 
 	// Render game objects...
 
