@@ -3,6 +3,8 @@
 \******************************************/
 
 #include "ECS.h"
+#include "spdlog/spdlog.h"
+
 // Everytime you have a static variable, we need to initialize that variable.
 int IComponent::nextId = 0;
 
@@ -68,7 +70,6 @@ Entity Registry::CreateEntity() {
 void Registry::AddEntityToSystems(Entity entity){
 	const auto entityId = entity.GetId();
 	const auto& entityComponentSignature = entityComponentSignatures[entityId];
-
 	for (auto& system : systems)
 	{
 		const auto& systemComponentSignature = system.second->GetComponentSignature();

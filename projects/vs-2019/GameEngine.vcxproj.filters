@@ -59,5 +59,8 @@
     <ClInclude Include="..\..\code\AssetManager\AssetManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\code\Systems\Render3DSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

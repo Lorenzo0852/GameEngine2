@@ -2,25 +2,36 @@
  *  Copyright (c) Lorenzo Herran - 2021   *
 \******************************************/
 
+//#include <gltk/Cube.hpp>
+//#include <gltk/Model.hpp>
+//#include <gltk/Model_Obj.hpp>
+//#include <gltk/Light.hpp>
+//#include <gltk/Render_Node.hpp>
+//#include <gltk/Camera.hpp>
 
-#include <gltk/Camera.hpp>
+
 #include <iostream>
 #include <sdl2/SDL.h>
 #include <sdl2/SDL_image.h>
 #include <glm/glm.hpp>
-#include <glad.h>
-
 #include "Game.h"
+
+#include "../Logger/Logger.h"
 #include "../ECS/ECS.h"
 #include "../Components/TransformComponent.h"
 #include "../Components/RigidBodyComponent.h"
 #include "../Components/SpriteComponent.h"
 #include "../Systems/MovementSystem.h"
 #include "../Systems/RenderSystem.h"
+#include "../Systems/Render3DSystem.h"
+
+
 
 
 Game::Game()
 {
+	gameLogger = spdlog::rotating_logger_mt("GameLogger", "logs/GameLogs.txt", max_size, max_files);
+	spdlog::set_default_logger(gameLogger);
 	isRunning = false;
 	registry = std::make_unique<Registry>();
 	assetManager = std::make_unique<AssetManager>();
@@ -46,7 +57,7 @@ void Game::Initialize(bool fullScreen, unsigned displayIndex)
 		SDL_WINDOWPOS_CENTERED,
 		windowWidth,
 		windowHeight,
-		SDL_WINDOW_BORDERLESS);
+		SDL_WINDOW_OPENGL | SDL_WINDOW_BORDERLESS);
 
 	if (!window)
 	{
@@ -56,11 +67,29 @@ void Game::Initialize(bool fullScreen, unsigned displayIndex)
 
 	//-1 index means "get the default monitor/screen for the renderer".
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
+	/*glContext = SDL_GL_CreateContext(window);
+	glRenderer.reset(new glt::Render_Node);*/
+	//std::shared_ptr< glt::Model  > cube(new glt::Model);
+	//std::shared_ptr< glt::Camera > camera(new glt::Camera(20.f, 1.f, 50.f, 1.f));
+	//std::shared_ptr< glt::Light  > light(new glt::Light);
+
+	/*glRenderer->add("cube" , cube);
+	glRenderer->add("light", light);
+	glRenderer->add("camera", camera);*/
+
+	/*cube->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());*/
+
 	if (!renderer)
 	{
 		gameLogger->error("Error creating SDL renderer.");
 		return;
 	}
+
+	//if (!glContext)
+	//{
+	//	gameLogger->error("Error creating OpenGL context.");
+	//	return;
+	//}
 
 	if (fullScreen) SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 
@@ -103,6 +132,7 @@ void Game::SetupScene()
 {
 	registry->AddSystem<MovementSystem>();
 	registry->AddSystem<RenderSystem>();
+	registry->AddSystem<Render3DSystem>();
 
 	assetManager->AddTexture(renderer, "tank-image", "../../../assets/images/tank-panther-right.png");
 	assetManager->AddTexture(renderer, "truck-image", "../../../assets/images/truck-ford-right.png");
@@ -143,7 +173,7 @@ void Game::Render()
 	SDL_RenderClear(renderer);
 
 	//Ask systems to render
-	registry->GetSystem<RenderSystem>().Update(renderer, assetManager);
+	registry->GetSystem<RenderSystem>().Render(renderer, assetManager);
 
 	// Render game objects...
 
@@ -153,7 +183,16 @@ void Game::Render()
 
 void Game::Destroy()
 {
+	SDL_GL_DeleteContext(glContext);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
+}
+
+void Game::ClearOpenGLContext() const
+{
+	if (glContext)
+	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
 }

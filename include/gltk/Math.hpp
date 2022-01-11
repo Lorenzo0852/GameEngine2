@@ -79,9 +79,9 @@
             return glm::rotate (matrix, angle, glm::vec3(0.f, 0.f, 1.f));
         }
 
-        inline Matrix44 perspective (float fov, float near, float far, float aspect_ratio)
+        inline Matrix44 perspective (float fov, float nearFloat, float farFloat, float aspect_ratio)
         {
-            return glm::perspective (fov, aspect_ratio, near, far);
+            return glm::perspective (fov, aspect_ratio, nearFloat, farFloat);
         }
 
         inline Vector2 extract_translation (const Matrix33 & transformation)

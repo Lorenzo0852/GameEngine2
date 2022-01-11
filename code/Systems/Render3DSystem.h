@@ -3,20 +3,18 @@
  *  Copyright (c) Lorenzo Herran - 2021   *
 \******************************************/
 
-#include "../sdl2/SDL.h"
 #include "../ECS/ECS.h"
 #include "../Components/TransformComponent.h"
 #include "../Components/SpriteComponent.h"
 #include "../AssetManager/AssetManager.h"
 
-class RenderSystem : public System
+class Render3DSystem : public System
 {
 public:
-	RenderSystem()
+	Render3DSystem()
 	{
 		// We specify the components that our system is interested in.
 		RequireComponent<TransformComponent>();
-		RequireComponent<SpriteComponent>();
 	}
 
 	void Render(SDL_Renderer* renderer, std::unique_ptr<AssetManager>& assetStore)
@@ -35,7 +33,7 @@ public:
 				static_cast<int>(sprite.width * transform.scale.x),
 				static_cast<int>(sprite.height * transform.scale.y)
 			};
-				
+
 			SDL_RenderCopyEx(
 				renderer,
 				assetStore->GetTexture(sprite.assetId),
