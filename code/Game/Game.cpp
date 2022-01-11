@@ -2,23 +2,22 @@
  *  Copyright (c) Lorenzo Herran - 2021   *
 \******************************************/
 
-#include "Game.h"
+
+#include <gltk/Camera.hpp>
 #include <iostream>
 #include <sdl2/SDL.h>
 #include <sdl2/SDL_image.h>
 #include <glm/glm.hpp>
-#include <spdlog/sinks/rotating_file_sink.h>
+#include <glad.h>
 
+#include "Game.h"
 #include "../ECS/ECS.h"
 #include "../Components/TransformComponent.h"
 #include "../Components/RigidBodyComponent.h"
 #include "../Components/SpriteComponent.h"
-
 #include "../Systems/MovementSystem.h"
 #include "../Systems/RenderSystem.h"
 
-#include <glad.h>
-#include <gltk/Camera.hpp>
 
 Game::Game()
 {
