@@ -2,6 +2,7 @@
 #include <sdl2/SDL.h>
 #include <spdlog/spdlog.h>
 #include <OpenGL.hpp>
+#include <spdlog\spdlog.h>
 
 Window::Window(const std::string& title, int width, int height, bool fullscreen, unsigned displayIndex)
 {
@@ -51,14 +52,15 @@ Window::Window(const std::string& title, int width, int height, bool fullscreen,
 				SDL_SetWindowFullscreen(sdlWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
 			}
 		}
-
 	}
+	spdlog::info("SDL Window created");
 }
 
 Window::~Window()
 {
 	if (glContext) SDL_GL_DeleteContext(glContext);
 	if (sdlWindow) SDL_DestroyWindow(sdlWindow);
+	spdlog::info("SDL Window destroyed");
 }
 
 void Window::SetWindowedFullscreen(){
@@ -70,7 +72,7 @@ void Window::SetWindowedFullscreen(){
 	SDL_SetWindowPosition(sdlWindow, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 }
 
-void Window::EnableVsync(bool isEnabled)
+void Window::SetVsync(bool isEnabled)
 {
 	if (glContext)
 	{

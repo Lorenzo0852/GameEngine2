@@ -37,7 +37,7 @@ public:
 	  */
 	unsigned GetHeight() const;
 
-	void EnableVsync(bool isEnabled);
+	void SetVsync(bool isEnabled);
 
 	/** Borra el buffer de la pantalla usando OpenGL.
 	  */

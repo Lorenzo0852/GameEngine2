@@ -2,11 +2,11 @@
  *  Copyright (c) Lorenzo Herran - 2021   *
 \******************************************/
 
-//#include <gltk/Cube.hpp>
-//#include <gltk/Model.hpp>
+#include <gltk/Cube.hpp>
+#include <gltk/Model.hpp>
 //#include <gltk/Model_Obj.hpp>
-//#include <gltk/Light.hpp>
-//#include <gltk/Render_Node.hpp>
+#include <gltk/Light.hpp>
+#include <gltk/Render_Node.hpp>
 //#include <gltk/Camera.hpp>
 
 
@@ -14,7 +14,6 @@
 #include <sdl2/SDL.h>
 #include <sdl2/SDL_image.h>
 #include <glm/glm.hpp>
-#include <Model.hpp>
 #include "Game.h"
 
 #include "../Logger/Logger.h"
@@ -31,8 +30,6 @@
 
 Game::Game()
 {
-	gameLogger = spdlog::rotating_logger_mt("GameLogger", "logs/GameLogs.txt", max_size, max_files);
-	spdlog::set_default_logger(gameLogger);
 	isRunning = false;
 	registry = std::make_unique<Registry>();
 	assetManager = std::make_unique<AssetManager>();
@@ -42,21 +39,24 @@ Game::Game()
 void Game::Initialize(Window & window)
 {
 	window.SetWindowedFullscreen();
+	window.SetVsync(true);
 
 	this->window = &window;
 	//-1 index means "get the default monitor/screen for the renderer".
 	//renderer = SDL_CreateRenderer(window.sdlWindow, -1, SDL_RENDERER_PRESENTVSYNC);
-
 	glRenderer.reset(new glt::Render_Node);
 	std::shared_ptr< glt::Model  > cube(new glt::Model);
-	//std::shared_ptr< glt::Camera > camera(new glt::Camera(20.f, 1.f, 50.f, 1.f));
-	//std::shared_ptr< glt::Light  > light(new glt::Light);
+	std::shared_ptr< glt::Camera > camera(new glt::Camera(20.f, 1.f, 50.f, 1.f));
+	std::shared_ptr< glt::Light  > light(new glt::Light);
 
-	glRenderer->add("cube" , cube);/*
+	cube->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+
+	glRenderer->add("camera", camera);
 	glRenderer->add("light", light);
-	glRenderer->add("camera", camera);*/
+	glRenderer->add("cube", cube);
 
-	/*cube->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());*/
+	glRenderer->get("camera")->translate(glt::Vector3(0.f, 0.f, 5.f));
+	glRenderer->get("light")->translate(glt::Vector3(10.f, 10.f, 10.f));
 
 	//if (!renderer)
 	//{
@@ -108,25 +108,24 @@ void Game::ProcessInput()
 void Game::SetupScene()
 {
 	registry->AddSystem<MovementSystem>();
-	registry->AddSystem<RenderSystem>();
-	registry->AddSystem<Render3DSystem>();
+	/*registry->AddSystem<RenderSystem>();*/
 
-	assetManager->AddTexture(renderer, "tank-image", "../../../assets/images/tank-panther-right.png");
-	assetManager->AddTexture(renderer, "truck-image", "../../../assets/images/truck-ford-right.png");
+	//assetManager->AddTexture(renderer, "tank-image", "../../../assets/images/tank-panther-right.png");
+	//assetManager->AddTexture(renderer, "truck-image", "../../../assets/images/truck-ford-right.png");
 
-	Entity tank = registry->CreateEntity();
-	gameLogger-> info("Entity ID: " + std::to_string(tank.GetId()));
+	//Entity tank = registry->CreateEntity();
+	//gameLogger-> info("Entity ID: " + std::to_string(tank.GetId()));
 
-	tank.AddComponent<TransformComponent>(glm::vec3(2000, 500, 0), glm::vec3(5.0, 5.0, 5.0), 0);
-	tank.AddComponent<RigidbodyComponent>(glm::vec3(50.0, 0.0, 0.0));
-	tank.AddComponent<SpriteComponent>("tank-image", 32, 32);
+	//tank.AddComponent<TransformComponent>(glm::vec3(2000, 500, 0), glm::vec3(5.0, 5.0, 5.0), 0);
+	//tank.AddComponent<RigidbodyComponent>(glm::vec3(50.0, 0.0, 0.0));
+	//tank.AddComponent<SpriteComponent>("tank-image", 32, 32);
 
-	Entity truck = registry->CreateEntity();
-	gameLogger->info("Entity ID: " + std::to_string(truck.GetId()));
+	//Entity truck = registry->CreateEntity();
+	//gameLogger->info("Entity ID: " + std::to_string(truck.GetId()));
 
-	truck.AddComponent<TransformComponent>(glm::vec3(1800, 500, 0), glm::vec3(5.0, 5.0, 5.0), 0);
-	truck.AddComponent<RigidbodyComponent>(glm::vec3(50.0, 0.0, 0.0));
-	truck.AddComponent<SpriteComponent>("truck-image", 32, 32);
+	//truck.AddComponent<TransformComponent>(glm::vec3(1800, 500, 0), glm::vec3(5.0, 5.0, 5.0), 0);
+	//truck.AddComponent<RigidbodyComponent>(glm::vec3(50.0, 0.0, 0.0));
+	//truck.AddComponent<SpriteComponent>("truck-image", 32, 32);
 }
 
 void Game::Update()
@@ -146,16 +145,34 @@ void Game::Update()
 /// </summary>
 void Game::Render()
 {
-	SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
-	SDL_RenderClear(renderer);
+	GLsizei width = GLsizei(window->GetWidth());
+	GLsizei height = GLsizei(window->GetHeight());
 
+	assert(glRenderer->get_active_camera() != nullptr);
+	glRenderer->get_active_camera()->set_aspect_ratio(float(width) / height);
+
+	glViewport(0, 0, width, height);
+
+	// Se rota el objeto:
+
+	auto cube = glRenderer->get("cube");
+
+	cube->rotate_around_x(0.01f);
+	cube->rotate_around_y(0.02f);
+	cube->rotate_around_z(0.03f);
+
+	//SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
+	//SDL_RenderClear(renderer);
+	window->Clear();
+	glRenderer->render();
+	window->SwapBuffers();
 	//Ask systems to render
-	registry->GetSystem<RenderSystem>().Render(renderer, assetManager);
+	//registry->GetSystem<RenderSystem>().Render(renderer, assetManager);
 
 	// Render game objects...
 
 	//Present the renderer / swaps render buffers.
-	SDL_RenderPresent(renderer);
+	//SDL_RenderPresent(renderer);
 }
 
 void Game::Destroy()

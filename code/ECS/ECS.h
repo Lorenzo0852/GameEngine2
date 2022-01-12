@@ -145,6 +145,7 @@ public:
 
 	/// <summary>
 	/// Defines the component type that entities must have to be considered by the system.
+	/// Defines the component type that entities must have to be considered by the system.
 	/// </summary>
 	/// <typeparam name="TComponent">Component type</typeparam>
 	template <typename TComponent> void RequireComponent();
