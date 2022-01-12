@@ -98,6 +98,7 @@
     <ClCompile Include="..\..\code\ECS\ECS.cpp" />
     <ClCompile Include="..\..\code\Game\Game.cpp" />
     <ClCompile Include="..\..\code\main.cpp" />
+    <ClCompile Include="..\..\code\Window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\code\AssetManager\AssetManager.h" />
@@ -111,6 +112,7 @@
     <ClInclude Include="..\..\code\Systems\MovementSystem.h" />
     <ClInclude Include="..\..\code\Systems\Render3DSystem.h" />
     <ClInclude Include="..\..\code\Systems\RenderSystem.h" />
+    <ClInclude Include="..\..\code\Window\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

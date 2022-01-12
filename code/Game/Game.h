@@ -6,6 +6,7 @@
 #include <sdl2/SDL.h>
 #include "../ECS/ECS.h"
 #include "../AssetManager/AssetManager.h"
+#include "../Window/Window.h"
 #include <gltk/Render_Node.hpp>
 #include <spdlog/sinks/rotating_file_sink.h>
 
@@ -13,8 +14,8 @@ class Game
 {
 private:
 	bool isRunning;
-	SDL_Window* window;
-	SDL_Renderer* renderer;
+	Window * window;
+	SDL_Renderer * renderer;
 	Uint64 millisecondsPreviousFrame = 0;
 
 
@@ -33,7 +34,7 @@ public:
 	Game();
 	~Game() = default;
 
-	void Initialize(bool fullScreen, unsigned displayIndex);
+	void Initialize(Window& window);
 	void ClearOpenGLContext() const;
 	void SetupScene();
 	void Run();

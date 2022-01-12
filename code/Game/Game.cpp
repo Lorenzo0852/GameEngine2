@@ -14,6 +14,7 @@
 #include <sdl2/SDL.h>
 #include <sdl2/SDL_image.h>
 #include <glm/glm.hpp>
+#include <Model.hpp>
 #include "Game.h"
 
 #include "../Logger/Logger.h"
@@ -38,60 +39,36 @@ Game::Game()
 	gameLogger->info("Game constructor called");
 }
 
-void Game::Initialize(bool fullScreen, unsigned displayIndex)
-{ 
-	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) //This will return != 0 if it can't initialize
-	{
-		gameLogger->error("Error initializing SDL");
-		return;
-	}
+void Game::Initialize(Window & window)
+{
+	window.SetWindowedFullscreen();
 
-	SDL_DisplayMode displayMode;
-	SDL_GetCurrentDisplayMode(displayIndex, &displayMode);
-	windowWidth = displayMode.w;
-	windowHeight = displayMode.h;
-
-	window = SDL_CreateWindow(
-		"Unnamed game engine",
-		SDL_WINDOWPOS_CENTERED,
-		SDL_WINDOWPOS_CENTERED,
-		windowWidth,
-		windowHeight,
-		SDL_WINDOW_OPENGL | SDL_WINDOW_BORDERLESS);
-
-	if (!window)
-	{
-		gameLogger->error("Error creating SDL window.");
-		return;
-	}
-
+	this->window = &window;
 	//-1 index means "get the default monitor/screen for the renderer".
-	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
-	/*glContext = SDL_GL_CreateContext(window);
-	glRenderer.reset(new glt::Render_Node);*/
-	//std::shared_ptr< glt::Model  > cube(new glt::Model);
+	//renderer = SDL_CreateRenderer(window.sdlWindow, -1, SDL_RENDERER_PRESENTVSYNC);
+
+	glRenderer.reset(new glt::Render_Node);
+	std::shared_ptr< glt::Model  > cube(new glt::Model);
 	//std::shared_ptr< glt::Camera > camera(new glt::Camera(20.f, 1.f, 50.f, 1.f));
 	//std::shared_ptr< glt::Light  > light(new glt::Light);
 
-	/*glRenderer->add("cube" , cube);
+	glRenderer->add("cube" , cube);/*
 	glRenderer->add("light", light);
 	glRenderer->add("camera", camera);*/
 
 	/*cube->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());*/
 
-	if (!renderer)
-	{
-		gameLogger->error("Error creating SDL renderer.");
-		return;
-	}
+	//if (!renderer)
+	//{
+	//	gameLogger->error("Error creating SDL renderer.");
+	//	return;
+	//}
 
 	//if (!glContext)
 	//{
 	//	gameLogger->error("Error creating OpenGL context.");
 	//	return;
 	//}
-
-	if (fullScreen) SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 
 	isRunning = true;
 }
@@ -183,9 +160,7 @@ void Game::Render()
 
 void Game::Destroy()
 {
-	SDL_GL_DeleteContext(glContext);
 	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
 	SDL_Quit();
 }
 
