@@ -21,6 +21,7 @@ int main(int args, char* argv[])
 	const int max_size = 1048576 * 5;
 	const int max_files = 1;
 	std::shared_ptr<spdlog::logger> gameLogger = spdlog::rotating_logger_mt("EngineLogger", "logs/EngineLogs.txt", max_size, max_files);
+	spdlog::set_default_logger(gameLogger);
 
 	Window window("Unnamed game engine", 1920, 1080, false, -1);
 	// We create the game in the stack. We don't need the 'new' keyword for stack-only variables.

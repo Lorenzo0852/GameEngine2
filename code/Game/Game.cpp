@@ -33,7 +33,7 @@ Game::Game()
 	isRunning = false;
 	registry = std::make_unique<Registry>();
 	assetManager = std::make_unique<AssetManager>();
-	gameLogger->info("Game constructor called");
+	spdlog::info("Game constructor called");
 }
 
 void Game::Initialize(Window & window)
@@ -46,7 +46,7 @@ void Game::Initialize(Window & window)
 	//renderer = SDL_CreateRenderer(window.sdlWindow, -1, SDL_RENDERER_PRESENTVSYNC);
 	glRenderer.reset(new glt::Render_Node);
 	std::shared_ptr< glt::Model  > cube(new glt::Model);
-	std::shared_ptr< glt::Camera > camera(new glt::Camera(20.f, 1.f, 50.f, 1.f));
+	std::shared_ptr< glt::Camera > camera(new glt::Camera(20.f, 1.f, 500.f, 1.f));
 	std::shared_ptr< glt::Light  > light(new glt::Light);
 
 	cube->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
@@ -163,6 +163,7 @@ void Game::Render()
 
 	//SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
 	//SDL_RenderClear(renderer);
+	glClearColor(0.5,0.5f,0.5f, 1);
 	window->Clear();
 	glRenderer->render();
 	window->SwapBuffers();
