@@ -21,11 +21,10 @@
 #include "../Components/TransformComponent.h"
 #include "../Components/RigidBodyComponent.h"
 #include "../Components/SpriteComponent.h"
+#include "../Components/OpenGLNodeComponent.h"
 #include "../Systems/MovementSystem.h"
 #include "../Systems/RenderSystem.h"
 #include "../Systems/Render3DSystem.h"
-
-
 
 
 Game::Game()
@@ -42,18 +41,19 @@ void Game::Initialize(Window & window)
 	window.SetVsync(true);
 
 	this->window = &window;
+	std::shared_ptr< glt::Model  > cube(new glt::Model);
 	//-1 index means "get the default monitor/screen for the renderer".
 	//renderer = SDL_CreateRenderer(window.sdlWindow, -1, SDL_RENDERER_PRESENTVSYNC);
 	glRenderer.reset(new glt::Render_Node);
-	std::shared_ptr< glt::Model  > cube(new glt::Model);
+	//std::shared_ptr< glt::Model  > cube(new glt::Model);
 	std::shared_ptr< glt::Camera > camera(new glt::Camera(20.f, 1.f, 500.f, 1.f));
 	std::shared_ptr< glt::Light  > light(new glt::Light);
 
-	cube->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+	//cube->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
 
 	glRenderer->add("camera", camera);
 	glRenderer->add("light", light);
-	glRenderer->add("cube", cube);
+	//glRenderer->add("cube", cube);
 
 	glRenderer->get("camera")->translate(glt::Vector3(0.f, 0.f, 5.f));
 	glRenderer->get("light")->translate(glt::Vector3(10.f, 10.f, 10.f));
@@ -108,6 +108,15 @@ void Game::ProcessInput()
 void Game::SetupScene()
 {
 	registry->AddSystem<MovementSystem>();
+	registry->AddSystem<Render3DSystem>();
+
+	Entity cube = registry->CreateEntity();
+	std::shared_ptr< glt::Model  > cubeModel(new glt::Model);
+	cubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+
+	cube.AddComponent<TransformComponent>(glm::vec3(2000, 500, 0), glm::vec3(5.0, 5.0, 5.0), 0);
+	cube.AddComponent<OpenGLNodeComponent>("cube", cubeModel);
+
 	/*registry->AddSystem<RenderSystem>();*/
 
 	//assetManager->AddTexture(renderer, "tank-image", "../../../assets/images/tank-panther-right.png");
@@ -126,7 +135,12 @@ void Game::SetupScene()
 	//truck.AddComponent<TransformComponent>(glm::vec3(1800, 500, 0), glm::vec3(5.0, 5.0, 5.0), 0);
 	//truck.AddComponent<RigidbodyComponent>(glm::vec3(50.0, 0.0, 0.0));
 	//truck.AddComponent<SpriteComponent>("truck-image", 32, 32);
+
+	//Update registry to process the entities that are waiting
+	registry->Update();
+	registry->GetSystem<Render3DSystem>().LoadEntities(*glRenderer);
 }
+
 
 void Game::Update()
 {
@@ -145,31 +159,33 @@ void Game::Update()
 /// </summary>
 void Game::Render()
 {
-	GLsizei width = GLsizei(window->GetWidth());
-	GLsizei height = GLsizei(window->GetHeight());
+	registry->GetSystem<Render3DSystem>().Render(*glRenderer, *window);
 
-	assert(glRenderer->get_active_camera() != nullptr);
-	glRenderer->get_active_camera()->set_aspect_ratio(float(width) / height);
+	//GLsizei width = GLsizei(window->GetWidth());
+	//GLsizei height = GLsizei(window->GetHeight());
 
-	glViewport(0, 0, width, height);
+	//glRenderer->get_active_camera()->set_aspect_ratio(float(width) / height);
 
-	// Se rota el objeto:
+	//glViewport(0, 0, width, height);
 
-	auto cube = glRenderer->get("cube");
+	//glClearColor(0.5, 0.5f, 0.5f, 1);
+	//window->Clear();
+	//glRenderer->render();
+	//window->SwapBuffers();
 
-	cube->rotate_around_x(0.01f);
-	cube->rotate_around_y(0.02f);
-	cube->rotate_around_z(0.03f);
+	//// Se rota el objeto:
 
-	//SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
-	//SDL_RenderClear(renderer);
-	glClearColor(0.5,0.5f,0.5f, 1);
-	window->Clear();
-	glRenderer->render();
-	window->SwapBuffers();
+	//auto cube = glRenderer->get("cube");
+
+	//cube->rotate_around_x(0.01f);
+	//cube->rotate_around_y(0.02f);
+	//cube->rotate_around_z(0.03f);
+
+	////SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
+	////SDL_RenderClear(renderer);
+
 	//Ask systems to render
 	//registry->GetSystem<RenderSystem>().Render(renderer, assetManager);
-
 	// Render game objects...
 
 	//Present the renderer / swaps render buffers.

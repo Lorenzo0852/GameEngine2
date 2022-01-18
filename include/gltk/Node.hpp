@@ -37,7 +37,7 @@
 
             bool           visible;
 
-        protected:
+        public:
 
 			Node() : local_scale(1), local_anchor(1), transformation(1)
             {
