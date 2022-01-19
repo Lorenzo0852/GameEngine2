@@ -110,10 +110,10 @@ void Game::ProcessInput()
 
 void Game::SetupScene()
 {
-	/*rapidxml::file<> xmlFile("../../assets/scenes/test.xml");
+	rapidxml::file<> xmlFile("../../assets/scenes/test.xml");
 	rapidxml::xml_document<> doc;
 	doc.parse<0>(xmlFile.data());
-	spdlog::info("XML: " + std::string(doc.first_node()->name()));*/
+	spdlog::info("XML: " + std::string(doc.first_node()->name()));
 	
 	registry->AddSystem<MovementSystem>();
 	registry->AddSystem<ModelRender3DSystem>();
