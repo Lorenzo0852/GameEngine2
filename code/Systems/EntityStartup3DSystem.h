@@ -22,7 +22,7 @@ public:
 		RequireComponent<TransformComponent>();
 	}
 
-	void SetStartingTransform()
+	bool Initialize()
 	{
 		spdlog::info("Starting up entities' transforms...");
 		for (auto entity : GetSystemEntities())
@@ -35,5 +35,11 @@ public:
 			node->rotate_around_y(transform.rotation.y);
 			node->rotate_around_z(transform.rotation.z);
 		}
+		return true;
+	}
+
+	void Run(float deltaTime)
+	{
+
 	}
 };

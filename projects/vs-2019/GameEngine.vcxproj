@@ -97,6 +97,7 @@
     <ClCompile Include="..\..\code\AssetManager\AssetStore.cpp" />
     <ClCompile Include="..\..\code\ECS\ECS.cpp" />
     <ClCompile Include="..\..\code\Game\Game.cpp" />
+    <ClCompile Include="..\..\code\Kernel\Kernel.cpp" />
     <ClCompile Include="..\..\code\main.cpp" />
     <ClCompile Include="..\..\code\Window\Window.cpp" />
   </ItemGroup>
@@ -107,7 +108,11 @@
     <ClInclude Include="..\..\code\Components\SpriteComponent.h" />
     <ClInclude Include="..\..\code\Components\TransformComponent.h" />
     <ClInclude Include="..\..\code\ECS\ECS.h" />
+    <ClInclude Include="..\..\code\EventBus\Event.h" />
+    <ClInclude Include="..\..\code\EventBus\EventBus.h" />
+    <ClInclude Include="..\..\code\Events\InputEvent.h" />
     <ClInclude Include="..\..\code\Game\Game.h" />
+    <ClInclude Include="..\..\code\Kernel\Kernel.h" />
     <ClInclude Include="..\..\code\Logger\Logger.h" />
     <ClInclude Include="..\..\code\Pool\Pool.h" />
     <ClInclude Include="..\..\code\Systems\EntityStartup3DSystem.h" />
@@ -115,6 +120,7 @@
     <ClInclude Include="..\..\code\Systems\MovementSystem.h" />
     <ClInclude Include="..\..\code\Systems\ModelRender3DSystem.h" />
     <ClInclude Include="..\..\code\Systems\RenderSystem.h" />
+    <ClInclude Include="..\..\code\Task\Task.h" />
     <ClInclude Include="..\..\code\Window\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

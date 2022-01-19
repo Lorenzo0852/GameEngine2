@@ -83,10 +83,17 @@ void Registry::AddEntityToSystems(Entity entity){
 	}
 }
 
-void Registry::Update(){
+void Registry::Run(float deltaTime)
+{
 	for (auto entity : entitiesToBeAdded)
 	{
 		AddEntityToSystems(entity);
 	}
 	entitiesToBeAdded.clear();
+}
+
+bool Registry::Initialize()
+{
+	Run(0);
+	return true;
 }

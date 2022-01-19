@@ -6,10 +6,13 @@
 // ARGE? -> Awesome Raw Game Engine
 // NIA Engine -> No Idea at All Engine
 // HSLM Engine -> Hecho Sobre La Marcha Engine
-
+//SPDLOG_LEVEL_TRACE to enable traces
+//SPDLOG_LEVEL_OFF to disable traces
 #include <iostream>
 #include "Game/Game.h"
 #include "Window/Window.h"
+#include "Kernel/Kernel.h"
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include "Logger/Logger.h"
@@ -23,12 +26,20 @@ int main(int args, char* argv[])
 	std::shared_ptr<spdlog::logger> gameLogger = spdlog::rotating_logger_mt("EngineLogger", "logs/EngineLogs.txt", max_size, max_files);
 	spdlog::set_default_logger(gameLogger);
 
+	//gameLogger->info("wtf");
+
 	Window window("Unnamed game engine", 1920, 1080, false, -1);
-	// We create the game in the stack. We don't need the 'new' keyword for stack-only variables.
+	Kernel kernel;
+	//// We create the game in the stack. We don't need the 'new' keyword for stack-only variables.
 	Game game;
-	game.Initialize(window);
+	////We initialize all game tasks to add them to the kernel...
+	game.Initialize(window, kernel);
 	game.SetupScene();
-	game.Run();
+	////Then start the kernel loop.
+
+	kernel.Execute();
+
+	//game.Run();
 	
 	return 0;
 }

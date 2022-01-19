@@ -10,6 +10,7 @@
 #include <typeindex>
 #include <set>
 #include "../Pool/Pool.h"
+#include "../Task/Task.h"
 
 /****************************************************************************************\
  *  ENTITY
@@ -124,7 +125,7 @@ public:
 /// <summary>
 /// The system processes entities that contain a specific signature.
 /// </summary>
-class System {
+class System : public Task{
 private:
 	/// <summary>
 	/// Components required by the system.
@@ -165,7 +166,7 @@ public:
 /// <summary>
 /// Base registry/manager class. Used to coordinate the different ECS implementations.
 /// </summary>
-class Registry {
+class Registry : public Task{
 private:
 	//Keeps track of how many entities were added to the scene.
 	int numEntities = 0;
@@ -245,7 +246,16 @@ public:
 	/*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*
 	* Game management
 	*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*/
-	void Update();
+	
+	/// <summary>
+	/// Updates the registry for the first time.
+	/// </summary>
+	bool Initialize();
+	/// <summary>
+	/// Updates the registry
+	/// </summary>
+	/// <param name="deltaTime"></param>
+	void Run(float deltaTime);
 };
 
 
@@ -344,7 +354,6 @@ bool Registry::HasSystem() const
 template <typename TSystem>
 TSystem& Registry::GetSystem() const
 {
-	//.end() in an unordered map is the element following the last element.
 	auto system = systems.find(	std::type_index(	typeid(TSystem)	)	);
 	//.find() returns a pair, where ->first is the first element and ->second the second one.
 	//We need to dereference it so it doesn't return a memory address, but its content.

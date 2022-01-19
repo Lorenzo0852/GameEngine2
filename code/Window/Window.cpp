@@ -2,7 +2,6 @@
 #include <sdl2/SDL.h>
 #include <spdlog/spdlog.h>
 #include <OpenGL.hpp>
-#include <spdlog\spdlog.h>
 
 Window::Window(const std::string& title, int width, int height, bool fullscreen, unsigned displayIndex)
 {

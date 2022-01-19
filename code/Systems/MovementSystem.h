@@ -30,4 +30,9 @@ public:
 			transform.position.z += static_cast<float>(rigidbody.velocity.z * deltaTime);
 		}
 	}
+
+	void Run(float deltaTime)
+	{
+
+	}
 };

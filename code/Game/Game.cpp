@@ -38,10 +38,11 @@ Game::Game()
 	spdlog::info("Game constructor called");
 }
 
-void Game::Initialize(Window & window)
+void Game::Initialize(Window & window, Kernel & kernel)
 {
 	window.SetWindowedFullscreen();
 	window.SetVsync(true);
+	this->kernel = &kernel;
 
 	this->window = &window;
 	std::shared_ptr< glt::Model  > cube(new glt::Model);
@@ -78,12 +79,12 @@ void Game::Initialize(Window & window)
 
 void Game::Run()
 {
-	while (isRunning)
-	{
-		ProcessInput();
-		Update();
-		Render();
-	}
+	//while (isRunning)
+	//{
+	//	ProcessInput();
+	//	Update();
+	//	Render();
+	//}
 }
 
 
@@ -110,13 +111,23 @@ void Game::ProcessInput()
 
 void Game::SetupScene()
 {
-	rapidxml::file<> xmlFile("../../assets/scenes/test.xml");
+	/*rapidxml::file<> xmlFile("../../../assets/scenes/test.scene");
 	rapidxml::xml_document<> doc;
 	doc.parse<0>(xmlFile.data());
-	spdlog::info("XML: " + std::string(doc.first_node()->name()));
+	rapidxml::xml_node<>* registryNode = doc.first_node()->first_node("registry");
+	while (registryNode != 0)
+	{
+		rapidxml::xml_node<>* childNode = registryNode->first_node();
+		while (childNode != 0)
+		{
+			spdlog::info("" + std::string(childNode->value()));
+			childNode = childNode->next_sibling();
+		}
+		registryNode = registryNode->next_sibling("registry");
+	}*/
 	
 	registry->AddSystem<MovementSystem>();
-	registry->AddSystem<ModelRender3DSystem>();
+	registry->AddSystem<ModelRender3DSystem>(*glRenderer, *window);
 	registry->AddSystem<Movement3DSystem>();
 	registry->AddSystem<EntityStartup3DSystem>();
 
@@ -138,13 +149,15 @@ void Game::SetupScene()
 	Entity fence = registry->CreateEntity();
 	std::shared_ptr< glt::Model  > fenceModel(new glt::Model_Obj("../../../assets/models/utah-teapot.obj"));
 	fence.AddComponent<RigidbodyComponent>(glm::vec3(0, 0, 0), glm::vec3(0, 0.2f, 0));
-	fence.AddComponent<TransformComponent>(glm::vec3(5, 0, -75), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
+	fence.AddComponent<TransformComponent>(glm::vec3(15, 0, -75), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
 	fence.AddComponent<Node3DComponent>("fence", fenceModel);
 
 	//Update registry to process the entities that are waiting
-	registry->Update();
-	registry->GetSystem<ModelRender3DSystem>().LoadEntities(*glRenderer, *window);
-	registry->GetSystem<EntityStartup3DSystem>().SetStartingTransform();
+	kernel->InitializeTask(*registry);
+	kernel->InitializeTask(registry->GetSystem<ModelRender3DSystem>());
+	kernel->InitializeTask(registry->GetSystem<EntityStartup3DSystem>());
+	kernel->AddRunningTask(registry->GetSystem<Movement3DSystem>());
+	kernel->AddRunningTask(registry->GetSystem<ModelRender3DSystem>());
 
 	/*registry->AddSystem<RenderSystem>();*/
 
@@ -172,10 +185,10 @@ void Game::Update()
 	millisecondsPreviousFrame = SDL_GetTicks64();
 
 	//Ask systems to update
-	registry->GetSystem<MovementSystem>().Update(deltaTime);
-	registry->GetSystem<Movement3DSystem>().Update(deltaTime);
+	//registry->GetSystem<MovementSystem>().Update(deltaTime);
+	kernel->AddRunningTask(registry->GetSystem<Movement3DSystem>());
 	//Update registry to process the entities that are waiting
-	registry->Update();
+	kernel->AddRunningTask(*registry);
 }
 
 /// <summary>
@@ -183,7 +196,7 @@ void Game::Update()
 /// </summary>
 void Game::Render()
 {
-	registry->GetSystem<ModelRender3DSystem>().Render(*glRenderer, *window);
+	kernel->AddRunningTask(registry->GetSystem<ModelRender3DSystem>());
 
 	//GLsizei width = GLsizei(window->GetWidth());
 	//GLsizei height = GLsizei(window->GetHeight());

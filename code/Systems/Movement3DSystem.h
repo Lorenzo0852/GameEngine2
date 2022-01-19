@@ -21,7 +21,7 @@ public:
 		RequireComponent<Node3DComponent>();
 	}
 
-	void Update(double deltaTime)
+	void Run(float deltaTime)
 	{
 		for (auto entity : GetSystemEntities())
 		{
