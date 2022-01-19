@@ -9,8 +9,9 @@
 #include <gltk/Render_Node.hpp>
 //#include <gltk/Camera.hpp>
 
+#include <rapidxml/rapidxml.hpp>
+#include <rapidxml/rapidxml_utils.hpp>
 
-#include <iostream>
 #include <sdl2/SDL.h>
 #include <sdl2/SDL_image.h>
 #include <glm/glm.hpp>
@@ -21,10 +22,12 @@
 #include "../Components/TransformComponent.h"
 #include "../Components/RigidBodyComponent.h"
 #include "../Components/SpriteComponent.h"
-#include "../Components/OpenGLNodeComponent.h"
+#include "../Components/Node3DComponent.h"
 #include "../Systems/MovementSystem.h"
 #include "../Systems/RenderSystem.h"
-#include "../Systems/Render3DSystem.h"
+#include "../Systems/ModelRender3DSystem.h"
+#include "../Systems/Movement3DSystem.h"
+#include "../Systems/EntityStartup3DSystem.h"
 
 
 Game::Game()
@@ -46,16 +49,16 @@ void Game::Initialize(Window & window)
 	//renderer = SDL_CreateRenderer(window.sdlWindow, -1, SDL_RENDERER_PRESENTVSYNC);
 	glRenderer.reset(new glt::Render_Node);
 	//std::shared_ptr< glt::Model  > cube(new glt::Model);
-	std::shared_ptr< glt::Camera > camera(new glt::Camera(20.f, 1.f, 500.f, 1.f));
+	//std::shared_ptr< glt::Camera > camera(new glt::Camera(20.f, 1.f, 500.f, 1.f));
 	std::shared_ptr< glt::Light  > light(new glt::Light);
 
 	//cube->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
 
-	glRenderer->add("camera", camera);
+	//glRenderer->add("camera", camera);
 	glRenderer->add("light", light);
 	//glRenderer->add("cube", cube);
 
-	glRenderer->get("camera")->translate(glt::Vector3(0.f, 0.f, 5.f));
+	//glRenderer->get("camera")->translate(glt::Vector3(0.f, 0.f, 5.f));
 	glRenderer->get("light")->translate(glt::Vector3(10.f, 10.f, 10.f));
 
 	//if (!renderer)
@@ -107,15 +110,41 @@ void Game::ProcessInput()
 
 void Game::SetupScene()
 {
+	/*rapidxml::file<> xmlFile("../../assets/scenes/test.xml");
+	rapidxml::xml_document<> doc;
+	doc.parse<0>(xmlFile.data());
+	spdlog::info("XML: " + std::string(doc.first_node()->name()));*/
+	
 	registry->AddSystem<MovementSystem>();
-	registry->AddSystem<Render3DSystem>();
+	registry->AddSystem<ModelRender3DSystem>();
+	registry->AddSystem<Movement3DSystem>();
+	registry->AddSystem<EntityStartup3DSystem>();
 
 	Entity cube = registry->CreateEntity();
 	std::shared_ptr< glt::Model  > cubeModel(new glt::Model);
 	cubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
 
-	cube.AddComponent<TransformComponent>(glm::vec3(2000, 500, 0), glm::vec3(5.0, 5.0, 5.0), 0);
-	cube.AddComponent<OpenGLNodeComponent>("cube", cubeModel);
+	cube.AddComponent<RigidbodyComponent>(glm::vec3(0.f, 0, -1.f), glm::vec3(0.f, 0.2f, -0.2f));
+	cube.AddComponent<TransformComponent>(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
+	cube.AddComponent<Node3DComponent>("cube", cubeModel);
+
+	Entity cam = registry->CreateEntity();
+	std::shared_ptr< glt::Camera > cameraNode(new glt::Camera(20.f, 1.f, 500.f, 1.f));
+
+	cam.AddComponent<RigidbodyComponent>();
+	cam.AddComponent<TransformComponent>(glm::vec3(0.f, 0.f, 5.f), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
+	cam.AddComponent<Node3DComponent>("camera", cameraNode);
+
+	Entity fence = registry->CreateEntity();
+	std::shared_ptr< glt::Model  > fenceModel(new glt::Model_Obj("../../../assets/models/utah-teapot.obj"));
+	fence.AddComponent<RigidbodyComponent>(glm::vec3(0, 0, 0), glm::vec3(0, 0.2f, 0));
+	fence.AddComponent<TransformComponent>(glm::vec3(5, 0, -75), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
+	fence.AddComponent<Node3DComponent>("fence", fenceModel);
+
+	//Update registry to process the entities that are waiting
+	registry->Update();
+	registry->GetSystem<ModelRender3DSystem>().LoadEntities(*glRenderer, *window);
+	registry->GetSystem<EntityStartup3DSystem>().SetStartingTransform();
 
 	/*registry->AddSystem<RenderSystem>();*/
 
@@ -135,12 +164,7 @@ void Game::SetupScene()
 	//truck.AddComponent<TransformComponent>(glm::vec3(1800, 500, 0), glm::vec3(5.0, 5.0, 5.0), 0);
 	//truck.AddComponent<RigidbodyComponent>(glm::vec3(50.0, 0.0, 0.0));
 	//truck.AddComponent<SpriteComponent>("truck-image", 32, 32);
-
-	//Update registry to process the entities that are waiting
-	registry->Update();
-	registry->GetSystem<Render3DSystem>().LoadEntities(*glRenderer);
 }
-
 
 void Game::Update()
 {
@@ -149,7 +173,7 @@ void Game::Update()
 
 	//Ask systems to update
 	registry->GetSystem<MovementSystem>().Update(deltaTime);
-
+	registry->GetSystem<Movement3DSystem>().Update(deltaTime);
 	//Update registry to process the entities that are waiting
 	registry->Update();
 }
@@ -159,7 +183,7 @@ void Game::Update()
 /// </summary>
 void Game::Render()
 {
-	registry->GetSystem<Render3DSystem>().Render(*glRenderer, *window);
+	registry->GetSystem<ModelRender3DSystem>().Render(*glRenderer, *window);
 
 	//GLsizei width = GLsizei(window->GetWidth());
 	//GLsizei height = GLsizei(window->GetHeight());

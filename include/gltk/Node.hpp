@@ -22,7 +22,7 @@
 
         class Node
         {
-        private:
+        public:
 
             typedef Matrix44 Transformation;
 

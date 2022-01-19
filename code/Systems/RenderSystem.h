@@ -41,7 +41,7 @@ public:
 				assetStore->GetTexture(sprite.assetId),
 				&srcRect,
 				&dstRect,
-				transform.rotation,
+				transform.rotation.x,
 				NULL,
 				SDL_FLIP_NONE);
 		}

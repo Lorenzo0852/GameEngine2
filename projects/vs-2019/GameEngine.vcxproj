@@ -60,7 +60,7 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../../include/lua;../../include/;../../include/gltk;../../include/glad;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../include/lua;../../include/;../../include/gltk;../../include/glad;../../include/rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard_C>Default</LanguageStandard_C>
     </ClCompile>
     <Link>
@@ -80,7 +80,7 @@
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../../include/lua;../../include/;../../include/gltk;../../include/glad;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../include/lua;../../include/;../../include/gltk;../../include/glad;../../include/rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard_C>Default</LanguageStandard_C>
     </ClCompile>
     <Link>
@@ -102,7 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\code\AssetManager\AssetManager.h" />
-    <ClInclude Include="..\..\code\Components\OpenGLNodeComponent.h" />
+    <ClInclude Include="..\..\code\Components\Node3DComponent.h" />
     <ClInclude Include="..\..\code\Components\RigidbodyComponent.h" />
     <ClInclude Include="..\..\code\Components\SpriteComponent.h" />
     <ClInclude Include="..\..\code\Components\TransformComponent.h" />
@@ -110,8 +110,10 @@
     <ClInclude Include="..\..\code\Game\Game.h" />
     <ClInclude Include="..\..\code\Logger\Logger.h" />
     <ClInclude Include="..\..\code\Pool\Pool.h" />
+    <ClInclude Include="..\..\code\Systems\EntityStartup3DSystem.h" />
+    <ClInclude Include="..\..\code\Systems\Movement3DSystem.h" />
     <ClInclude Include="..\..\code\Systems\MovementSystem.h" />
-    <ClInclude Include="..\..\code\Systems\Render3DSystem.h" />
+    <ClInclude Include="..\..\code\Systems\ModelRender3DSystem.h" />
     <ClInclude Include="..\..\code\Systems\RenderSystem.h" />
     <ClInclude Include="..\..\code\Window\Window.h" />
   </ItemGroup>

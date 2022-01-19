@@ -62,13 +62,19 @@
     <ClInclude Include="..\..\code\AssetManager\AssetManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\code\Systems\Render3DSystem.h">
+    <ClInclude Include="..\..\code\Systems\ModelRender3DSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\code\Window\Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\code\Components\OpenGLNodeComponent.h">
+    <ClInclude Include="..\..\code\Components\Node3DComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\Systems\Movement3DSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\Systems\EntityStartup3DSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
