@@ -17,7 +17,6 @@
 #include <glm/glm.hpp>
 #include "Game.h"
 
-#include "../Logger/Logger.h"
 #include "../ECS/ECS.h"
 #include "../Components/TransformComponent.h"
 #include "../Components/RigidBodyComponent.h"
@@ -30,11 +29,12 @@
 #include "../Systems/EntityStartup3DSystem.h"
 
 
-Game::Game()
+Game::Game(std::shared_ptr<EventBus> eventBus)
 {
-	isRunning = false;
-	registry = std::make_unique<Registry>();
-	assetManager = std::make_unique<AssetManager>();
+	isRunning		=		false;
+	registry		=		std::make_unique<Registry>();
+	assetManager	=		std::make_unique<AssetManager>();
+	this->eventBus	=		eventBus;
 	spdlog::info("Game constructor called");
 }
 
@@ -43,24 +43,20 @@ void Game::Initialize(Window & window, Kernel & kernel)
 	window.SetWindowedFullscreen();
 	window.SetVsync(true);
 	this->kernel = &kernel;
-
 	this->window = &window;
-	std::shared_ptr< glt::Model  > cube(new glt::Model);
+
 	//-1 index means "get the default monitor/screen for the renderer".
 	//renderer = SDL_CreateRenderer(window.sdlWindow, -1, SDL_RENDERER_PRESENTVSYNC);
 	glRenderer.reset(new glt::Render_Node);
 	//std::shared_ptr< glt::Model  > cube(new glt::Model);
 	//std::shared_ptr< glt::Camera > camera(new glt::Camera(20.f, 1.f, 500.f, 1.f));
-	std::shared_ptr< glt::Light  > light(new glt::Light);
 
 	//cube->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
 
 	//glRenderer->add("camera", camera);
-	glRenderer->add("light", light);
 	//glRenderer->add("cube", cube);
 
 	//glRenderer->get("camera")->translate(glt::Vector3(0.f, 0.f, 5.f));
-	glRenderer->get("light")->translate(glt::Vector3(10.f, 10.f, 10.f));
 
 	//if (!renderer)
 	//{
@@ -75,38 +71,6 @@ void Game::Initialize(Window & window, Kernel & kernel)
 	//}
 
 	isRunning = true;
-}
-
-void Game::Run()
-{
-	//while (isRunning)
-	//{
-	//	ProcessInput();
-	//	Update();
-	//	Render();
-	//}
-}
-
-
-void Game::ProcessInput()
-{
-	SDL_Event sdlEvent;
-	while (SDL_PollEvent(&sdlEvent))
-	{
-		switch (sdlEvent.type)
-		{
-			//Event that the system triggers when the user closes the window
-			case SDL_QUIT:
-				isRunning = false;
-				break;
-			case SDL_KEYDOWN:
-				if (sdlEvent.key.keysym.sym == SDLK_ESCAPE)
-				{
-					isRunning = false;
-				}
-				break;
-		}
-	}
 }
 
 void Game::SetupScene()
@@ -131,26 +95,31 @@ void Game::SetupScene()
 	registry->AddSystem<Movement3DSystem>();
 	registry->AddSystem<EntityStartup3DSystem>();
 
-	Entity cube = registry->CreateEntity();
+	cube = registry->CreateEntity();
 	std::shared_ptr< glt::Model  > cubeModel(new glt::Model);
 	cubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
 
-	cube.AddComponent<RigidbodyComponent>(glm::vec3(0.f, 0, -1.f), glm::vec3(0.f, 0.2f, -0.2f));
-	cube.AddComponent<TransformComponent>(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
+	cube.AddComponent<RigidbodyComponent>(glm::vec3(0.f, 0, 0), glm::vec3(0.f, 0.f, 0.f));
+	cube.AddComponent<TransformComponent>(glm::vec3(0, 0, -20.f), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
 	cube.AddComponent<Node3DComponent>("cube", cubeModel);
 
-	Entity cam = registry->CreateEntity();
+	cam = registry->CreateEntity();
 	std::shared_ptr< glt::Camera > cameraNode(new glt::Camera(20.f, 1.f, 500.f, 1.f));
 
 	cam.AddComponent<RigidbodyComponent>();
 	cam.AddComponent<TransformComponent>(glm::vec3(0.f, 0.f, 5.f), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
 	cam.AddComponent<Node3DComponent>("camera", cameraNode);
 
-	Entity fence = registry->CreateEntity();
-	std::shared_ptr< glt::Model  > fenceModel(new glt::Model_Obj("../../../assets/models/utah-teapot.obj"));
-	fence.AddComponent<RigidbodyComponent>(glm::vec3(0, 0, 0), glm::vec3(0, 0.2f, 0));
-	fence.AddComponent<TransformComponent>(glm::vec3(15, 0, -75), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
-	fence.AddComponent<Node3DComponent>("fence", fenceModel);
+	teapot = registry->CreateEntity();
+	std::shared_ptr< glt::Model  > teapotModel(new glt::Model_Obj("../../../assets/models/utah-teapot.obj"));
+	teapot.AddComponent<RigidbodyComponent>(glm::vec3(0, 0, 0), glm::vec3(0, 0.2f, 0));
+	teapot.AddComponent<TransformComponent>(glm::vec3(15, 0, -75), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
+	teapot.AddComponent<Node3DComponent>("teapot", teapotModel);
+
+	light = registry->CreateEntity();
+	std::shared_ptr< glt::Light  > lightNode(new glt::Light);
+	light.AddComponent<TransformComponent>(glt::Vector3(10.f, 10.f, 10.f), glt::Vector3(0.f, 0.f, 0.f));
+	light.AddComponent<Node3DComponent>("light", lightNode);
 
 	//Update registry to process the entities that are waiting
 	kernel->InitializeTask(*registry);
@@ -179,16 +148,34 @@ void Game::SetupScene()
 	//truck.AddComponent<SpriteComponent>("truck-image", 32, 32);
 }
 
-void Game::Update()
+void Game::Run(float deltaTime)
 {
-	double deltaTime = (static_cast<double>(SDL_GetTicks64()) - millisecondsPreviousFrame) * 0.001;
-	millisecondsPreviousFrame = SDL_GetTicks64();
+	eventBus->Reset();
+	eventBus->AddEventListener<InputEvent>(this, &Game::OnInputRegistered);
 
-	//Ask systems to update
-	//registry->GetSystem<MovementSystem>().Update(deltaTime);
-	kernel->AddRunningTask(registry->GetSystem<Movement3DSystem>());
-	//Update registry to process the entities that are waiting
-	kernel->AddRunningTask(*registry);
+}
+
+void Game::OnInputRegistered(InputEvent& event)
+{
+	RigidbodyComponent & cubeRigidbody = cube.GetComponent<RigidbodyComponent>();
+	switch (event.action)
+	{
+	case InputEvent::Action::QUIT :
+		kernel->Stop();
+		break;
+	case InputEvent::Action::FORWARD :
+		cubeRigidbody.velocity = glm::vec3(cubeRigidbody.velocity.x	,	 10 * event.value		,	 cubeRigidbody.velocity.z);
+		break;
+	case InputEvent::Action::BACKWARDS:
+		cubeRigidbody.velocity = glm::vec3(cubeRigidbody.velocity.x	,	-10 * event.value		,	 cubeRigidbody.velocity.z);
+		break;
+	case InputEvent::Action::LEFT:
+		cubeRigidbody.velocity = glm::vec3(		-10 * event.value	, cubeRigidbody.velocity.y	,	 cubeRigidbody.velocity.z);
+		break;
+	case InputEvent::Action::RIGHT:
+		cubeRigidbody.velocity = glm::vec3(		10 * event.value	, cubeRigidbody.velocity.y	,	 cubeRigidbody.velocity.z);
+		break;
+	}
 }
 
 /// <summary>

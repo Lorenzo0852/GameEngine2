@@ -1,3 +1,7 @@
+/******************************************\
+ *  Copyright (c) Lorenzo Herran - 2021   *
+\******************************************/
+
 #include "Window.h"
 #include <sdl2/SDL.h>
 #include <spdlog/spdlog.h>

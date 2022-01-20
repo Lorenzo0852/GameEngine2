@@ -34,6 +34,15 @@ public:
         runningTasks.push_back(&task);
     }
 
+    /// <summary>
+    /// This will set the task to be on the front of the task list.
+    /// </summary>
+    /// <param name="task"></param>
+    void AddPriorizedRunningTask(Task& task)
+    {
+        runningTasks.push_front(&task);
+    }
+
     void Execute();
     void Stop()
     {

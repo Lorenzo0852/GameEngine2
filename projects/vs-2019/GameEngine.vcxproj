@@ -94,7 +94,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\code\AssetManager\AssetStore.cpp" />
+    <ClCompile Include="..\..\code\AssetManager\AssetManager.cpp" />
     <ClCompile Include="..\..\code\ECS\ECS.cpp" />
     <ClCompile Include="..\..\code\Game\Game.cpp" />
     <ClCompile Include="..\..\code\Kernel\Kernel.cpp" />
@@ -112,8 +112,8 @@
     <ClInclude Include="..\..\code\EventBus\EventBus.h" />
     <ClInclude Include="..\..\code\Events\InputEvent.h" />
     <ClInclude Include="..\..\code\Game\Game.h" />
+    <ClInclude Include="..\..\code\Input\InputPollingTask.h" />
     <ClInclude Include="..\..\code\Kernel\Kernel.h" />
-    <ClInclude Include="..\..\code\Logger\Logger.h" />
     <ClInclude Include="..\..\code\Pool\Pool.h" />
     <ClInclude Include="..\..\code\Systems\EntityStartup3DSystem.h" />
     <ClInclude Include="..\..\code\Systems\Movement3DSystem.h" />

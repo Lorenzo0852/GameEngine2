@@ -1,3 +1,7 @@
+/******************************************\
+ *  Copyright (c) Lorenzo Herran - 2021   *
+\******************************************/
+
 #include "Kernel.h"
 
 void Kernel::Execute()

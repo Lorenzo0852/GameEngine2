@@ -61,13 +61,19 @@ public:
 		spdlog::info("EventBus destructor called");
 	}
 	
+	//Clears the subscriber list
+	void Reset()
+	{
+		subscribers.clear();
+	}
+
 	/// <summary>
 	/// Subscribe to an event of type T.
 	/// </summary>
 	template <typename TEvent, typename TOwner>
 	void AddEventListener(TOwner*ownerInstance, void (TOwner::*callbackFunction)(TEvent&))
 	{
-		//Usage objective: eventBus->SubscribeToEvent<TEvent>(function);
+		//Usage objective: eventBus->SubscribeToEvent<TEvent>(callbackInstance, callbackFunction);
 
 		// What this means is:
 		// Use this function (TOwner::*callbackFunction), with this parameter (TEvent&).

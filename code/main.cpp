@@ -6,40 +6,48 @@
 // ARGE? -> Awesome Raw Game Engine
 // NIA Engine -> No Idea at All Engine
 // HSLM Engine -> Hecho Sobre La Marcha Engine
+// RAW Engine -> Raw and Wacky
+
+//Set as a preprocessor definition
 //SPDLOG_LEVEL_TRACE to enable traces
 //SPDLOG_LEVEL_OFF to disable traces
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
+
 #include <iostream>
 #include "Game/Game.h"
 #include "Window/Window.h"
 #include "Kernel/Kernel.h"
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/rotating_file_sink.h>
-#include "Logger/Logger.h"
+#include "Input/InputPollingTask.h"
+#include "EventBus/EventBus.h"
 
 // SDL Requires a number of arguments and an array of the actual parameters in the main function.
 int main(int args, char* argv[])
-{	
+{
 	// Create a file rotating logger with 5mb size max and 3 rotated files
 	const int max_size = 1048576 * 5;
 	const int max_files = 1;
 	std::shared_ptr<spdlog::logger> gameLogger = spdlog::rotating_logger_mt("EngineLogger", "logs/EngineLogs.txt", max_size, max_files);
 	spdlog::set_default_logger(gameLogger);
 
-	//gameLogger->info("wtf");
-
+	std::shared_ptr<EventBus> eventBus = std::make_shared<EventBus>();
 	Window window("Unnamed game engine", 1920, 1080, false, -1);
+	InputPollingTask inputPoller(eventBus);
 	Kernel kernel;
-	//// We create the game in the stack. We don't need the 'new' keyword for stack-only variables.
-	Game game;
-	////We initialize all game tasks to add them to the kernel...
+
+	// We create the game in the stack. We don't need the 'new' keyword for stack-only variables.
+	Game game(eventBus);
+	//We initialize everything needed for the game to show.
 	game.Initialize(window, kernel);
+
+	//We initialize all scene specific tasks to add them to the kernel...
 	game.SetupScene();
-	////Then start the kernel loop.
+	//Then start the kernel loop.
+	kernel.AddPriorizedRunningTask(game);
+	kernel.AddPriorizedRunningTask(inputPoller);
 
 	kernel.Execute();
-
-	//game.Run();
 	
 	return 0;
 }

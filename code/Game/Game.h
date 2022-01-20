@@ -10,8 +10,9 @@
 #include <gltk/Render_Node.hpp>
 #include "../Kernel/Kernel.h"
 #include "../EventBus/EventBus.h"
+#include "../Events/InputEvent.h"
 
-class Game
+class Game : public Task
 {
 private:
 	bool isRunning;
@@ -25,18 +26,23 @@ private:
 
 	std::unique_ptr<Registry> registry;
 	std::unique_ptr<AssetManager> assetManager;
-	std::unique_ptr<EventBus> eventBus;
+	std::shared_ptr<EventBus> eventBus;
+
+private:
+	Entity cube;
+	Entity cam;
+	Entity light;
+	Entity teapot;
 
 public:
-	Game();
+	Game(std::shared_ptr<EventBus> eventBus);
 	~Game() = default;
 
 	void Initialize(Window& window, Kernel & kernel);
 	void ClearOpenGLContext() const;
 	void SetupScene();
-	void Run();
-	void ProcessInput();
-	void Update();
+	void Run(float deltaTime);
+	void OnInputRegistered(InputEvent& event);
 	void Render();
 	void Destroy();
 
