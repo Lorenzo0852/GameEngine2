@@ -41,6 +41,11 @@ public:
 			node->rotate_around_x(transform.rotation.x);
 			node->rotate_around_y(transform.rotation.y);
 			node->rotate_around_z(transform.rotation.z);
+
+			if (transform.parent)
+			{
+				node->set_parent(transform.parent->GetComponent<Node3DComponent>().node.get());
+			}
 		}
 		return true;
 	}
