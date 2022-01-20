@@ -11,18 +11,24 @@
 
 class ModelRender3DSystem : public System
 {
-	glt::Render_Node * glRenderer;
+	std::unique_ptr<glt::Render_Node> glRenderer;
 	Window * window;
 public:
-	ModelRender3DSystem(glt::Render_Node& glRenderer, Window& window)
+	ModelRender3DSystem(Window& window)
 	{
 		// We specify the components that our system is interested in.
 		RequireComponent<TransformComponent>();
 		RequireComponent<Node3DComponent>();
 
-		this->glRenderer = &glRenderer;
+		this->glRenderer.reset(new glt::Render_Node);
+		//glRenderer = new glt::Render_Node;
 		this->window = &window;
 	}
+
+	//static std::shared_ptr< System > CreateInstance(glt::Render_Node& glRenderer, Window& window)
+	//{
+	//	return std::make_shared<ModelRender3DSystem>(glRenderer, window);
+	//}
 
 	bool Initialize()
 	{

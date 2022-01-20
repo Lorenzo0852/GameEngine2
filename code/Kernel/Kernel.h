@@ -34,10 +34,8 @@ public:
         runningTasks.push_back(&task);
     }
 
-    /// <summary>
-    /// This will set the task to be on the front of the task list.
-    /// </summary>
-    /// <param name="task"></param>
+
+    // This will set the task to be on the front of the task list.
     void AddPriorizedRunningTask(Task& task)
     {
         runningTasks.push_front(&task);
@@ -47,6 +45,7 @@ public:
     void Stop()
     {
         exit = true;
+        SDL_Quit();
     }
     
     ~Kernel() = default;

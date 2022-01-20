@@ -11,13 +11,16 @@ void Kernel::Execute()
     {
         millisecondsPreviousFrame = SDL_GetTicks64();
 
-        for (auto task : tasksToInitialize)
+        if (!tasksToInitialize.empty())
         {
-            //Won't enter here if there isn't any tasks to initialize.
-            task->Initialize();
+            for (auto task : tasksToInitialize)
+            {
+                //Won't enter here if there isn't any tasks to initialize.
+                task->Initialize();
+            }
+            tasksToInitialize.clear();
         }
-        tasksToInitialize.clear();
-
+        
         for (auto task : runningTasks)
         {
             task->Run(deltaTime);

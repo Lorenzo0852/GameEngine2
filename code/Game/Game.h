@@ -15,14 +15,9 @@
 class Game : public Task
 {
 private:
-	bool isRunning;
 	Window * window;
 	SDL_Renderer * renderer;
-	Uint64 millisecondsPreviousFrame = 0;
 	Kernel * kernel;
-
-	SDL_GLContext glContext;
-	std::unique_ptr< glt::Render_Node > glRenderer;
 
 	std::unique_ptr<Registry> registry;
 	std::unique_ptr<AssetManager> assetManager;
@@ -35,17 +30,10 @@ private:
 	Entity teapot;
 
 public:
-	Game(std::shared_ptr<EventBus> eventBus);
+	Game(Window & window, Kernel & kernel, std::shared_ptr<EventBus> eventBus);
 	~Game() = default;
 
-	void Initialize(Window& window, Kernel & kernel);
-	void ClearOpenGLContext() const;
 	void SetupScene();
-	void Run(float deltaTime);
+	virtual void Run(float deltaTime);
 	void OnInputRegistered(InputEvent& event);
-	void Render();
-	void Destroy();
-
-	unsigned windowWidth;
-	unsigned windowHeight;
 };

@@ -230,8 +230,40 @@ public:
 	/*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*
 	* System management
 	*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*.*/
+
+public:
+	// Holds pointers to the system functions. Useful for scene deserialization.
+	typedef std::shared_ptr< System >(*System_Factory) ();
+
+private:
+	//// Relation [System Name <-> System factory function]. Useful for scene deserialization.
+	//static std::unordered_map< std::string, System_Factory > systemFactories;
+
+public:
+
+	/*static std::shared_ptr< System > CreateSystemInstance(const std::string& systemName)
+	{
+		auto item = systemFactories.find(systemName);
+
+		if (item != systemFactories.end())
+		{
+			return item->second();
+		}
+
+		return {};
+	}*/
+
+	//static void AddSystemFactory(const std::string& id, System_Factory factory)
+	//{
+	//	systemFactories[id] = factory;
+	//}
+
+
+public:
 	template <typename TSystem, typename ...TArgs>
 		void AddSystem(TArgs&& ...args);
+	template <typename ...TArgs>
+		void AddSystem(const std::string& systemName, TArgs&& ...args);
 	template <typename TSystem>
 		void RemoveSystem();
 	template <typename TSystem>
@@ -335,6 +367,14 @@ void Registry::AddSystem(TArgs&& ...args)
 	std::shared_ptr<TSystem> newSystem = std::make_shared<TSystem>(std::forward<TArgs>(args)...);
 	systems.insert(std::make_pair(std::type_index(typeid(TSystem)), newSystem));
 }
+
+//template <typename ...TArgs>
+//void Registry::AddSystem(const std::string &systemName, TArgs&& ...args)
+//{
+//	std::shared_ptr<System> newSystem = CreateSystemInstance(systemName);
+//	//std::shared_ptr<TSystem> newSystem = std::make_shared<TSystem>(std::forward<TArgs>(args)...);
+//	systems.insert(std::make_pair(std::type_index(typeid(newSystem)), newSystem));
+//}
 
 template <typename TSystem>
 void Registry::RemoveSystem()

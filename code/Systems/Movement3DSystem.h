@@ -21,6 +21,11 @@ public:
 		RequireComponent<Node3DComponent>();
 	}
 
+	static std::shared_ptr< System > CreateInstance()
+	{
+		return std::make_shared<Movement3DSystem>();
+	}
+
 	void Run(float deltaTime)
 	{
 		for (auto entity : GetSystemEntities())

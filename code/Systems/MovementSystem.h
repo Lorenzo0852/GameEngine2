@@ -18,6 +18,13 @@ public:
 		RequireComponent<RigidbodyComponent>();
 	}
 
+
+	static std::shared_ptr< System > CreateInstance()
+	{
+		return std::make_shared<MovementSystem>();
+	}
+
+
 	void Update(double deltaTime)
 	{
 		for (auto entity : GetSystemEntities())

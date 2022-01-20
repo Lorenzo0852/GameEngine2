@@ -11,6 +11,8 @@
 
 class RenderSystem : public System
 {
+private:
+	SDL_Renderer* renderer;
 public:
 	RenderSystem()
 	{
@@ -19,8 +21,16 @@ public:
 		RequireComponent<SpriteComponent>();
 	}
 
+
+	//static std::shared_ptr< System > CreateInstance()
+	//{
+	//	return std::make_shared<RenderSystem>();
+	//}
+
+
 	void Render(SDL_Renderer* renderer, std::unique_ptr<AssetManager>& assetStore)
 	{
+		this->renderer = renderer;
 		for (auto entity : GetSystemEntities())
 		{
 			const TransformComponent transform = entity.GetComponent<TransformComponent>();
@@ -45,5 +55,10 @@ public:
 				NULL,
 				SDL_FLIP_NONE);
 		}
+	}
+
+	~RenderSystem()
+	{
+		SDL_DestroyRenderer(renderer);
 	}
 };

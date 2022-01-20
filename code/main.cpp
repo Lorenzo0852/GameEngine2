@@ -37,9 +37,7 @@ int main(int args, char* argv[])
 	Kernel kernel;
 
 	// We create the game in the stack. We don't need the 'new' keyword for stack-only variables.
-	Game game(eventBus);
-	//We initialize everything needed for the game to show.
-	game.Initialize(window, kernel);
+	Game game(window, kernel, eventBus);
 
 	//We initialize all scene specific tasks to add them to the kernel...
 	game.SetupScene();

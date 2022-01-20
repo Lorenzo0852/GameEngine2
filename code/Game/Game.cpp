@@ -29,49 +29,21 @@
 #include "../Systems/EntityStartup3DSystem.h"
 
 
-Game::Game(std::shared_ptr<EventBus> eventBus)
+Game::Game(Window & window, Kernel & kernel, std::shared_ptr<EventBus> eventBus)
 {
-	isRunning		=		false;
-	registry		=		std::make_unique<Registry>();
-	assetManager	=		std::make_unique<AssetManager>();
-	this->eventBus	=		eventBus;
-	spdlog::info("Game constructor called");
-}
+	registry			=		std::make_unique<Registry>();
+	assetManager		=		std::make_unique<AssetManager>();
+	this->eventBus		=		eventBus;
 
-void Game::Initialize(Window & window, Kernel & kernel)
-{
-	window.SetWindowedFullscreen();
-	window.SetVsync(true);
 	this->kernel = &kernel;
 	this->window = &window;
 
-	//-1 index means "get the default monitor/screen for the renderer".
-	//renderer = SDL_CreateRenderer(window.sdlWindow, -1, SDL_RENDERER_PRESENTVSYNC);
-	glRenderer.reset(new glt::Render_Node);
-	//std::shared_ptr< glt::Model  > cube(new glt::Model);
-	//std::shared_ptr< glt::Camera > camera(new glt::Camera(20.f, 1.f, 500.f, 1.f));
+	window.SetWindowedFullscreen();
+	window.SetVsync(true);
 
-	//cube->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-
-	//glRenderer->add("camera", camera);
-	//glRenderer->add("cube", cube);
-
-	//glRenderer->get("camera")->translate(glt::Vector3(0.f, 0.f, 5.f));
-
-	//if (!renderer)
-	//{
-	//	gameLogger->error("Error creating SDL renderer.");
-	//	return;
-	//}
-
-	//if (!glContext)
-	//{
-	//	gameLogger->error("Error creating OpenGL context.");
-	//	return;
-	//}
-
-	isRunning = true;
+	spdlog::info("Game constructor called");
 }
+
 
 void Game::SetupScene()
 {
@@ -91,7 +63,7 @@ void Game::SetupScene()
 	}*/
 	
 	registry->AddSystem<MovementSystem>();
-	registry->AddSystem<ModelRender3DSystem>(*glRenderer, *window);
+	registry->AddSystem<ModelRender3DSystem>(*window);
 	registry->AddSystem<Movement3DSystem>();
 	registry->AddSystem<EntityStartup3DSystem>();
 
@@ -152,7 +124,6 @@ void Game::Run(float deltaTime)
 {
 	eventBus->Reset();
 	eventBus->AddEventListener<InputEvent>(this, &Game::OnInputRegistered);
-
 }
 
 void Game::OnInputRegistered(InputEvent& event)
@@ -163,7 +134,7 @@ void Game::OnInputRegistered(InputEvent& event)
 	case InputEvent::Action::QUIT :
 		kernel->Stop();
 		break;
-	case InputEvent::Action::FORWARD :
+	case InputEvent::Action::FORWARD:
 		cubeRigidbody.velocity = glm::vec3(cubeRigidbody.velocity.x	,	 10 * event.value		,	 cubeRigidbody.velocity.z);
 		break;
 	case InputEvent::Action::BACKWARDS:
@@ -175,57 +146,5 @@ void Game::OnInputRegistered(InputEvent& event)
 	case InputEvent::Action::RIGHT:
 		cubeRigidbody.velocity = glm::vec3(		10 * event.value	, cubeRigidbody.velocity.y	,	 cubeRigidbody.velocity.z);
 		break;
-	}
-}
-
-/// <summary>
-/// Renders all gameobjects
-/// </summary>
-void Game::Render()
-{
-	kernel->AddRunningTask(registry->GetSystem<ModelRender3DSystem>());
-
-	//GLsizei width = GLsizei(window->GetWidth());
-	//GLsizei height = GLsizei(window->GetHeight());
-
-	//glRenderer->get_active_camera()->set_aspect_ratio(float(width) / height);
-
-	//glViewport(0, 0, width, height);
-
-	//glClearColor(0.5, 0.5f, 0.5f, 1);
-	//window->Clear();
-	//glRenderer->render();
-	//window->SwapBuffers();
-
-	//// Se rota el objeto:
-
-	//auto cube = glRenderer->get("cube");
-
-	//cube->rotate_around_x(0.01f);
-	//cube->rotate_around_y(0.02f);
-	//cube->rotate_around_z(0.03f);
-
-	////SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
-	////SDL_RenderClear(renderer);
-
-	//Ask systems to render
-	//registry->GetSystem<RenderSystem>().Render(renderer, assetManager);
-	// Render game objects...
-
-	//Present the renderer / swaps render buffers.
-	//SDL_RenderPresent(renderer);
-}
-
-void Game::Destroy()
-{
-	SDL_DestroyRenderer(renderer);
-	SDL_Quit();
-}
-
-void Game::ClearOpenGLContext() const
-{
-	if (glContext)
-	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 }

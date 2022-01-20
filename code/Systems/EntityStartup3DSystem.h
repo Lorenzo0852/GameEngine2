@@ -22,6 +22,13 @@ public:
 		RequireComponent<TransformComponent>();
 	}
 
+
+	static std::shared_ptr< System > CreateInstance()
+	{
+		return std::make_shared<EntityStartup3DSystem>();
+	}
+
+
 	bool Initialize()
 	{
 		spdlog::info("Starting up entities' transforms...");
