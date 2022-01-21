@@ -10,6 +10,12 @@ private:
     /// These tasks will only run once.
     /// </summary>
     std::list < Task*> tasksToInitialize;
+
+    /// <summary>
+    /// This tasks will run in a loop computed before the main one.
+    /// </summary>
+    std::list < Task*> priorizedRunningTasks;
+
     /// <summary>
     /// This tasks will run in a loop.
     /// </summary>
@@ -35,10 +41,10 @@ public:
     }
 
 
-    // This will set the task to be on the front of the task list.
     void AddPriorizedRunningTask(Task& task)
     {
-        runningTasks.push_front(&task);
+        //Made this way so the engine mandated tasks such as input collection always run BEFORE any tasks the end user creates.
+        priorizedRunningTasks.push_back(&task);
     }
 
     void Execute();

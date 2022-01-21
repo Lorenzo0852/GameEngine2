@@ -9,8 +9,8 @@
 			<TransformComponent>
 				<position>
 					<x>0</x>
-					<y>0</y>
-					<z>0</z>
+					<y>15</y>
+					<z>-20</z>
 				</position>
 				<rotation>
 					<x>0</x>
@@ -18,16 +18,17 @@
 					<z>0</z>
 				</rotation>
 				<scale>
-					<x>1</x>
+					<x>40</x>
 					<y>1</y>
 					<z>1</z>
 				</scale>
+				<parent>null</parent>
 			</TransformComponent>
 			<RigidbodyComponent>
 				<velocity>
 					<x>0</x>
 					<y>0</y>
-					<z>-1</z>
+					<z>0</z>
 				</velocity>
 				<angularvelocity>
 					<x>0</x>
@@ -41,7 +42,130 @@
 				</scale>
 			</RigidbodyComponent>
 			<Node3DComponent>
-				<type>model</type>
+				<name>topWall</name>
+				<model>default</model>
+			</Node3DComponent>
+		</entity>
+		<entity>
+			<TransformComponent>
+				<position>
+					<x>0</x>
+					<y>-15</y>
+					<z>-20</z>
+				</position>
+				<rotation>
+					<x>0</x>
+					<y>0</y>
+					<z>0</z>
+				</rotation>
+				<scale>
+					<x>40</x>
+					<y>1</y>
+					<z>1</z>
+				</scale>
+				<parent>null</parent>
+			</TransformComponent>
+			<RigidbodyComponent>
+				<velocity>
+					<x>0</x>
+					<y>0</y>
+					<z>0</z>
+				</velocity>
+				<angularvelocity>
+					<x>0</x>
+					<y>0</y>
+					<z>0</z>
+				</angularvelocity>
+				<scale>
+					<x>1</x>
+					<y>1</y>
+					<z>1</z>
+				</scale>
+			</RigidbodyComponent>
+			<Node3DComponent>
+				<name>bottomWall</name>
+				<model>default</model>
+			</Node3DComponent>
+		</entity>
+		<entity>
+			<TransformComponent>
+				<position>
+					<x>-37</x>
+					<y>0</y>
+					<z>-20</z>
+				</position>
+				<rotation>
+					<x>0</x>
+					<y>0</y>
+					<z>0</z>
+				</rotation>
+				<scale>
+					<x>1</x>
+					<y>40</y>
+					<z>1</z>
+				</scale>
+				<parent>null</parent>
+			</TransformComponent>
+			<RigidbodyComponent>
+				<velocity>
+					<x>0</x>
+					<y>0</y>
+					<z>0</z>
+				</velocity>
+				<angularvelocity>
+					<x>0</x>
+					<y>0</y>
+					<z>0</z>
+				</angularvelocity>
+				<scale>
+					<x>1</x>
+					<y>1</y>
+					<z>1</z>
+				</scale>
+			</RigidbodyComponent>
+			<Node3DComponent>
+				<name>leftWall</name>
+				<model>default</model>
+			</Node3DComponent>
+		</entity>
+		<entity>
+			<TransformComponent>
+				<position>
+					<x>37</x>
+					<y>0</y>
+					<z>-20</z>
+				</position>
+				<rotation>
+					<x>0</x>
+					<y>0</y>
+					<z>0</z>
+				</rotation>
+				<scale>
+					<x>1</x>
+					<y>40</y>
+					<z>1</z>
+				</scale>
+				<parent>null</parent>
+			</TransformComponent>
+			<RigidbodyComponent>
+				<velocity>
+					<x>0</x>
+					<y>0</y>
+					<z>0</z>
+				</velocity>
+				<angularvelocity>
+					<x>0</x>
+					<y>0</y>
+					<z>0</z>
+				</angularvelocity>
+				<scale>
+					<x>1</x>
+					<y>1</y>
+					<z>1</z>
+				</scale>
+			</RigidbodyComponent>
+			<Node3DComponent>
+				<name>rightWall</name>
 				<model>default</model>
 			</Node3DComponent>
 		</entity>

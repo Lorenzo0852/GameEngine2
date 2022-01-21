@@ -62,12 +62,30 @@ public:
 		node->scale(transform.scale.x, transform.scale.y, transform.scale.z);
 	}
 
+	void ResetTransform(Entity& entity)
+	{
+		std::shared_ptr<glt::Node> node = entity.GetComponent<Node3DComponent>().node;
+		auto& transform = entity.GetComponent<TransformComponent>();
+
+		node->set_transformation(glm::mat4(1));
+		node->translate(transform.initialPosition);
+		node->rotate_around_x(transform.initialRotation.x);
+		node->rotate_around_y(transform.initialRotation.y);
+		node->rotate_around_z(transform.initialRotation.z);
+		node->scale(transform.initialScale.x, transform.initialScale.y, transform.initialScale.z);
+	}
+
 	glm::vec3 MoveTowards(Entity & entity, glm::vec3 destination)
 	{
 		auto& transform = entity.GetComponent<TransformComponent>();
 		glm::vec3 direction =  destination - transform.position;
-		float length = direction.length();
+		float length = glm::length(direction);
 		glm::vec3 normalized = glm::vec3(direction.x / length, direction.y / length, direction.z / length);
 		return normalized;
+	}
+
+	float Distance(glm::vec3 from, glm::vec3 to)
+	{
+		return glm::distance(from, to);
 	}
 };

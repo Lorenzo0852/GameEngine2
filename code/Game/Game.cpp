@@ -9,13 +9,13 @@
 #include <gltk/Render_Node.hpp>
 //#include <gltk/Camera.hpp>
 
-#include <rapidxml/rapidxml.hpp>
-#include <rapidxml/rapidxml_utils.hpp>
-
 #include <sdl2/SDL.h>
 #include <sdl2/SDL_image.h>
+#include <sdl2/SDL_mixer.h>
 #include <glm/glm.hpp>
 #include "Game.h"
+
+#include "../Deserializer/Scene3DDeserializer.h"
 
 #include "../ECS/ECS.h"
 #include "../Components/TransformComponent.h"
@@ -47,30 +47,23 @@ Game::Game(Window & window, Kernel & kernel, std::shared_ptr<EventBus> eventBus)
 
 void Game::SetupScene()
 {
-	/*rapidxml::file<> xmlFile("../../../assets/scenes/test.scene");
-	rapidxml::xml_document<> doc;
-	doc.parse<0>(xmlFile.data());
-	rapidxml::xml_node<>* registryNode = doc.first_node()->first_node("registry");
-	while (registryNode != 0)
+	Scene3DDeserializer deserializer("../../../assets/scenes/test.scene" , registry.get(), window);
+
+	deserializer.Initialize();
+
+	sound = Mix_LoadWAV("../../../assets/sounds/hit.wav");
+	if (sound == NULL)
 	{
-		rapidxml::xml_node<>* childNode = registryNode->first_node();
-		while (childNode != 0)
-		{
-			spdlog::info("" + std::string(childNode->value()));
-			childNode = childNode->next_sibling();
-		}
-		registryNode = registryNode->next_sibling("registry");
-	}*/
-	
-	registry->AddSystem<MovementSystem>();
-	registry->AddSystem<ModelRender3DSystem>(*window);
-	registry->AddSystem<Movement3DSystem>();
-	registry->AddSystem<EntityStartup3DSystem>();
+		spdlog::error("Couldn't load .wav from the wanted path");
+	}
+	death = Mix_LoadWAV("../../../assets/sounds/death.wav");
+	Mix_Volume(-1, 60);
+
+	//registry->AddSystem<MovementSystem>();
 
 	player = registry->CreateEntity();
 	std::shared_ptr< glt::Model  > cubeModel(new glt::Model);
 	cubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-
 	player.AddComponent<RigidbodyComponent>(glm::vec3(0.f, 0, 0), glm::vec3(0.f, 0.f, 0.f));
 	player.AddComponent<TransformComponent>(glm::vec3(0, 0, -20.f), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
 	player.AddComponent<Node3DComponent>("cube", cubeModel);
@@ -112,36 +105,6 @@ void Game::SetupScene()
 	/*********************************************
 	*	WALLS
 	*********************************************/
-
-	Entity upperWall = registry->CreateEntity();
-	std::shared_ptr< glt::Model  > upperWallModel(new glt::Model);
-	upperWallModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-
-	upperWall.AddComponent<RigidbodyComponent>(glm::vec3(0.f, 0, 0), glm::vec3(0.f, 0.f, 0.f));
-	upperWall.AddComponent<TransformComponent>(glm::vec3(0, 15, -20.f), glm::vec3(0, 0, 0), glm::vec3(40, 1, 1));
-	upperWall.AddComponent<Node3DComponent>("upperWall", upperWallModel);
-
-	Entity bottomWall = registry->CreateEntity();
-	std::shared_ptr< glt::Model  > bottomWallModel(new glt::Model);
-	bottomWallModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-
-	bottomWall.AddComponent<RigidbodyComponent>(glm::vec3(0.f, 0, 0), glm::vec3(0.f, 0.f, 0.f));
-	bottomWall.AddComponent<TransformComponent>(glm::vec3(0, -15, -20.f), glm::vec3(0, 0, 0), glm::vec3(40, 1, 1));
-	bottomWall.AddComponent<Node3DComponent>("bottomWall", bottomWallModel);
-
-	Entity leftWall = registry->CreateEntity();
-	std::shared_ptr< glt::Model  > leftWallModel(new glt::Model);
-	leftWallModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-	leftWall.AddComponent<RigidbodyComponent>(glm::vec3(0.f, 0, 0), glm::vec3(0.f, 0.f, 0.f));
-	leftWall.AddComponent<TransformComponent>(glm::vec3(-37, 0, -20.f), glm::vec3(0, 0, 0), glm::vec3(1, 40, 1));
-	leftWall.AddComponent<Node3DComponent>("leftWall", leftWallModel);
-
-	Entity rightWall = registry->CreateEntity();
-	std::shared_ptr< glt::Model  > rightWallModel(new glt::Model);
-	rightWallModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-	rightWall.AddComponent<RigidbodyComponent>(glm::vec3(0.f, 0, 0), glm::vec3(0.f, 0.f, 0.f));
-	rightWall.AddComponent<TransformComponent>(glm::vec3(37, 0, -20.f), glm::vec3(0, 0, 0), glm::vec3(1, 40, 1));
-	rightWall.AddComponent<Node3DComponent>("rightWall", rightWallModel);
 
 	//teapot = registry->CreateEntity();
 	//std::shared_ptr< glt::Model  > teapotModel(new glt::Model_Obj("../../../assets/models/utah-teapot.obj"));
@@ -193,6 +156,7 @@ void Game::Run(float deltaTime)
 		auto& transform = player.GetComponent<TransformComponent>();
 		transform.position.y = 13.95f;
 		registry->GetSystem<Movement3DSystem>().MoveToPosition(player, transform.position);
+		Mix_PlayChannel(-1, sound, 0);
 	}
 
 	if (playerTransform.position.y < -14)
@@ -200,6 +164,7 @@ void Game::Run(float deltaTime)
 		auto& transform = player.GetComponent<TransformComponent>();
 		transform.position.y = -13.95f;
 		registry->GetSystem<Movement3DSystem>().MoveToPosition(player, transform.position);
+		Mix_PlayChannel(-1, sound, 0);
 	}
 
 	if (playerTransform.position.x > 35)
@@ -207,6 +172,7 @@ void Game::Run(float deltaTime)
 		auto& transform = player.GetComponent<TransformComponent>();
 		transform.position.x = 34.95f;
 		registry->GetSystem<Movement3DSystem>().MoveToPosition(player, transform.position);
+		Mix_PlayChannel(-1, sound, 0);
 	}
 
 	if (playerTransform.position.x < -35)
@@ -214,14 +180,23 @@ void Game::Run(float deltaTime)
 		auto& transform = player.GetComponent<TransformComponent>();
 		transform.position.x = -34.95f;
 		registry->GetSystem<Movement3DSystem>().MoveToPosition(player, transform.position);
+		Mix_PlayChannel(-1, sound, 0);
 	}
-	
 	TransformComponent& enemy1TransformComponent = enemy1.GetComponent<TransformComponent>();
 	glt::Node * enemyNode = enemy1.GetComponent<Node3DComponent>().node.get();
 
 	glm::vec3 directionVector = movement3DSystem.MoveTowards(enemy1, playerTransform.position);
-	
-	enemyNode->translate(directionVector * 4.f * deltaTime);
+
+	enemyNode->translate(directionVector * 14.f * deltaTime);
+
+
+	if (movement3DSystem.Distance(playerTransform.position, enemy1TransformComponent.position) < 1.f)
+	{
+		Mix_PlayChannel(-1, death, 0);
+		movement3DSystem.ResetTransform(player);
+		movement3DSystem.ResetTransform(enemy1);
+	}
+
 }
 
 void Game::OnInputRegistered(InputEvent& event)

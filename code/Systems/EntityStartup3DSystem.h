@@ -46,11 +46,13 @@ public:
 			node->rotate_around_y(transform.rotation.y);
 			node->rotate_around_z(transform.rotation.z);
 			node->translate(transform.position);
+			transform.initialRotation = glm::vec3(transform.rotation.x, transform.rotation.y, transform.rotation.z);
 
 			node->scale(transform.scale.x, transform.scale.y, transform.scale.z);
+			transform.initialScale = glm::vec3(transform.scale.x, transform.scale.y, transform.scale.z);
 
 			glm::vec3 translation = glt::extract_translation(node->get_transformation());
-			transform.position = glm::vec3(translation.x, translation.y, translation.z);
+			transform.initialPosition = transform.position = glm::vec3(translation.x, translation.y, translation.z);
 		}
 		return true;
 	}

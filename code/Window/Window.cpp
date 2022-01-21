@@ -4,6 +4,7 @@
 
 #include "Window.h"
 #include <sdl2/SDL.h>
+#include <sdl2/SDL_mixer.h>
 #include <spdlog/spdlog.h>
 #include <OpenGL.hpp>
 
@@ -18,6 +19,13 @@ Window::Window(const std::string& title, int width, int height, bool fullscreen,
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) //This will return != 0 if it can't initialize
 	{
 		spdlog::error("Error initializing SDL");
+		return;
+	}
+
+	//Initialize SDL_mixer
+	if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1)
+	{
+		spdlog::error("Error initializing SDL Mixer");
 		return;
 	}
 
@@ -61,6 +69,7 @@ Window::Window(const std::string& title, int width, int height, bool fullscreen,
 
 Window::~Window()
 {
+	Mix_CloseAudio();
 	if (glContext) SDL_GL_DeleteContext(glContext);
 	if (sdlWindow) SDL_DestroyWindow(sdlWindow);
 	spdlog::info("SDL Window destroyed");

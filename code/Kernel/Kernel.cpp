@@ -21,9 +21,14 @@ void Kernel::Execute()
             tasksToInitialize.clear();
         }
         
+        for (auto task : priorizedRunningTasks)
+        {
+            task -> Run(deltaTime);
+        }
+
         for (auto task : runningTasks)
         {
-            task->Run(deltaTime);
+            task -> Run(deltaTime);
         }
         deltaTime = (SDL_GetTicks64() - millisecondsPreviousFrame) * 0.001f;
     }

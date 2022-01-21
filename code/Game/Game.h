@@ -4,6 +4,7 @@
 #pragma once
 
 #include <sdl2/SDL.h>
+#include <sdl2/SDL_mixer.h>
 #include "../ECS/ECS.h"
 #include "../AssetManager/AssetManager.h"
 #include "../Window/Window.h"
@@ -29,6 +30,8 @@ private:
 	Entity cam;
 	Entity light;
 	Entity teapot;
+	Mix_Chunk* sound;
+	Mix_Chunk* death;
 
 public:
 	Game(Window & window, Kernel & kernel, std::shared_ptr<EventBus> eventBus);

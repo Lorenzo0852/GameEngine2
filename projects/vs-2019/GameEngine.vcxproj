@@ -96,6 +96,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\code\AssetManager\AssetManager.cpp" />
     <ClCompile Include="..\..\code\Core\Core.cpp" />
+    <ClCompile Include="..\..\code\Deserializer\Scene3DDeserializer.cpp" />
     <ClCompile Include="..\..\code\ECS\ECS.cpp" />
     <ClCompile Include="..\..\code\Game\Game.cpp" />
     <ClCompile Include="..\..\code\Kernel\Kernel.cpp" />
@@ -109,6 +110,7 @@
     <ClInclude Include="..\..\code\Components\SpriteComponent.h" />
     <ClInclude Include="..\..\code\Components\TransformComponent.h" />
     <ClInclude Include="..\..\code\Core\Core.h" />
+    <ClInclude Include="..\..\code\Deserializer\Scene3DDeserializer.h" />
     <ClInclude Include="..\..\code\ECS\ECS.h" />
     <ClInclude Include="..\..\code\EventBus\Event.h" />
     <ClInclude Include="..\..\code\EventBus\EventBus.h" />

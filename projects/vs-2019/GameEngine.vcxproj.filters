@@ -55,6 +55,12 @@
     <Filter Include="Source Files\Core\2D">
       <UniqueIdentifier>{b515caa9-8056-452d-8d93-383af0dff6fc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Core\3D">
+      <UniqueIdentifier>{a0c68626-12fd-4ac9-80f9-3dc814f15523}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\3D">
+      <UniqueIdentifier>{425ab217-f23e-428f-80d3-8eb2b06f105c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\code\main.cpp">
@@ -77,6 +83,9 @@
     </ClCompile>
     <ClCompile Include="..\..\code\Core\Core.cpp">
       <Filter>Header Files\Core\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\Deserializer\Scene3DDeserializer.cpp">
+      <Filter>Source Files\Core\3D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -142,6 +151,9 @@
     </ClInclude>
     <ClInclude Include="..\..\code\Core\Core.h">
       <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\Deserializer\Scene3DDeserializer.h">
+      <Filter>Header Files\Core\3D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

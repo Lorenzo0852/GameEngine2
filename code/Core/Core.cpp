@@ -23,8 +23,8 @@ void Core::StartMainGameLoop(int args, char* argv[])
 	//We initialize all scene specific tasks to add them to the kernel...
 	game.SetupScene();
 	//Then start the kernel loop.
-	kernel.AddPriorizedRunningTask(game);
 	kernel.AddPriorizedRunningTask(inputPoller);
+	kernel.AddPriorizedRunningTask(game);
 
 	kernel.Execute();
 
