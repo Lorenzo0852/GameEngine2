@@ -28,20 +28,46 @@ public:
 
 	void Run(float deltaTime)
 	{
-		for (auto entity : GetSystemEntities())
+		for (auto & entity : GetSystemEntities())
 		{
 			std::shared_ptr<glt::Node> node = entity.GetComponent<Node3DComponent>().node;
 			auto& transform = entity.GetComponent<TransformComponent>();
 			const auto& rigidbody = entity.GetComponent<RigidbodyComponent>();
+
 			node->translate(glm::vec3(rigidbody.velocity.x * deltaTime, rigidbody.velocity.y * deltaTime, rigidbody.velocity.z * deltaTime));
 
-			transform.position.x += static_cast<float>(rigidbody.velocity.x * deltaTime);
-			transform.position.y += static_cast<float>(rigidbody.velocity.y * deltaTime);
-			transform.position.z += static_cast<float>(rigidbody.velocity.z * deltaTime);
+			transform.rotation.x += static_cast<float>(rigidbody.angularVelocity.x * deltaTime);
+			transform.rotation.y += static_cast<float>(rigidbody.angularVelocity.y * deltaTime);
+			transform.rotation.z += static_cast<float>(rigidbody.angularVelocity.z * deltaTime);
 
 			node->rotate_around_x(rigidbody.angularVelocity.x * deltaTime);
 			node->rotate_around_y(rigidbody.angularVelocity.y * deltaTime);
 			node->rotate_around_z(rigidbody.angularVelocity.z * deltaTime);
+
+			glm::vec3 translation = glt::extract_translation(node->get_transformation());
+			transform.position = glm::vec3(translation.x, translation.y, translation.z);
 		}
+	}
+
+	void MoveToPosition(Entity & entity, glm::vec3 position)
+	{
+		std::shared_ptr<glt::Node> node = entity.GetComponent<Node3DComponent>().node;
+		auto & transform = entity.GetComponent<TransformComponent>();
+
+		node->set_transformation(glm::mat4(1));
+		node->translate(position);
+		node->rotate_around_x(transform.rotation.x);
+		node->rotate_around_y(transform.rotation.y);
+		node->rotate_around_z(transform.rotation.z);
+		node->scale(transform.scale.x, transform.scale.y, transform.scale.z);
+	}
+
+	glm::vec3 MoveTowards(Entity & entity, glm::vec3 destination)
+	{
+		auto& transform = entity.GetComponent<TransformComponent>();
+		glm::vec3 direction =  destination - transform.position;
+		float length = direction.length();
+		glm::vec3 normalized = glm::vec3(direction.x / length, direction.y / length, direction.z / length);
+		return normalized;
 	}
 };

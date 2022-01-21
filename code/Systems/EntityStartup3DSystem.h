@@ -32,20 +32,25 @@ public:
 	bool Initialize()
 	{
 		spdlog::info("Starting up entities' transforms...");
-		for (auto entity : GetSystemEntities())
+		for (auto & entity : GetSystemEntities())
 		{
 			std::shared_ptr<glt::Node> node = entity.GetComponent<Node3DComponent>().node;
 			auto& transform = entity.GetComponent<TransformComponent>();
-			node->translate(transform.position);
-			node->scale(transform.scale.x, transform.scale.y, transform.scale.z);
-			node->rotate_around_x(transform.rotation.x);
-			node->rotate_around_y(transform.rotation.y);
-			node->rotate_around_z(transform.rotation.z);
 
-			if (transform.parent)
+			if (transform.parent != NULL)
 			{
 				node->set_parent(transform.parent->GetComponent<Node3DComponent>().node.get());
 			}
+
+			node->rotate_around_x(transform.rotation.x);
+			node->rotate_around_y(transform.rotation.y);
+			node->rotate_around_z(transform.rotation.z);
+			node->translate(transform.position);
+
+			node->scale(transform.scale.x, transform.scale.y, transform.scale.z);
+
+			glm::vec3 translation = glt::extract_translation(node->get_transformation());
+			transform.position = glm::vec3(translation.x, translation.y, translation.z);
 		}
 		return true;
 	}

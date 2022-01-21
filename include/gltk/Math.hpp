@@ -95,7 +95,7 @@
             const  Vector4 & translation = transformation[3];
             return Vector3(translation[0], translation[1], translation[2]);
         }
-
+        
         inline Quaternion extract_rotation (const Matrix44 & transformation)
         {
             glm::vec3 scale;

@@ -11,6 +11,7 @@
 #include <set>
 #include "../Pool/Pool.h"
 #include "../Task/Task.h"
+#include <glm/glm.hpp>
 
 /****************************************************************************************\
  *  ENTITY
@@ -44,6 +45,7 @@ private:
 	int id;
 
 public:
+
 	Entity() = default;
 	Entity(int id) : id(id) {};
 	//Not gonna change any value of internal member variables or attributes, so the method is const.

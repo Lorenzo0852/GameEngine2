@@ -13,7 +13,7 @@
 /// </summary>
 struct TransformComponent {
 
-	Entity* parent;
+	Entity* parent = NULL;
 	glm::vec3 position;
 	glm::vec3 rotation;
 	glm::vec3 scale;
@@ -21,10 +21,13 @@ struct TransformComponent {
 	TransformComponent(
 		glm::vec3 position = glm::vec3(0,0,0),
 		glm::vec3 rotation = glm::vec3(0, 0, 0),
-		glm::vec3 scale = glm::vec3(0, 0, 0)) {
+		glm::vec3 scale = glm::vec3(0, 0, 0),
+		Entity* parent = NULL ) {
 
 		this->position = position;
 		this->scale = scale;
 		this->rotation = rotation;
+		this->parent = parent;
 	}
+
 };

@@ -127,8 +127,8 @@
 
             void reset_transformation (float new_scale, const Vector3 & new_anchor)
             {
-                local_scale    = glt::scale     (Matrix44(), new_scale );
-                local_anchor   = glt::translate (Matrix44(), new_anchor);
+                local_scale    = glt::scale     (Matrix44(1), new_scale );
+                local_anchor   = glt::translate (Matrix44(1), new_anchor);
                 transformation = local_scale * local_anchor;
             }
 

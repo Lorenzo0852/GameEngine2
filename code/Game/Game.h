@@ -24,7 +24,8 @@ private:
 	std::shared_ptr<EventBus> eventBus;
 
 private:
-	Entity cube;
+	Entity player;
+	Entity enemy1;
 	Entity cam;
 	Entity light;
 	Entity teapot;

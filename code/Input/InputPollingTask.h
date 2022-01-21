@@ -43,7 +43,7 @@ public:
                 case SDLK_LEFT:
                     eventBus->FireEvent<InputEvent>(InputEvent::Action::LEFT_ROTATION, 1);
                     break;
-                case SDLK_UP:
+                case SDLK_RIGHT:
                     eventBus->FireEvent<InputEvent>(InputEvent::Action::RIGHT_ROTATION, 1);
                     break;
                 }
@@ -71,7 +71,7 @@ public:
                 case SDLK_LEFT:
                     eventBus->FireEvent<InputEvent>(InputEvent::Action::LEFT_ROTATION, 0);
                     break;
-                case SDLK_UP:
+                case SDLK_RIGHT:
                     eventBus->FireEvent<InputEvent>(InputEvent::Action::RIGHT_ROTATION, 0);
                     break;
                 }
