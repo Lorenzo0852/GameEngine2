@@ -9,56 +9,59 @@
 #include <Components/SpriteComponent.h>
 #include <AssetManager/AssetManager.h>
 
-class RenderSystem : public System
+namespace engine
 {
-private:
-	SDL_Renderer* renderer;
-public:
-	RenderSystem()
+	class RenderSystem : public System
 	{
-		// We specify the components that our system is interested in.
-		RequireComponent<TransformComponent>();
-		RequireComponent<SpriteComponent>();
-	}
-
-
-	//static std::shared_ptr< System > CreateInstance()
-	//{
-	//	return std::make_shared<RenderSystem>();
-	//}
-
-
-	void Render(SDL_Renderer* renderer, std::unique_ptr<AssetManager>& assetStore)
-	{
-		this->renderer = renderer;
-		for (auto entity : GetSystemEntities())
+	private:
+		SDL_Renderer* renderer;
+	public:
+		RenderSystem()
 		{
-			const TransformComponent transform = entity.GetComponent<TransformComponent>();
-			const SpriteComponent sprite = entity.GetComponent<SpriteComponent>();
-
-			//Section of our original sprite texture, useful for things such as tilemaps.
-			SDL_Rect srcRect = sprite.srcRect;
-			//Set the destination rectangle with the x,y position to be rendered.
-			SDL_Rect dstRect = {
-				static_cast<int>(transform.position.x),
-				static_cast<int>(transform.position.y),
-				static_cast<int>(sprite.width * transform.scale.x),
-				static_cast<int>(sprite.height * transform.scale.y)
-			};
-				
-			SDL_RenderCopyEx(
-				renderer,
-				assetStore->GetTexture(sprite.assetId),
-				&srcRect,
-				&dstRect,
-				transform.rotation.x,
-				NULL,
-				SDL_FLIP_NONE);
+			// We specify the components that our system is interested in.
+			RequireComponent<TransformComponent>();
+			RequireComponent<SpriteComponent>();
 		}
-	}
 
-	~RenderSystem()
-	{
-		SDL_DestroyRenderer(renderer);
-	}
-};
+
+		//static std::shared_ptr< System > CreateInstance()
+		//{
+		//	return std::make_shared<RenderSystem>();
+		//}
+
+
+		void Render(SDL_Renderer* renderer, std::unique_ptr<AssetManager>& assetStore)
+		{
+			this->renderer = renderer;
+			for (auto entity : GetSystemEntities())
+			{
+				const TransformComponent transform = entity.GetComponent<TransformComponent>();
+				const SpriteComponent sprite = entity.GetComponent<SpriteComponent>();
+
+				//Section of our original sprite texture, useful for things such as tilemaps.
+				SDL_Rect srcRect = sprite.srcRect;
+				//Set the destination rectangle with the x,y position to be rendered.
+				SDL_Rect dstRect = {
+					static_cast<int>(transform.position.x),
+					static_cast<int>(transform.position.y),
+					static_cast<int>(sprite.width * transform.scale.x),
+					static_cast<int>(sprite.height * transform.scale.y)
+				};
+
+				SDL_RenderCopyEx(
+					renderer,
+					assetStore->GetTexture(sprite.assetId),
+					&srcRect,
+					&dstRect,
+					transform.rotation.x,
+					NULL,
+					SDL_FLIP_NONE);
+			}
+		}
+
+		~RenderSystem()
+		{
+			SDL_DestroyRenderer(renderer);
+		}
+	};
+}

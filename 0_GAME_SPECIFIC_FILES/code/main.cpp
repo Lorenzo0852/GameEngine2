@@ -12,9 +12,8 @@
 //SPDLOG_LEVEL_TRACE to enable traces
 //SPDLOG_LEVEL_OFF to disable traces
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
-#define SDL_MAIN_HANDLED
 
-#include <iostream>
+#include <sdl2/SDL.h>
 #include "Game/Game.h"
 #include "Window/Window.h"
 #include "Kernel/Kernel.h"
@@ -22,7 +21,9 @@
 #include <spdlog/sinks/rotating_file_sink.h>
 #include "Input/InputPollingTask.h"
 #include "EventBus/EventBus.h"
-#include "Core/Core.h"
+
+using namespace engine;
+using namespace game;
 
 // SDL Requires a number of arguments and an array of the actual parameters in the main function.
 int main(int args, char* argv[])
@@ -33,7 +34,7 @@ int main(int args, char* argv[])
 	std::shared_ptr<spdlog::logger> gameLogger = spdlog::rotating_logger_mt("EngineLogger", "logs/EngineLogs.txt", max_size, max_files);
 	spdlog::set_default_logger(gameLogger);
 
-	std::shared_ptr<EventBus> eventBus = std::make_shared<EventBus>();
+	std::shared_ptr<engine::EventBus> eventBus = std::make_shared<engine::EventBus>();
 	Window window("Unnamed game engine", 1920, 1080, false, -1);
 	InputPollingTask inputPoller(eventBus);
 	Kernel kernel;
@@ -49,4 +50,5 @@ int main(int args, char* argv[])
 
 	kernel.Execute();
 	return 0;
+
 }

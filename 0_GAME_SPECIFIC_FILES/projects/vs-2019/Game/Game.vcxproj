@@ -130,13 +130,16 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../../../../libs;../../../../bin/x64/Debug/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl-toolkit-debug.lib;SDL2.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;GameEngine_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;opengl-toolkit-debug.lib;GameEngine_debug.lib;Shell32.lib</AdditionalDependencies>
     </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -155,7 +158,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../../../../libs;../../../../bin/x64/Release/</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl-toolkit-release.lib;SDL2.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;GameEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GameEngine.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;opengl-toolkit-release.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

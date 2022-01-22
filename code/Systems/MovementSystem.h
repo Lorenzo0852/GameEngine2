@@ -8,38 +8,41 @@
 #include <Components/TransformComponent.h>
 #include <Components/RigidbodyComponent.h>
 
-class MovementSystem : public System
+namespace engine
 {
-public:
-	MovementSystem()
+	class MovementSystem : public System
 	{
-		// We specify the components that our system is interested in.
-		RequireComponent<TransformComponent>();
-		RequireComponent<RigidbodyComponent>();
-	}
-
-
-	static std::shared_ptr< System > CreateInstance()
-	{
-		return std::make_shared<MovementSystem>();
-	}
-
-
-	void Update(double deltaTime)
-	{
-		for (auto entity : GetSystemEntities())
+	public:
+		MovementSystem()
 		{
-			auto& transform = entity.GetComponent<TransformComponent>();
-			const auto& rigidbody = entity.GetComponent<RigidbodyComponent>();
-
-			transform.position.x += static_cast<float>(rigidbody.velocity.x * deltaTime);
-			transform.position.y += static_cast<float>(rigidbody.velocity.y * deltaTime);
-			transform.position.z += static_cast<float>(rigidbody.velocity.z * deltaTime);
+			// We specify the components that our system is interested in.
+			RequireComponent<TransformComponent>();
+			RequireComponent<RigidbodyComponent>();
 		}
-	}
 
-	void Run(float deltaTime)
-	{
 
-	}
-};
+		static std::shared_ptr< System > CreateInstance()
+		{
+			return std::make_shared<MovementSystem>();
+		}
+
+
+		void Update(double deltaTime)
+		{
+			for (auto entity : GetSystemEntities())
+			{
+				auto& transform = entity.GetComponent<TransformComponent>();
+				const auto& rigidbody = entity.GetComponent<RigidbodyComponent>();
+
+				transform.position.x += static_cast<float>(rigidbody.velocity.x * deltaTime);
+				transform.position.y += static_cast<float>(rigidbody.velocity.y * deltaTime);
+				transform.position.z += static_cast<float>(rigidbody.velocity.z * deltaTime);
+			}
+		}
+
+		void Run(float deltaTime)
+		{
+
+		}
+	};
+}

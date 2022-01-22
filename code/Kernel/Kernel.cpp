@@ -4,33 +4,35 @@
 
 #include <Kernel/Kernel.h>
 
-void Kernel::Execute()
+namespace engine
 {
-    exit = false;
-    do 
+    void Kernel::Execute()
     {
-        millisecondsPreviousFrame = SDL_GetTicks64();
-
-        if (!tasksToInitialize.empty())
+        exit = false;
+        do
         {
-            for (auto task : tasksToInitialize)
+            millisecondsPreviousFrame = SDL_GetTicks64();
+
+            if (!tasksToInitialize.empty())
             {
-                //Won't enter here if there isn't any tasks to initialize.
-                task->Initialize();
+                for (auto task : tasksToInitialize)
+                {
+                    //Won't enter here if there isn't any tasks to initialize.
+                    task->Initialize();
+                }
+                tasksToInitialize.clear();
             }
-            tasksToInitialize.clear();
-        }
-        
-        for (auto task : priorizedRunningTasks)
-        {
-            task -> Run(deltaTime);
-        }
 
-        for (auto task : runningTasks)
-        {
-            task -> Run(deltaTime);
-        }
-        deltaTime = (SDL_GetTicks64() - millisecondsPreviousFrame) * 0.001f;
+            for (auto task : priorizedRunningTasks)
+            {
+                task->Run(deltaTime);
+            }
+
+            for (auto task : runningTasks)
+            {
+                task->Run(deltaTime);
+            }
+            deltaTime = (SDL_GetTicks64() - millisecondsPreviousFrame) * 0.001f;
+        } while (!exit);
     }
-    while (!exit);
 }

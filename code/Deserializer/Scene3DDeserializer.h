@@ -13,17 +13,20 @@
 #include <Components/RigidbodyComponent.h>
 #include <Components/TransformComponent.h>
 
-class Scene3DDeserializer : public Task
+namespace engine
 {
-private:
-	Registry* registry;
-	Window* window;
-	const char * path;
+	class Scene3DDeserializer : public Task
+	{
+	private:
+		Registry* registry;
+		Window* window;
+		const char* path;
 
-public:
+	public:
 
-	Scene3DDeserializer(const char* path, Registry* registry, Window* window) : path(path), registry(registry), window(window) {}
+		Scene3DDeserializer(const char* path, Registry* registry, Window* window) : path(path), registry(registry), window(window) {}
 
-	bool Initialize();
-	void Run(float deltaTime);
-};
+		bool Initialize();
+		void Run(float deltaTime);
+	};
+}

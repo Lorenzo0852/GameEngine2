@@ -1,7 +1,10 @@
 #pragma once
 
-class Event
+namespace engine
 {
-public:
-	Event() = default;
-};
+	class Event
+	{
+	public:
+		Event() = default;
+	};
+}

@@ -13,32 +13,33 @@
 #include <EventBus/EventBus.h>
 #include <Events/InputEvent.h>
 
-class Game : public Task
+using namespace engine;
+namespace game
 {
-private:
-	Window * window;
-	SDL_Renderer * renderer;
-	Kernel * kernel;
+	class Game : public Task
+	{
+	private:
+		Window* window;
+		SDL_Renderer* renderer;
+		Kernel* kernel;
 
-	std::unique_ptr<Registry> registry;
-	std::unique_ptr<AssetManager> assetManager;
-	std::shared_ptr<EventBus> eventBus;
+		std::unique_ptr<Registry> registry;
+		std::unique_ptr<AssetManager> assetManager;
+		std::shared_ptr<EventBus> eventBus;
 
-private:
-	Entity player;
-	Entity enemyTopRight;
-	Entity enemyTopLeft;
-	Entity enemyBotLeft;
-	Entity enemyBotRight;
+	private:
+		Entity player;
+		Entity enemies[4];
 
-	Mix_Chunk* sound;
-	Mix_Chunk* death;
+		Mix_Chunk* sound;
+		Mix_Chunk* death;
 
-public:
-	Game(Window & window, Kernel & kernel, std::shared_ptr<EventBus> eventBus);
-	~Game() = default;
+	public:
+		Game(Window& window, Kernel& kernel, std::shared_ptr<EventBus> eventBus);
+		~Game() = default;
 
-	void SetupScene();
-	virtual void Run(float deltaTime);
-	void OnInputRegistered(InputEvent& event);
-};
+		void SetupScene();
+		virtual void Run(float deltaTime);
+		void OnInputRegistered(InputEvent& event);
+	};
+}
