@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "../EventBus/Event.h"
+#include <EventBus/Event.h>
 
 class InputEvent : public Event
 {

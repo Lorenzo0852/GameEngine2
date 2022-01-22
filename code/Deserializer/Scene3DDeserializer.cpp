@@ -1,11 +1,11 @@
-#include "Scene3DDeserializer.h"
+#include <Deserializer/Scene3DDeserializer.h>
 
 bool Scene3DDeserializer::Initialize()
 {
-	rapidxml::file<> xmlFile(path);
-	rapidxml::xml_document<> doc;
-	doc.parse<0>(xmlFile.data());
-	rapidxml::xml_node<>* registryNode = doc.first_node()->first_node("registry");
+	rapidxml::file<> * xmlFile = new rapidxml::file<>(path);
+	rapidxml::xml_document<> * doc = new rapidxml::xml_document<>();
+	doc->parse<0>(xmlFile->data());
+	rapidxml::xml_node<>* registryNode = doc->first_node()->first_node("registry");
 	while (registryNode != 0)
 	{
 		rapidxml::xml_node<>* childNode = registryNode->first_node();
@@ -27,7 +27,7 @@ bool Scene3DDeserializer::Initialize()
 		}
 		registryNode = registryNode->next_sibling("registry");
 	}
-	rapidxml::xml_node<>* entitiesNode = doc.first_node()->first_node("entities");
+	rapidxml::xml_node<>* entitiesNode = doc->first_node()->first_node("entities");
 	while (entitiesNode != 0)
 	{
 		rapidxml::xml_node<>* childNode = entitiesNode->first_node();

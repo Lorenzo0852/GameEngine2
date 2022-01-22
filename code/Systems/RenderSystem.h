@@ -3,11 +3,11 @@
  *  Copyright (c) Lorenzo Herran - 2021   *
 \******************************************/
 
-#include "../sdl2/SDL.h"
-#include "../ECS/ECS.h"
-#include "../Components/TransformComponent.h"
-#include "../Components/SpriteComponent.h"
-#include "../AssetManager/AssetManager.h"
+#include <sdl2/SDL.h>
+#include <ECS/ECS.h>
+#include <Components/TransformComponent.h>
+#include <Components/SpriteComponent.h>
+#include <AssetManager/AssetManager.h>
 
 class RenderSystem : public System
 {

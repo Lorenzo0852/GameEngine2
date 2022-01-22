@@ -5,7 +5,7 @@
 \******************************************/
 
 #include <glm/glm.hpp>
-#include <../sdl2/SDL.h>
+#include <sdl2/SDL.h>
 
 /// <summary>
 /// Components are data-driven structures. Nothing more.

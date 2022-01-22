@@ -5,7 +5,7 @@
 \******************************************/
 
 #include <glm/glm.hpp>
-#include "../ECS/ECS.h"
+#include <ECS/ECS.h>
 
 /// <summary>
 /// Components are data-driven structures. Nothing more.

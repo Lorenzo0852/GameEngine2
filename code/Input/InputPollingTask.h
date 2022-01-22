@@ -1,8 +1,8 @@
 #pragma once
-#include "../Task/Task.h"
+#include <Task/Task.h>
 #include <sdl2/SDL.h>
-#include "../EventBus/EventBus.h"
-#include "../Events/InputEvent.h"
+#include <EventBus/EventBus.h>
+#include <Events/InputEvent.h>
 #include <spdlog/spdlog.h>
 
 class InputPollingTask : public Task

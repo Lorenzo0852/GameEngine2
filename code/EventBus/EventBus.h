@@ -2,7 +2,7 @@
 #include <spdlog/spdlog.h>
 #include <map>
 #include <typeindex>
-#include "Event.h"
+#include <EventBus/Event.h>
 
 class IEventCallback
 {

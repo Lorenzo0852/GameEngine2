@@ -3,11 +3,11 @@
  *  Copyright (c) Lorenzo Herran - 2021   *
 \******************************************/
 
-#include "../ECS/ECS.h"
-#include "../Components/TransformComponent.h"
-#include "../Components/Node3DComponent.h"
-#include "../Window/Window.h"
-#include <Render_Node.hpp>
+#include <ECS/ECS.h>
+#include <Components/TransformComponent.h>
+#include <Components/Node3DComponent.h>
+#include <Window/Window.h>
+#include <gltk/Render_Node.hpp>
 #include <spdlog/spdlog.h>
 
 /// <summary>

@@ -2,11 +2,11 @@
  *  Copyright (c) Lorenzo Herran - 2021   *
 \******************************************/
 
-#include "Window.h"
+#include <Window/Window.h>
 #include <sdl2/SDL.h>
 #include <sdl2/SDL_mixer.h>
 #include <spdlog/spdlog.h>
-#include <OpenGL.hpp>
+#include <gltk/OpenGL.hpp>
 
 Window::Window(const std::string& title, int width, int height, bool fullscreen, unsigned displayIndex)
 {

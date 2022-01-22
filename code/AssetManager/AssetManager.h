@@ -6,7 +6,7 @@
 
 #include <map>
 #include <string>
-#include <../sdl2/SDL.h>
+#include <sdl2/SDL.h>
 
 class AssetManager {
 private:

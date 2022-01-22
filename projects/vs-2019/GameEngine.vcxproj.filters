@@ -63,13 +63,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\code\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\code\ECS\ECS.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\Game\Game.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\code\Kernel\Kernel.cpp">
@@ -80,9 +74,6 @@
     </ClCompile>
     <ClCompile Include="..\..\code\AssetManager\AssetManager.cpp">
       <Filter>Source Files\Core\2D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\Core\Core.cpp">
-      <Filter>Header Files\Core\Common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\code\Deserializer\Scene3DDeserializer.cpp">
       <Filter>Source Files\Core\3D</Filter>
@@ -131,9 +122,6 @@
     <ClInclude Include="..\..\code\ECS\ECS.h">
       <Filter>Header Files\Core\Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\code\Game\Game.h">
-      <Filter>Header Files\Core\Common</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\code\Kernel\Kernel.h">
       <Filter>Header Files\Core\Common</Filter>
     </ClInclude>
@@ -148,9 +136,6 @@
     </ClInclude>
     <ClInclude Include="..\..\code\Input\InputPollingTask.h">
       <Filter>Header Files\Core\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\Core\Core.h">
-      <Filter>Source Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\code\Deserializer\Scene3DDeserializer.h">
       <Filter>Header Files\Core\3D</Filter>

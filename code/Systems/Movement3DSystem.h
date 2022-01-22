@@ -4,11 +4,11 @@
  *  Copyright (c) Lorenzo Herran - 2021   *
 \******************************************/
 
-#include "../ECS/ECS.h"
-#include "../Components/TransformComponent.h"
-#include "../Components/RigidbodyComponent.h"
-#include "../Components/Node3DComponent.h"
-#include "../gltk/Node.hpp"
+#include <ECS/ECS.h>
+#include <Components/TransformComponent.h>
+#include <Components/RigidbodyComponent.h>
+#include <Components/Node3DComponent.h>
+#include <gltk/Node.hpp>
 
 class Movement3DSystem : public System
 {

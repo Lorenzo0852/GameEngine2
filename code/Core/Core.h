@@ -3,7 +3,6 @@
  *  Copyright (c) Lorenzo Herran - 2021   *
 \******************************************/
 #include <iostream>
-#include "../Game/Game.h"
 #include "../Window/Window.h"
 #include "../Kernel/Kernel.h"
 #include <spdlog/spdlog.h>

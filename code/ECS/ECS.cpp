@@ -2,8 +2,8 @@
  *  Copyright (c) Lorenzo Herran - 2021   *
 \******************************************/
 
-#include "ECS.h"
-#include "spdlog/spdlog.h"
+#include <ECS/ECS.h>
+#include <spdlog/spdlog.h>
 
 // Everytime you have a static variable, we need to initialize that variable.
 int IComponent::nextId = 0;

@@ -2,8 +2,8 @@
  *  Copyright (c) Lorenzo Herran - 2021   *
 \******************************************/
 
-#include "AssetManager.h"
-#include "../sdl2/SDL_image.h"
+#include <AssetManager/AssetManager.h>
+#include <sdl2/SDL_image.h>
 
 AssetManager::AssetManager()
 {

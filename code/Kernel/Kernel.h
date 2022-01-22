@@ -1,7 +1,7 @@
 #pragma once
 #include <list>
 #include <sdl2/SDL.h>
-#include "../Task/Task.h"
+#include <Task/Task.h>
 
 class Kernel
 {

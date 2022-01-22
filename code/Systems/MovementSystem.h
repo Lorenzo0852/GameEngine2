@@ -4,9 +4,9 @@
  *  Copyright (c) Lorenzo Herran - 2021   *
 \******************************************/
 
-#include "../ECS/ECS.h"
-#include "../Components/TransformComponent.h"
-#include "../Components/RigidbodyComponent.h"
+#include <ECS/ECS.h>
+#include <Components/TransformComponent.h>
+#include <Components/RigidbodyComponent.h>
 
 class MovementSystem : public System
 {

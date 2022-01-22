@@ -9,8 +9,8 @@
 #include <unordered_map>
 #include <typeindex>
 #include <set>
-#include "../Pool/Pool.h"
-#include "../Task/Task.h"
+#include <Pool/Pool.h>
+#include <Task/Task.h>
 #include <glm/glm.hpp>
 
 /****************************************************************************************\

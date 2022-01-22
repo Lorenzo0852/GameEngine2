@@ -2,7 +2,7 @@
  *  Copyright (c) Lorenzo Herran - 2021   *
 \******************************************/
 
-#include "Kernel.h"
+#include <Kernel/Kernel.h>
 
 void Kernel::Execute()
 {

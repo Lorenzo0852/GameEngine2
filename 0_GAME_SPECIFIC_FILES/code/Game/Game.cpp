@@ -2,12 +2,15 @@
  *  Copyright (c) Lorenzo Herran - 2021   *
 \******************************************/
 
+#include <gltk/Mesh.hpp>
 #include <gltk/Cube.hpp>
 #include <gltk/Model.hpp>
-//#include <gltk/Model_Obj.hpp>
+#include <gltk/Node.hpp>
 #include <gltk/Light.hpp>
 #include <gltk/Render_Node.hpp>
-//#include <gltk/Camera.hpp>
+#include <gltk/Drawable.hpp>
+#include <gltk/Material.hpp>
+#include <gltk/Camera.hpp>
 
 #include <sdl2/SDL.h>
 #include <sdl2/SDL_image.h>
@@ -15,19 +18,16 @@
 #include <glm/glm.hpp>
 #include "Game.h"
 
-#include "../Deserializer/Scene3DDeserializer.h"
+#include <Deserializer/Scene3DDeserializer.h>
 
-#include "../ECS/ECS.h"
-#include "../Components/TransformComponent.h"
-#include "../Components/RigidBodyComponent.h"
-#include "../Components/SpriteComponent.h"
-#include "../Components/Node3DComponent.h"
-#include "../Systems/MovementSystem.h"
-#include "../Systems/RenderSystem.h"
-#include "../Systems/ModelRender3DSystem.h"
-#include "../Systems/Movement3DSystem.h"
-#include "../Systems/EntityStartup3DSystem.h"
+#include <ECS/ECS.h>
+#include <Components/TransformComponent.h>
+#include <Components/RigidbodyComponent.h>
+#include <Components/Node3DComponent.h>
 
+#include <Systems/Movement3DSystem.h>
+#include <Systems/ModelRender3DSystem.h>
+#include <Systems/EntityStartup3DSystem.h>
 
 Game::Game(Window & window, Kernel & kernel, std::shared_ptr<EventBus> eventBus)
 {
@@ -59,8 +59,6 @@ void Game::SetupScene()
 	death = Mix_LoadWAV("../../../assets/sounds/death.wav");
 	Mix_Volume(-1, 60);
 
-	//registry->AddSystem<MovementSystem>();
-
 	player = registry->CreateEntity();
 	std::shared_ptr< glt::Model  > cubeModel(new glt::Model);
 	cubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
@@ -86,37 +84,52 @@ void Game::SetupScene()
 	head.AddComponent<TransformComponent>(glm::vec3(0, 0.5f, 1.f), glm::vec3(0, 0, 0), glm::vec3(0.7f, 0.7f, 0.7f), &player);
 	head.AddComponent<Node3DComponent>("head", cube4Model);
 
-
-	cam = registry->CreateEntity();
+	Entity cam = registry->CreateEntity();
 	std::shared_ptr< glt::Camera > cameraNode(new glt::Camera(20.f, 1.f, 500.f, 1.f));
 
 	cam.AddComponent<RigidbodyComponent>();
 	cam.AddComponent<TransformComponent>(glm::vec3(0.f, 0.f, 5.f), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
 	cam.AddComponent<Node3DComponent>("camera", cameraNode);
 
-	enemy1 = registry->CreateEntity();
-	std::shared_ptr< glt::Model  > enemy1Model(new glt::Model);
-	enemy1Model->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-	enemy1.AddComponent<RigidbodyComponent>(glm::vec3(0, 0, 0), glm::vec3(0.f, 0.f, 0.f));
-	enemy1.AddComponent<TransformComponent>(glm::vec3(36, 14, -20.f), glm::vec3(0, 0, 0), glm::vec3(.4f, .4f, .4f));
+	enemyTopRight = registry->CreateEntity();
+	std::shared_ptr< glt::Model  > enemyTopRightModel(new glt::Model);
+	enemyTopRightModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+	enemyTopRight.AddComponent<RigidbodyComponent>(glm::vec3(0, 0, 0), glm::vec3(0.f, 0.f, 0.f));
+	enemyTopRight.AddComponent<TransformComponent>(glm::vec3(36, 14, -20.f), glm::vec3(0, 0, 0), glm::vec3(.4f, .4f, .4f));
 	
-	enemy1.AddComponent<Node3DComponent>("enemy1", enemy1Model);
+	enemyTopRight.AddComponent<Node3DComponent>("enemyTopRight", enemyTopRightModel);
 
-	/*********************************************
-	*	WALLS
-	*********************************************/
+	enemyTopLeft = registry->CreateEntity();
+	std::shared_ptr< glt::Model  > enemyTopLeftModel(new glt::Model);
+	enemyTopLeftModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+	enemyTopLeft.AddComponent<RigidbodyComponent>(glm::vec3(0, 0, 0), glm::vec3(0.f, 0.f, 0.f));
+	enemyTopLeft.AddComponent<TransformComponent>(glm::vec3(-36, 14, -20.f), glm::vec3(0, 0, 0), glm::vec3(.4f, .4f, .4f));
 
-	//teapot = registry->CreateEntity();
-	//std::shared_ptr< glt::Model  > teapotModel(new glt::Model_Obj("../../../assets/models/utah-teapot.obj"));
-	//teapot.AddComponent<RigidbodyComponent>(glm::vec3(0, 0, 0), glm::vec3(0, 0.2f, 0));
-	//teapot.AddComponent<TransformComponent>(glm::vec3(15, 0, -75), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
-	//teapot.AddComponent<Node3DComponent>("teapot", teapotModel);
+	enemyTopLeft.AddComponent<Node3DComponent>("enemyTopLeft", enemyTopLeftModel);
 
-	light = registry->CreateEntity();
+	Entity light = registry->CreateEntity();
 	std::shared_ptr< glt::Light  > lightNode(new glt::Light);
-	lightNode->set_color(glm::vec3(0.4f,0.7f,0.929f));
-	light.AddComponent<TransformComponent>(glt::Vector3(10.f, 10.f, 10.f), glt::Vector3(0.f, 0.f, 0.f));
+	lightNode->set_color(glm::vec3(0.4f, 0.7f, 0.929f));
+	light.AddComponent<TransformComponent>(glm::vec3(10.f, 10.f, 10.f), glm::vec3(0.f, 0.f, 0.f));
 	light.AddComponent<Node3DComponent>("light", lightNode);
+
+	enemyBotRight = registry->CreateEntity();
+	std::shared_ptr< glt::Model  > enemyBotRightModel(new glt::Model);
+	enemyBotRightModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+	enemyBotRight.AddComponent<RigidbodyComponent>(glm::vec3(0, 0, 0), glm::vec3(0.f, 0.f, 0.f));
+	enemyBotRight.AddComponent<TransformComponent>(glm::vec3(36, -14, -20.f), glm::vec3(0, 0, 0), glm::vec3(.4f, .4f, .4f));
+	enemyBotRight.AddComponent<TransformComponent>(glm::vec3(36, -14, -20.f), glm::vec3(0, 0, 0), glm::vec3(.4f, .4f, .4f));
+
+	enemyBotRight.AddComponent<Node3DComponent>("enemyBotRight", enemyBotRightModel);
+	
+	enemyBotLeft = registry->CreateEntity();
+	std::shared_ptr< glt::Model  > enemyBotLeftModel(new glt::Model);
+	enemyBotLeftModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+	enemyBotLeft.AddComponent<RigidbodyComponent>(glm::vec3(0, 0, 0), glm::vec3(0.f, 0.f, 0.f));
+	enemyBotLeft.AddComponent<TransformComponent>(glm::vec3(-36, -14, -20.f), glm::vec3(0, 0, 0), glm::vec3(.4f, .4f, .4f));
+
+	enemyBotLeft.AddComponent<Node3DComponent>("enemyBotLeft", enemyBotLeftModel);
+
 
 	//Update registry to process the entities that are waiting
 	kernel->InitializeTask(*registry);
@@ -124,25 +137,6 @@ void Game::SetupScene()
 	kernel->InitializeTask(registry->GetSystem<EntityStartup3DSystem>());
 	kernel->AddRunningTask(registry->GetSystem<Movement3DSystem>());
 	kernel->AddRunningTask(registry->GetSystem<ModelRender3DSystem>());
-
-	/*registry->AddSystem<RenderSystem>();*/
-
-	//assetManager->AddTexture(renderer, "tank-image", "../../../assets/images/tank-panther-right.png");
-	//assetManager->AddTexture(renderer, "truck-image", "../../../assets/images/truck-ford-right.png");
-
-	//Entity tank = registry->CreateEntity();
-	//gameLogger-> info("Entity ID: " + std::to_string(tank.GetId()));
-
-	//tank.AddComponent<TransformComponent>(glm::vec3(2000, 500, 0), glm::vec3(5.0, 5.0, 5.0), 0);
-	//tank.AddComponent<RigidbodyComponent>(glm::vec3(50.0, 0.0, 0.0));
-	//tank.AddComponent<SpriteComponent>("tank-image", 32, 32);
-
-	//Entity truck = registry->CreateEntity();
-	//gameLogger->info("Entity ID: " + std::to_string(truck.GetId()));
-
-	//truck.AddComponent<TransformComponent>(glm::vec3(1800, 500, 0), glm::vec3(5.0, 5.0, 5.0), 0);
-	//truck.AddComponent<RigidbodyComponent>(glm::vec3(50.0, 0.0, 0.0));
-	//truck.AddComponent<SpriteComponent>("truck-image", 32, 32);
 }
 
 void Game::Run(float deltaTime)
@@ -182,10 +176,10 @@ void Game::Run(float deltaTime)
 		registry->GetSystem<Movement3DSystem>().MoveToPosition(player, transform.position);
 		Mix_PlayChannel(-1, sound, 0);
 	}
-	TransformComponent& enemy1TransformComponent = enemy1.GetComponent<TransformComponent>();
-	glt::Node * enemyNode = enemy1.GetComponent<Node3DComponent>().node.get();
+	TransformComponent& enemy1TransformComponent = enemyTopRight.GetComponent<TransformComponent>();
+	glt::Node * enemyNode = enemyTopRight.GetComponent<Node3DComponent>().node.get();
 
-	glm::vec3 directionVector = movement3DSystem.MoveTowards(enemy1, playerTransform.position);
+	glm::vec3 directionVector = movement3DSystem.MoveTowards(enemyTopRight, playerTransform.position);
 
 	enemyNode->translate(directionVector * 14.f * deltaTime);
 
@@ -194,7 +188,7 @@ void Game::Run(float deltaTime)
 	{
 		Mix_PlayChannel(-1, death, 0);
 		movement3DSystem.ResetTransform(player);
-		movement3DSystem.ResetTransform(enemy1);
+		movement3DSystem.ResetTransform(enemyTopRight);
 	}
 
 }
