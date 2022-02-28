@@ -1,0 +1,30 @@
+<scene>
+	<registry>
+		<system>Movement3DSystem</system>
+		<system>ModelRender3DSystem</system>
+		<system>EntityStartup3DSystem</system>
+	</registry>
+	<entities>
+		<entity>
+			<TransformComponent>
+				<position>
+					<x>0</x>
+					<y>0</y>
+					<z>0</z>
+				</position>
+				<rotation>
+					<x>0</x>
+					<y>0</y>
+					<z>0</z>
+				</rotation>
+				<scale>
+					<x>1</x>
+					<y>1</y>
+					<z>1</z>
+				</scale>
+			</TransformComponent>
+			<RigidbodyComponent></RigidbodyComponent>
+			<Node3DComponent></Node3DComponent>
+		</entity>
+	</entities>
+</scene>

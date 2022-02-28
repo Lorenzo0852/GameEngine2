@@ -19,13 +19,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -47,6 +47,7 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)../../bin/$(Platform)/$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)../../bin/intermediate/$(Platform)/$(Configuration)/</IntDir>
+    <TargetName>$(ProjectName)_debug</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -57,18 +58,18 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../../include/lua;../../include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../include/gltk;../../include/;../../code;../../include/rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard_C>Default</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>$(TargetPath)</OutputFile>
-      <AdditionalLibraryDirectories>../../libs/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;SDL2main.lib;liblua54.a;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;SDL2main.lib;liblua54.a;opengl-toolkit-debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -80,7 +81,7 @@
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../../include/lua;../../include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../include/gltk;../../include/;../../code;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard_C>Default</LanguageStandard_C>
     </ClCompile>
     <Link>
@@ -89,25 +90,38 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>$(TargetPath)</OutputFile>
-      <AdditionalLibraryDirectories>../../libs/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;SDL2main.lib;liblua54.a;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;SDL2main.lib;liblua54.a;opengl-toolkit-release.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\code\AssetManager\AssetManager.cpp" />
+    <ClCompile Include="..\..\code\Deserializer\Scene3DDeserializer.cpp" />
     <ClCompile Include="..\..\code\ECS\ECS.cpp" />
-    <ClCompile Include="..\..\code\Game\Game.cpp" />
-    <ClCompile Include="..\..\code\main.cpp" />
+    <ClCompile Include="..\..\code\Kernel\Kernel.cpp" />
+    <ClCompile Include="..\..\code\Window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\code\AssetManager\AssetManager.h" />
+    <ClInclude Include="..\..\code\Components\Node3DComponent.h" />
     <ClInclude Include="..\..\code\Components\RigidbodyComponent.h" />
     <ClInclude Include="..\..\code\Components\SpriteComponent.h" />
     <ClInclude Include="..\..\code\Components\TransformComponent.h" />
+    <ClInclude Include="..\..\code\Deserializer\Scene3DDeserializer.h" />
     <ClInclude Include="..\..\code\ECS\ECS.h" />
-    <ClInclude Include="..\..\code\Game\Game.h" />
-    <ClInclude Include="..\..\code\Logger\Logger.h" />
+    <ClInclude Include="..\..\code\EventBus\Event.h" />
+    <ClInclude Include="..\..\code\EventBus\EventBus.h" />
+    <ClInclude Include="..\..\code\Events\InputEvent.h" />
+    <ClInclude Include="..\..\code\Input\InputPollingTask.h" />
+    <ClInclude Include="..\..\code\Kernel\Kernel.h" />
     <ClInclude Include="..\..\code\Pool\Pool.h" />
+    <ClInclude Include="..\..\code\Systems\EntityStartup3DSystem.h" />
+    <ClInclude Include="..\..\code\Systems\Movement3DSystem.h" />
     <ClInclude Include="..\..\code\Systems\MovementSystem.h" />
+    <ClInclude Include="..\..\code\Systems\ModelRender3DSystem.h" />
     <ClInclude Include="..\..\code\Systems\RenderSystem.h" />
+    <ClInclude Include="..\..\code\Task\Task.h" />
+    <ClInclude Include="..\..\code\Window\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

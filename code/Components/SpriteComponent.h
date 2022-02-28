@@ -1,18 +1,30 @@
 #pragma once
 
-#include <glm/glm.hpp>
+/******************************************\
+ *  Copyright (c) Lorenzo Herran - 2021   *
+\******************************************/
 
-/// <summary>
+#include <glm/glm.hpp>
+#include <sdl2/SDL.h>
+
+
+namespace engine
+{
+	/// <summary>
 /// Components are data-driven structures. Nothing more.
 /// All functionality needed in a component is managed in the "System" part of Entity-Component-System
 /// </summary>
-struct SpriteComponent{
-	int width;
-	int height;
+	struct SpriteComponent {
+		std::string assetId;
+		int width;
+		int height;
+		SDL_Rect srcRect;
 
-	SpriteComponent(int width = 0, int height = 0) {
-
-		this->width = width;
-		this->height = height;
-	}
-};
+		SpriteComponent(std::string assetId = "", int width = 0, int height = 0, int srcRectX = 0, int srcRectY = 0) {
+			this->assetId = assetId;
+			this->width = width;
+			this->height = height;
+			this->srcRect = { srcRectX, srcRectY, width, height };
+		}
+	};
+}

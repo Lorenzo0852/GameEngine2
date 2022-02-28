@@ -13,45 +13,132 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Systems">
+      <UniqueIdentifier>{d7487687-91c5-4b62-951d-609521ff8f95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Components">
+      <UniqueIdentifier>{cb26a15f-a6c8-41c3-bd36-d46fb77f97cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Systems\3D">
+      <UniqueIdentifier>{52a99649-4e53-48c7-ae36-9164aa3e17b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Systems\2D">
+      <UniqueIdentifier>{40688930-ae7d-4951-9a41-c8b505d38cf5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\EventSystems">
+      <UniqueIdentifier>{bebd91e2-912a-46e6-9103-42437caa9378}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\EventTypes">
+      <UniqueIdentifier>{c481c956-a893-4335-916b-fbd9bfcd258d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Components\3D">
+      <UniqueIdentifier>{917c74e3-e9e6-46da-843a-0f7d74444fe7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Components\2D">
+      <UniqueIdentifier>{b304cc15-3643-436d-886d-9a9d60e8bbd2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core">
+      <UniqueIdentifier>{4c23faa0-e23d-4d67-a68c-e6e8656223b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\2D">
+      <UniqueIdentifier>{4365756a-970e-47d1-b03d-53801f88c3c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Common">
+      <UniqueIdentifier>{e0739062-82bf-416c-9626-3aafcf8beeea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Components\Common">
+      <UniqueIdentifier>{36a76eea-d1c0-4756-bb6d-bfa01d210ad1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{454a420a-1886-4dc8-a931-9ec195c6d797}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\2D">
+      <UniqueIdentifier>{b515caa9-8056-452d-8d93-383af0dff6fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\3D">
+      <UniqueIdentifier>{a0c68626-12fd-4ac9-80f9-3dc814f15523}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\3D">
+      <UniqueIdentifier>{425ab217-f23e-428f-80d3-8eb2b06f105c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\code\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\Game\Game.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\code\ECS\ECS.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\Kernel\Kernel.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\Window\Window.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\AssetManager\AssetManager.cpp">
+      <Filter>Source Files\Core\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\Deserializer\Scene3DDeserializer.cpp">
+      <Filter>Source Files\Core\3D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\code\Game\Game.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\code\Systems\EntityStartup3DSystem.h">
+      <Filter>Header Files\Systems\3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\code\Logger\Logger.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\code\Systems\ModelRender3DSystem.h">
+      <Filter>Header Files\Systems\3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\code\ECS\ECS.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\code\Systems\Movement3DSystem.h">
+      <Filter>Header Files\Systems\3D</Filter>
     </ClInclude>
     <ClInclude Include="..\..\code\Systems\MovementSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\Components\TransformComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\Pool\Pool.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\Components\RigidbodyComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\Components\SpriteComponent.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Systems\2D</Filter>
     </ClInclude>
     <ClInclude Include="..\..\code\Systems\RenderSystem.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Systems\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\EventBus\EventBus.h">
+      <Filter>Header Files\EventSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\EventBus\Event.h">
+      <Filter>Header Files\EventSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\Events\InputEvent.h">
+      <Filter>Header Files\EventTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\Components\Node3DComponent.h">
+      <Filter>Header Files\Components\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\Components\SpriteComponent.h">
+      <Filter>Header Files\Components\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\Components\RigidbodyComponent.h">
+      <Filter>Header Files\Components\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\Components\TransformComponent.h">
+      <Filter>Header Files\Components\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\AssetManager\AssetManager.h">
+      <Filter>Header Files\Core\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\ECS\ECS.h">
+      <Filter>Header Files\Core\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\Kernel\Kernel.h">
+      <Filter>Header Files\Core\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\Pool\Pool.h">
+      <Filter>Header Files\Core\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\Task\Task.h">
+      <Filter>Header Files\Core\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\Window\Window.h">
+      <Filter>Header Files\Core\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\Input\InputPollingTask.h">
+      <Filter>Header Files\Core\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\Deserializer\Scene3DDeserializer.h">
+      <Filter>Header Files\Core\3D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
