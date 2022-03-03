@@ -104,7 +104,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\code\AssetManager\AssetManager.h" />
     <ClInclude Include="..\..\code\Components\Node3DComponent.h" />
-    <ClInclude Include="..\..\code\Components\RigidbodyComponent.h" />
+    <ClInclude Include="..\..\code\Components\Rigidbody3DComponent.h" />
     <ClInclude Include="..\..\code\Components\SpriteComponent.h" />
     <ClInclude Include="..\..\code\Components\TransformComponent.h" />
     <ClInclude Include="..\..\code\Deserializer\Scene3DDeserializer.h" />

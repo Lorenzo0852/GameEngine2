@@ -6,7 +6,7 @@
 
 #include <ECS/ECS.h>
 #include <Components/TransformComponent.h>
-#include <Components/RigidbodyComponent.h>
+#include <Components/Rigidbody3DComponent.h>
 #include <Components/Node3DComponent.h>
 #include <gltk/Node.hpp>
 
@@ -19,7 +19,7 @@ namespace engine
 		{
 			// We specify the components that our system is interested in.
 			RequireComponent<TransformComponent>();
-			RequireComponent<RigidbodyComponent>();
+			RequireComponent<Rigidbody3DComponent>();
 			RequireComponent<Node3DComponent>();
 		}
 
@@ -34,7 +34,7 @@ namespace engine
 			{
 				std::shared_ptr<glt::Node> node = entity.GetComponent<Node3DComponent>().node;
 				auto& transform = entity.GetComponent<TransformComponent>();
-				const auto& rigidbody = entity.GetComponent<RigidbodyComponent>();
+				const auto& rigidbody = entity.GetComponent<Rigidbody3DComponent>();
 
 				node->translate(glm::vec3(rigidbody.velocity.x * deltaTime, rigidbody.velocity.y * deltaTime, rigidbody.velocity.z * deltaTime));
 

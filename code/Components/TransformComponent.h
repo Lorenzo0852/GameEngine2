@@ -28,7 +28,7 @@ namespace engine
 			glm::vec3 position = glm::vec3(0, 0, 0),
 			glm::vec3 rotation = glm::vec3(0, 0, 0),
 			glm::vec3 scale = glm::vec3(0, 0, 0),
-			Entity* parent = NULL) {
+			Entity* parent = nullptr) {
 
 			this->position = position;
 			this->scale = scale;

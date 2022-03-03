@@ -110,9 +110,6 @@
     <ClInclude Include="..\..\code\Components\SpriteComponent.h">
       <Filter>Header Files\Components\2D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\code\Components\RigidbodyComponent.h">
-      <Filter>Header Files\Components\Common</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\code\Components\TransformComponent.h">
       <Filter>Header Files\Components\Common</Filter>
     </ClInclude>
@@ -139,6 +136,9 @@
     </ClInclude>
     <ClInclude Include="..\..\code\Deserializer\Scene3DDeserializer.h">
       <Filter>Header Files\Core\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\Components\Rigidbody3DComponent.h">
+      <Filter>Header Files\Components\3D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

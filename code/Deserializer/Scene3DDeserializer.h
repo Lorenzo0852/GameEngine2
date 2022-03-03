@@ -10,7 +10,7 @@
 #include <Systems/Movement3DSystem.h>
 
 #include <Components/Node3DComponent.h>
-#include <Components/RigidbodyComponent.h>
+#include <Components/Rigidbody3DComponent.h>
 #include <Components/TransformComponent.h>
 
 namespace engine

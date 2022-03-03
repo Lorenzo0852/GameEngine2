@@ -59,6 +59,11 @@ namespace engine
 			}
 		}
 
+		void Run(float deltaTime)
+		{
+
+		}
+
 		~RenderSystem()
 		{
 			SDL_DestroyRenderer(renderer);
