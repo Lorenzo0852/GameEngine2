@@ -23,6 +23,7 @@ namespace engine
 			spdlog::error("Error initializing SDL");
 			return;
 		}
+		spdlog::info("SDL initialized!");
 
 		//Initialize SDL_mixer
 		if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1)
@@ -30,6 +31,7 @@ namespace engine
 			spdlog::error("Error initializing SDL Mixer");
 			return;
 		}
+		spdlog::info("SDL Mixer (sound) initialized!");
 
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
@@ -66,7 +68,7 @@ namespace engine
 				}
 			}
 		}
-		spdlog::info("SDL Window created");
+		spdlog::info("SDL Window succesfully created!");
 	}
 
 	Window::~Window()

@@ -15,12 +15,15 @@ namespace engine
 	{
 	private:
 		SDL_Renderer* renderer;
+		AssetManager * assetManager;
 	public:
-		RenderSystem()
+		RenderSystem(SDL_Renderer * rend, AssetManager & assetMgr)
 		{
 			// We specify the components that our system is interested in.
 			RequireComponent<TransformComponent>();
 			RequireComponent<SpriteComponent>();
+			this->renderer = rend;
+			this->assetManager = &assetMgr;
 		}
 
 
@@ -29,8 +32,8 @@ namespace engine
 		//	return std::make_shared<RenderSystem>();
 		//}
 
-
-		void Render(SDL_Renderer* renderer, std::unique_ptr<AssetManager>& assetStore)
+		
+		void Run(float deltaTime)
 		{
 			this->renderer = renderer;
 			for (auto entity : GetSystemEntities())
@@ -50,18 +53,14 @@ namespace engine
 
 				SDL_RenderCopyEx(
 					renderer,
-					assetStore->GetTexture(sprite.assetId),
+					assetManager->GetTexture(sprite.assetId),
 					&srcRect,
 					&dstRect,
 					transform.rotation.x,
 					NULL,
 					SDL_FLIP_NONE);
 			}
-		}
-
-		void Run(float deltaTime)
-		{
-
+			SDL_RenderPresent(renderer);
 		}
 
 		~RenderSystem()

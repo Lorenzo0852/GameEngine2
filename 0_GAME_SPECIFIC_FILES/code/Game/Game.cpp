@@ -2,24 +2,11 @@
  *  Copyright (c) Lorenzo Herran - 2021   *
 \******************************************/
 
-#include <gltk/Mesh.hpp>
-#include <gltk/Cube.hpp>
-#include <gltk/Model.hpp>
-#include <gltk/Model_Obj.hpp>
-#include <gltk/Node.hpp>
-#include <gltk/Light.hpp>
-#include <gltk/Render_Node.hpp>
-#include <gltk/Drawable.hpp>
-#include <gltk/Material.hpp>
-#include <gltk/Camera.hpp>
-
 #include <sdl2/SDL.h>
 #include <sdl2/SDL_image.h>
 #include <sdl2/SDL_mixer.h>
 #include <glm/glm.hpp>
 #include "Game.h"
-
-#include <Deserializer/Scene3DDeserializer.h>
 
 #include <ECS/ECS.h>
 #include <Components/TransformComponent.h>
@@ -58,8 +45,7 @@ namespace game
 			spdlog::error("Error creating SDL renderer.");
 			return;
 		}
-
-
+		spdlog::info("SDL Renderer created succesfully.");
 
 		spdlog::info("Game constructor called");
 	}
@@ -67,7 +53,7 @@ namespace game
 
 	void Game::SetupScene()
 	{
-		registry->AddSystem<RenderSystem>();
+		registry->AddSystem<RenderSystem>(renderer, *assetManager);
 
 		assetManager->AddTexture(renderer, "tank-image", "../../../assets/images/tank-panther-right.png");
 		assetManager->AddTexture(renderer, "truck-image", "../../../assets/images/truck-ford-right.png");
@@ -186,6 +172,7 @@ namespace game
 		*/
 		//Update registry to process the entities that are waiting
 		kernel->InitializeTask(*registry);
+		kernel->AddRunningTask(registry->GetSystem<RenderSystem>());
 		/*kernel->InitializeTask(registry->GetSystem<ModelRender3DSystem>());
 		kernel->InitializeTask(registry->GetSystem<EntityStartup3DSystem>());
 		kernel->AddRunningTask(registry->GetSystem<Movement3DSystem>());
@@ -197,7 +184,7 @@ namespace game
 	*/
 	void Game::Run(float deltaTime)
 	{
-		registry->GetSystem<RenderSystem>().Render(renderer, assetManager);
+		//registry->GetSystem<RenderSystem>().Render(renderer, assetManager);
 		/*
 		*	Restraining player movement...
 		*/
