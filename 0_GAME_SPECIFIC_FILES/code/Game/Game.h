@@ -13,6 +13,9 @@
 #include <EventBus/EventBus.h>
 #include <Events/InputEvent.h>
 
+#include <b2_world.h>
+#include <b2_body.h>
+
 using namespace engine;
 namespace game
 {
@@ -29,7 +32,11 @@ namespace game
 
 	private:
 		Entity player;
-		Entity enemies[4];
+		Entity wheel;
+
+		b2Body*	mainBody;
+		b2Body* wheelBody;
+		b2World* world;
 
 		Mix_Chunk* sound;
 		Mix_Chunk* death;

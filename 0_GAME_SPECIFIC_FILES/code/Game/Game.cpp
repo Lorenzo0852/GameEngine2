@@ -30,12 +30,21 @@
 #include <Systems/ModelRender3DSystem.h>
 #include <Systems/EntityStartup3DSystem.h>
 
+#include <box2d/b2_polygon_shape.h>
+#include <box2d/b2_fixture.h>
+#include <b2_revolute_joint.h>
+#include <b2_circle_shape.h>
+
+
 using namespace engine;
 
 namespace game
 {
 	Game::Game(Window& window, Kernel& kernel, std::shared_ptr<EventBus> eventBus)
 	{
+		b2Vec2 gravity(0.0f, -10.0f);
+		world = new b2World(gravity);
+
 		registry = std::make_unique<Registry>();
 		assetManager = std::make_unique<AssetManager>();
 		this->eventBus = eventBus;
@@ -74,6 +83,71 @@ namespace game
 		death = Mix_LoadWAV("../../../assets/sounds/death.wav");
 		Mix_Volume(-1, 60);
 
+		//Ground:
+
+		b2BodyDef groundBodyDef;
+		groundBodyDef.position.Set(0.f, -23.0f);
+		b2Body* groundBody = world->CreateBody(&groundBodyDef);
+
+		b2PolygonShape groundBox;
+		groundBox.SetAsBox(50.0f, 10.0f);
+		groundBody->CreateFixture(&groundBox, 0.0f);
+
+		//Dynamic:
+
+		b2BodyDef bodyDef;
+		bodyDef.type = b2_dynamicBody;
+		bodyDef.position.Set(0.0f, 4.0f);
+		mainBody = world->CreateBody(&bodyDef);
+
+		//We attach a polygon shape to the body...
+		b2PolygonShape dynamicBox;
+		dynamicBox.SetAsBox(1.0f, 1.0f);
+
+		b2FixtureDef fixtureDef;
+		fixtureDef.shape = &dynamicBox;
+		fixtureDef.density = 1.0f;
+		fixtureDef.friction = 0.3f;
+		
+		mainBody->CreateFixture(&fixtureDef);
+
+		//Body 2:
+		b2BodyDef wheelBodyDef;
+		wheelBodyDef.type = b2_dynamicBody;
+		b2Vec2 mainBodyPosition = mainBody->GetPosition();
+		wheelBodyDef.position.Set(mainBodyPosition.x, mainBodyPosition.y - 1.f);
+		wheelBody = world->CreateBody(&wheelBodyDef);
+
+		b2CircleShape wheelShape;
+		wheelShape.m_p.Set(0, 0);
+		wheelShape.m_radius = 0.5f;
+
+		b2FixtureDef wheelFixtureDef;
+		wheelFixtureDef.shape = &wheelShape;
+		wheelFixtureDef.density = 1.0f;
+		wheelFixtureDef.friction = 0.3f;
+
+		wheelBody->CreateFixture(&wheelFixtureDef);
+
+
+		//JOINTS
+
+		b2RevoluteJointDef jointDef;
+		jointDef.bodyA = mainBody;
+		jointDef.bodyB = wheelBody;
+		jointDef.localAnchorA = mainBody->GetWorldCenter();
+		jointDef.localAnchorB = mainBody->GetWorldCenter();
+
+		b2RevoluteJoint* joint = (b2RevoluteJoint*)world->CreateJoint(&jointDef);
+
+		// ... do stuff ...
+
+		//To destroy joints:
+		//NULLIFY to avoid errors...
+
+		/*world->DestroyJoint(joint);
+		joint = nullptr;*/
+
 		/*
 		*	We start up and add all needed components to the dynamic (moving) entities.
 		*/
@@ -81,56 +155,16 @@ namespace game
 		player = registry->CreateEntity();
 		std::shared_ptr< glt::Model  > cubeModel(new glt::Model);
 		cubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-		player.AddComponent<RigidbodyComponent>(glm::vec3(0.f, 0, 0), glm::vec3(0.f, 0.f, 0.f));
+		//player.AddComponent<RigidbodyComponent>(glm::vec3(0.f, 0, 0), glm::vec3(0.f, 0.f, 0.f));
 		player.AddComponent<TransformComponent>(glm::vec3(0, 0, -20.f), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
 		player.AddComponent<Node3DComponent>("cube", cubeModel);
 
-		Entity rightArm = registry->CreateEntity();
-		std::shared_ptr< glt::Model  > cube2Model(new glt::Model);
-		cube2Model->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-		rightArm.AddComponent<TransformComponent>(glm::vec3(1, 1, 0.f), glm::vec3(0, 0, 0), glm::vec3(0.2f, 1, 0.2f), &player);
-		rightArm.AddComponent<Node3DComponent>("rightArm", cube2Model);
-
-		Entity leftArm = registry->CreateEntity();
-		std::shared_ptr< glt::Model  > cube3Model(new glt::Model);
-		cube3Model->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-		leftArm.AddComponent<TransformComponent>(glm::vec3(-1, 1, 0.f), glm::vec3(0, 0, 0), glm::vec3(0.2f, 1, 0.2f), &player);
-		leftArm.AddComponent<Node3DComponent>("leftArm", cube3Model);
-
-		Entity head = registry->CreateEntity();
-		std::shared_ptr< glt::Model  > cube4Model(new glt::Model);
-		cube4Model->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-		head.AddComponent<TransformComponent>(glm::vec3(0, 0.5f, 1.f), glm::vec3(0, 0, 0), glm::vec3(0.7f, 0.7f, 0.7f), &player);
-		head.AddComponent<Node3DComponent>("head", cube4Model);
-
-		enemies[0] = registry->CreateEntity();
-		std::shared_ptr< glt::Model  > enemyTopRightModel(new glt::Model);
-		enemyTopRightModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-		enemies[0].AddComponent<RigidbodyComponent>(glm::vec3(0, 0, 0), glm::vec3(0.f, 0.f, 0.f));
-		enemies[0].AddComponent<TransformComponent>(glm::vec3(36, 14, -20.f), glm::vec3(0, 0, 0), glm::vec3(.4f, .4f, .4f));
-		enemies[0].AddComponent<Node3DComponent>("enemyTopRight", enemyTopRightModel);
-
-		enemies[1] = registry->CreateEntity();
-		std::shared_ptr< glt::Model  > enemyTopLeftModel(new glt::Model);
-		enemyTopLeftModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-		enemies[1].AddComponent<RigidbodyComponent>(glm::vec3(0, 0, 0), glm::vec3(0.f, 0.f, 0.f));
-		enemies[1].AddComponent<TransformComponent>(glm::vec3(-36, 14, -20.f), glm::vec3(0, 0, 0), glm::vec3(.4f, .4f, .4f));
-		enemies[1].AddComponent<Node3DComponent>("enemyTopLeft", enemyTopLeftModel);
-
-		enemies[2] = registry->CreateEntity();
-		std::shared_ptr< glt::Model  > enemyBotRightModel(new glt::Model);
-		enemyBotRightModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-		enemies[2].AddComponent<RigidbodyComponent>(glm::vec3(0, 0, 0), glm::vec3(0.f, 0.f, 0.f));
-		enemies[2].AddComponent<TransformComponent>(glm::vec3(36, -14, -20.f), glm::vec3(0, 0, 0), glm::vec3(.4f, .4f, .4f));
-		enemies[2].AddComponent<TransformComponent>(glm::vec3(36, -14, -20.f), glm::vec3(0, 0, 0), glm::vec3(.4f, .4f, .4f));
-		enemies[2].AddComponent<Node3DComponent>("enemyBotRight", enemyBotRightModel);
-
-		enemies[3] = registry->CreateEntity();
-		std::shared_ptr< glt::Model  > enemyBotLeftModel(new glt::Model);
-		enemyBotLeftModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-		enemies[3].AddComponent<RigidbodyComponent>(glm::vec3(0, 0, 0), glm::vec3(0.f, 0.f, 0.f));
-		enemies[3].AddComponent<TransformComponent>(glm::vec3(-36, -14, -20.f), glm::vec3(0, 0, 0), glm::vec3(.4f, .4f, .4f));
-		enemies[3].AddComponent<Node3DComponent>("enemyBotLeft", enemyBotLeftModel);
+		wheel = registry->CreateEntity();
+		std::shared_ptr< glt::Model  > wheelCubeModel(new glt::Model);
+		wheelCubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+		//player.AddComponent<RigidbodyComponent>(glm::vec3(0.f, 0, 0), glm::vec3(0.f, 0.f, 0.f));
+		wheel.AddComponent<TransformComponent>(glm::vec3(0, 0, -20.f), glm::vec3(0, 0, 0), glm::vec3(0.5f, 0.5f, 0.5f));
+		wheel.AddComponent<Node3DComponent>("wheel_1", wheelCubeModel);
 
 		Entity light = registry->CreateEntity();
 		std::shared_ptr< glt::Light  > lightNode(new glt::Light);
@@ -161,69 +195,69 @@ namespace game
 	*/
 	void Game::Run(float deltaTime)
 	{
-		/*
-		*	Restraining player movement...
-		*/
+		world->Step(1.f/60.f, 6, 2);
+		
+
 		Movement3DSystem& movement3DSystem = registry->GetSystem<Movement3DSystem>();
+
+		b2Vec2 position = mainBody->GetPosition();
+		float angle = mainBody->GetAngle();
 		TransformComponent& playerTransform = player.GetComponent<TransformComponent>();
-		if (playerTransform.position.y > 14)
+		playerTransform.position = {position.x, position.y, playerTransform.position.z};
+		movement3DSystem.MoveToPosition(player, playerTransform.position);
+
+		b2Vec2 wheelPosition = wheelBody->GetPosition();
+		float wheelAngle = wheelBody->GetAngle();
+
+		TransformComponent& wheelTransform = wheel.GetComponent<TransformComponent>();
+		wheelTransform.position = { wheelPosition.x, wheelPosition.y, wheelTransform.position.z };
+		wheelTransform.rotation = { wheelTransform.rotation.x, wheelTransform.rotation.y, wheelAngle };
+		movement3DSystem.MoveToPosition(wheel, wheelTransform.position);
+
+		/*if (playerTransform.position.y > 14)
 		{
 			auto& transform = player.GetComponent<TransformComponent>();
 			transform.position.y = 13.95f;
 			registry->GetSystem<Movement3DSystem>().MoveToPosition(player, transform.position);
 			Mix_PlayChannel(-1, sound, 0);
-		}
+		}*/
 
-		if (playerTransform.position.y < -14)
-		{
-			auto& transform = player.GetComponent<TransformComponent>();
-			transform.position.y = -13.95f;
-			registry->GetSystem<Movement3DSystem>().MoveToPosition(player, transform.position);
-			Mix_PlayChannel(-1, sound, 0);
-		}
+		///*
+		//*	Restraining player movement...
+		//*/
+		//Movement3DSystem& movement3DSystem = registry->GetSystem<Movement3DSystem>();
+		//TransformComponent& playerTransform = player.GetComponent<TransformComponent>();
+		//if (playerTransform.position.y > 14)
+		//{
+		//	auto& transform = player.GetComponent<TransformComponent>();
+		//	transform.position.y = 13.95f;
+		//	registry->GetSystem<Movement3DSystem>().MoveToPosition(player, transform.position);
+		//	Mix_PlayChannel(-1, sound, 0);
+		//}
 
-		if (playerTransform.position.x > 35)
-		{
-			auto& transform = player.GetComponent<TransformComponent>();
-			transform.position.x = 34.95f;
-			registry->GetSystem<Movement3DSystem>().MoveToPosition(player, transform.position);
-			Mix_PlayChannel(-1, sound, 0);
-		}
+		//if (playerTransform.position.y < -14)
+		//{
+		//	auto& transform = player.GetComponent<TransformComponent>();
+		//	transform.position.y = -13.95f;
+		//	registry->GetSystem<Movement3DSystem>().MoveToPosition(player, transform.position);
+		//	Mix_PlayChannel(-1, sound, 0);
+		//}
 
-		if (playerTransform.position.x < -35)
-		{
-			auto& transform = player.GetComponent<TransformComponent>();
-			transform.position.x = -34.95f;
-			registry->GetSystem<Movement3DSystem>().MoveToPosition(player, transform.position);
-			Mix_PlayChannel(-1, sound, 0);
-		}
+		//if (playerTransform.position.x > 35)
+		//{
+		//	auto& transform = player.GetComponent<TransformComponent>();
+		//	transform.position.x = 34.95f;
+		//	registry->GetSystem<Movement3DSystem>().MoveToPosition(player, transform.position);
+		//	Mix_PlayChannel(-1, sound, 0);
+		//}
 
-		/*
-		*	Creating enemy movement...
-		*/
-
-		for (auto entity : enemies)
-		{
-			TransformComponent& transform = entity.GetComponent<TransformComponent>();
-			glt::Node* enemyNode = entity.GetComponent<Node3DComponent>().node.get();
-			glm::vec3 directionVector = movement3DSystem.MoveTowards(entity, playerTransform.position);
-			enemyNode->translate(directionVector * 14.f * deltaTime);
-
-			/*
-			*	Detecting distances between player and enemies to use as a pseudo - collision system.
-			*/
-			if (movement3DSystem.Distance(playerTransform.position, transform.position) < 1.f)
-			{
-				Mix_PlayChannel(-1, death, 0);
-				movement3DSystem.ResetTransform(player);
-				for (auto e : enemies)
-				{
-					movement3DSystem.ResetTransform(e);
-				}
-			}
-		}
-
-
+		//if (playerTransform.position.x < -35)
+		//{
+		//	auto& transform = player.GetComponent<TransformComponent>();
+		//	transform.position.x = -34.95f;
+		//	registry->GetSystem<Movement3DSystem>().MoveToPosition(player, transform.position);
+		//	Mix_PlayChannel(-1, sound, 0);
+		//}
 	}
 
 	void Game::OnInputRegistered(InputEvent& event)
@@ -241,11 +275,15 @@ namespace game
 			cubeRigidbody.velocity = glm::vec3(cubeRigidbody.velocity.x, -8 * event.value, cubeRigidbody.velocity.z);
 			break;
 		case InputEvent::Action::LEFT:
-			cubeRigidbody.angularVelocity = glm::vec3(0, 0, 2 * event.value);
+			cubeRigidbody.velocity = glm::vec3(-8 * event.value, cubeRigidbody.velocity.y, cubeRigidbody.velocity.z);
+			//cubeRigidbody.angularVelocity = glm::vec3(0, 0, 2 * event.value);
 			break;
 		case InputEvent::Action::RIGHT:
-			cubeRigidbody.angularVelocity = glm::vec3(0, 0, -2 * event.value);
+			cubeRigidbody.velocity = glm::vec3(8 * event.value, cubeRigidbody.velocity.y, cubeRigidbody.velocity.z);
+			//cubeRigidbody.angularVelocity = glm::vec3(0, 0, -2 * event.value);
 			break;
 		}
+
+		mainBody->SetLinearVelocity({ cubeRigidbody.velocity.x, cubeRigidbody.velocity.y });
 	}
 }
