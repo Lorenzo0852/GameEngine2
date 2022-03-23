@@ -155,21 +155,21 @@ namespace game
 		player = registry->CreateEntity();
 		std::shared_ptr< glt::Model  > cubeModel(new glt::Model);
 		cubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-		//player.AddComponent<RigidbodyComponent>(glm::vec3(0.f, 0, 0), glm::vec3(0.f, 0.f, 0.f));
 		player.AddComponent<TransformComponent>(glm::vec3(0, 0, -20.f), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
+		player.AddComponent<RigidbodyComponent>();
 		player.AddComponent<Node3DComponent>("cube", cubeModel);
 
 		wheel = registry->CreateEntity();
 		std::shared_ptr< glt::Model  > wheelCubeModel(new glt::Model);
 		wheelCubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-		//player.AddComponent<RigidbodyComponent>(glm::vec3(0.f, 0, 0), glm::vec3(0.f, 0.f, 0.f));
 		wheel.AddComponent<TransformComponent>(glm::vec3(0, 0, -20.f), glm::vec3(0, 0, 0), glm::vec3(0.5f, 0.5f, 0.5f));
+		wheel.AddComponent<RigidbodyComponent>();
 		wheel.AddComponent<Node3DComponent>("wheel_1", wheelCubeModel);
 
 		Entity light = registry->CreateEntity();
 		std::shared_ptr< glt::Light  > lightNode(new glt::Light);
 		lightNode->set_color(glm::vec3(0.4f, 0.7f, 0.929f));
-		light.AddComponent<TransformComponent>(glm::vec3(10.f, 10.f, 10.f), glm::vec3(0.f, 0.f, 0.f));
+		light.AddComponent<TransformComponent>(glm::vec3(10.f, 10.f, -30.f), glm::vec3(0.f, 0.f, 0.f));
 		light.AddComponent<Node3DComponent>("light", lightNode);
 
 		Entity cam = registry->CreateEntity();
@@ -196,23 +196,18 @@ namespace game
 	void Game::Run(float deltaTime)
 	{
 		world->Step(1.f/60.f, 6, 2);
-		
 
 		Movement3DSystem& movement3DSystem = registry->GetSystem<Movement3DSystem>();
 
 		b2Vec2 position = mainBody->GetPosition();
 		float angle = mainBody->GetAngle();
 		TransformComponent& playerTransform = player.GetComponent<TransformComponent>();
-		playerTransform.position = {position.x, position.y, playerTransform.position.z};
-		movement3DSystem.MoveToPosition(player, playerTransform.position);
+		playerTransform.SetTransformation({ position.x, position.y, 0 }, { 0, 0, angle }, { 1,1,1 });
 
 		b2Vec2 wheelPosition = wheelBody->GetPosition();
 		float wheelAngle = wheelBody->GetAngle();
-
 		TransformComponent& wheelTransform = wheel.GetComponent<TransformComponent>();
-		wheelTransform.position = { wheelPosition.x, wheelPosition.y, wheelTransform.position.z };
-		wheelTransform.rotation = { wheelTransform.rotation.x, wheelTransform.rotation.y, wheelAngle };
-		movement3DSystem.MoveToPosition(wheel, wheelTransform.position);
+		wheelTransform.SetTransformation({ wheelPosition.x, wheelPosition.y, 0 }, { 0, 0, wheelAngle }, { 1,1,1 });
 
 		/*if (playerTransform.position.y > 14)
 		{

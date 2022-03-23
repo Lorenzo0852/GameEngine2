@@ -5,6 +5,7 @@
 \******************************************/
 
 #include <glm/glm.hpp>
+#include <box2d.h>
 
 namespace engine
 {
