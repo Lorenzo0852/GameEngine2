@@ -33,13 +33,21 @@ namespace game
 	private:
 		Entity player;
 		Entity wheel;
+		Entity cam;
 
-		b2Body*	mainBody;
-		b2Body* wheelBody;
-		b2World* world;
+		b2Body*	m_car;
+		b2Body* m_wheel1;
+		b2Body* m_wheel2;
+
+		b2WheelJoint* m_spring1;
+		b2WheelJoint* m_spring2;
 
 		Mix_Chunk* sound;
 		Mix_Chunk* death;
+
+		float m_speed;
+		b2World* m_world;
+		b2RevoluteJoint* m_car_container_joint_motor;
 
 	public:
 		Game(Window& window, Kernel& kernel, std::shared_ptr<EventBus> eventBus);

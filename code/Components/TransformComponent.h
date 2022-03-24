@@ -32,24 +32,7 @@ namespace engine
 			glm::vec3 scale = glm::vec3(0, 0, 0),
 			Entity* parent = nullptr) {
 
-			this->position = position;
-			this->scale = scale;
-			this->rotation = rotation;
-			this->parent = parent;
-			transformation = glm::mat4(1);
-			
-			glm::mat4 identity(1);
-			glm::mat4 translation = glm::translate(identity, position);
-			glm::mat4 rotationMat = glm::rotate(identity, rotation.x, glm::vec3(1, 0, 0));
-			glm::mat4 scaling = glm::scale(identity, scale);
-
-			transformation = scaling;
-
-			if (parent != nullptr)
-			{
-				glm::mat4 parentTransformation = parent->GetComponent<TransformComponent>().transformation;
-				transformation *= parentTransformation;
-			}
+			SetTransformation(position, rotation, scale);
 		}
 
 		glm::mat4 SetTransformation(glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale)
