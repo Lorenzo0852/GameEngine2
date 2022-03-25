@@ -31,7 +31,7 @@ namespace game
 		std::shared_ptr<EventBus> eventBus;
 
 	private:
-		Entity player;
+		Entity wheel2;
 		Entity wheel;
 		Entity cam;
 

@@ -33,7 +33,6 @@ int main(int args, char* argv[])
 	const int max_files = 1;
 	std::shared_ptr<spdlog::logger> gameLogger = spdlog::rotating_logger_mt("EngineLogger", "logs/EngineLogs.txt", max_size, max_files);
 	spdlog::set_default_logger(gameLogger);
-
 	std::shared_ptr<engine::EventBus> eventBus = std::make_shared<engine::EventBus>();
 	Window window("Unnamed game engine", 1920, 1080, false, -1);
 	InputPollingTask inputPoller(eventBus);

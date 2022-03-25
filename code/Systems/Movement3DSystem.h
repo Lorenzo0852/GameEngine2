@@ -36,6 +36,13 @@ namespace engine
 				auto& transform = entity.GetComponent<TransformComponent>();
 				const auto& rigidbody = entity.GetComponent<RigidbodyComponent>();
 				
+				b2Vec2 position = rigidbody.body->GetPosition();
+				float angle = rigidbody.body->GetAngle();
+				transform.SetTransformation(
+					{ position.x, position.y, 0 },
+					{ 0, 0, angle },
+					{ transform.scale.x,transform.scale.y,transform.scale.z });
+
 				node->set_transformation(transform.GetTransformation());
 			}
 		}

@@ -97,7 +97,7 @@ namespace engine
 						float ySca = std::stof(std::string(scaleNode->first_node("y")->value()));
 						float zSca = std::stof(std::string(scaleNode->first_node("z")->value()));
 
-						entity.AddComponent<RigidbodyComponent>(glm::vec3(xPos, yPos, zPos), glm::vec3(xRot, yRot, zRot));
+						//entity.AddComponent<RigidbodyComponent>(glm::vec3(xPos, yPos, zPos), glm::vec3(xRot, yRot, zRot));
 					}
 
 					if (std::string(componentNode->name()) == "Node3DComponent")

@@ -103,6 +103,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\code\AssetManager\AssetManager.h" />
+    <ClInclude Include="..\..\code\Components\BoxColliderComponent.h" />
+    <ClInclude Include="..\..\code\Components\CircleColliderComponent.h" />
     <ClInclude Include="..\..\code\Components\Node3DComponent.h" />
     <ClInclude Include="..\..\code\Components\RigidbodyComponent.h" />
     <ClInclude Include="..\..\code\Components\SpriteComponent.h" />
@@ -119,6 +121,7 @@
     <ClInclude Include="..\..\code\Systems\Movement3DSystem.h" />
     <ClInclude Include="..\..\code\Systems\MovementSystem.h" />
     <ClInclude Include="..\..\code\Systems\ModelRender3DSystem.h" />
+    <ClInclude Include="..\..\code\Systems\PhysicsSystem.h" />
     <ClInclude Include="..\..\code\Systems\RenderSystem.h" />
     <ClInclude Include="..\..\code\Task\Task.h" />
     <ClInclude Include="..\..\code\Window\Window.h" />
