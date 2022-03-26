@@ -16,6 +16,8 @@
 #include <b2_world.h>
 #include <b2_body.h>
 
+#include <Systems/PhysicsSystem.h>
+
 using namespace engine;
 namespace game
 {
@@ -31,22 +33,15 @@ namespace game
 		std::shared_ptr<EventBus> eventBus;
 
 	private:
-		Entity wheel2;
-		Entity wheel;
+		Entity car_base;
+		Entity wheel_1;
+		Entity wheel_2;
 		Entity cam;
 
-		b2Body*	m_car;
-		b2Body* m_wheel1;
-		b2Body* m_wheel2;
-
-		b2WheelJoint* m_spring1;
-		b2WheelJoint* m_spring2;
-
-		Mix_Chunk* sound;
-		Mix_Chunk* death;
+		PhysicsSystem::Wheel back_wheel_motor, front_wheel_motor;
 
 		float m_speed;
-		b2World* m_world;
+
 		b2RevoluteJoint* m_car_container_joint_motor;
 
 	public:
@@ -54,6 +49,8 @@ namespace game
 		~Game() = default;
 
 		void SetupScene();
+		/* Post-initialization stuff */
+		bool Initialize();
 		virtual void Run(float deltaTime);
 		void OnInputRegistered(InputEvent& event);
 	};

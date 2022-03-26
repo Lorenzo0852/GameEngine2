@@ -78,13 +78,13 @@ namespace game
 		/*
 		*	We load up the .wav sounds we want to use in this demo.
 		*/
-		sound = Mix_LoadWAV("../../../assets/sounds/hit.wav");
+		/*sound = Mix_LoadWAV("../../../assets/sounds/hit.wav");
 		if (sound == NULL)
 		{
 			spdlog::error("Couldn't load .wav from the wanted path");
 		}
 		death = Mix_LoadWAV("../../../assets/sounds/death.wav");
-		Mix_Volume(-1, 60);
+		Mix_Volume(-1, 60);*/
 		
 	/*Ported box2D stuff*/
 	//{
@@ -321,21 +321,32 @@ namespace game
 		*	We start up and add all needed components to the dynamic (moving) entities.
 		*/
 
-		wheel = registry->CreateEntity();
+		m_speed = 10.0f;
+
+		car_base = registry->CreateEntity();
+		std::shared_ptr< glt::Model  > carBaseCubeModel(new glt::Model);
+		carBaseCubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+		car_base.AddComponent<TransformComponent>(glm::vec3(0, 1.f, 0.f), glm::vec3(0, 0, 0), glm::vec3(4.f, 0.5f, 0.5f));
+		car_base.AddComponent<RigidbodyComponent>();
+		car_base.AddComponent<Node3DComponent>("car_base", carBaseCubeModel);
+		car_base.AddComponent<BoxColliderComponent>(4.f, 0.5f);
+
+
+		wheel_1 = registry->CreateEntity();
 		std::shared_ptr< glt::Model  > wheelCubeModel(new glt::Model);
 		wheelCubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-		wheel.AddComponent<TransformComponent>(glm::vec3(0, 0, 0.f), glm::vec3(0, 0, 0), glm::vec3(0.5f, 0.5f, 0.5f));
-		wheel.AddComponent<RigidbodyComponent>();
-		wheel.AddComponent<Node3DComponent>("wheel_1", wheelCubeModel);
-		wheel.AddComponent<CircleColliderComponent>(0.5f);
+		wheel_1.AddComponent<TransformComponent>(glm::vec3(0, 0, 0.f), glm::vec3(0, 0, 0), glm::vec3(1,1,1));
+		wheel_1.AddComponent<RigidbodyComponent>();
+		wheel_1.AddComponent<Node3DComponent>("wheel_1", wheelCubeModel);
+		wheel_1.AddComponent<CircleColliderComponent>();
 
-		wheel2 = registry->CreateEntity();
+		wheel_2 = registry->CreateEntity();
 		std::shared_ptr< glt::Model  > cubeModel(new glt::Model);
 		cubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-		wheel2.AddComponent<TransformComponent>(glm::vec3(10, 0, 0.f), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
-		wheel2.AddComponent<RigidbodyComponent>();
-		wheel2.AddComponent<Node3DComponent>("wheel_2", cubeModel);
-		wheel2.AddComponent<CircleColliderComponent>();
+		wheel_2.AddComponent<TransformComponent>(glm::vec3(10, 0, 0.f), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
+		wheel_2.AddComponent<RigidbodyComponent>();
+		wheel_2.AddComponent<Node3DComponent>("wheel_2", cubeModel);
+		wheel_2.AddComponent<CircleColliderComponent>();
 
 		Entity ground = registry->CreateEntity();
 		std::shared_ptr< glt::Model  > groundCubeModel(new glt::Model);
@@ -362,16 +373,26 @@ namespace game
 		/*
 		*	Telling the kernel what tasks does it need to initialize and what tasks does it have to keep running in loop.
 		*/
+
 		//Update registry to process the entities that are waiting
 		kernel->InitializeTask(*registry);
 		kernel->InitializeTask(registry->GetSystem<ModelRender3DSystem>());
 		kernel->InitializeTask(registry->GetSystem<EntityStartup3DSystem>());
 		kernel->InitializeTask(registry->GetSystem<PhysicsSystem>());
 
+		//Physics need to be calculated before any rendering is done...
 		kernel->AddPriorizedRunningTask(registry->GetSystem<PhysicsSystem>());
 
 		kernel->AddRunningTask(registry->GetSystem<Movement3DSystem>());
 		kernel->AddRunningTask(registry->GetSystem<ModelRender3DSystem>());
+	}
+
+	bool Game::Initialize()
+	{
+		back_wheel_motor  = registry->GetSystem<PhysicsSystem>().MotorizeAsWheel(&wheel_1, &car_base, 500.f, {0, -1});
+		front_wheel_motor = registry->GetSystem<PhysicsSystem>().MotorizeAsWheel(&wheel_2, &car_base, 500.f, {0, -1});
+
+		return true;
 	}
 
 	/*
@@ -382,13 +403,13 @@ namespace game
 
 		Movement3DSystem& movement3DSystem = registry->GetSystem<Movement3DSystem>();
 
-		b2Vec2 position = wheel2.GetComponent<RigidbodyComponent>().body->GetPosition();
-		float angle = wheel2.GetComponent<RigidbodyComponent>().body->GetAngle();
-		TransformComponent& playerTransform = wheel2.GetComponent<TransformComponent>();
+		b2Vec2 position = wheel_2.GetComponent<RigidbodyComponent>().body->GetPosition();
+		float angle = wheel_2.GetComponent<RigidbodyComponent>().body->GetAngle();
+		TransformComponent& playerTransform = wheel_2.GetComponent<TransformComponent>();
 
-		b2Vec2 wheelPosition = wheel.GetComponent<RigidbodyComponent>().body->GetPosition();
-		float wheelAngle = wheel.GetComponent<RigidbodyComponent>().body->GetAngle();
-		TransformComponent& wheelTransform = wheel.GetComponent<TransformComponent>();
+		b2Vec2 wheelPosition = wheel_1.GetComponent<RigidbodyComponent>().body->GetPosition();
+		float wheelAngle = wheel_1.GetComponent<RigidbodyComponent>().body->GetAngle();
+		TransformComponent& wheelTransform = wheel_1.GetComponent<TransformComponent>();
 
 		//Cam need Rigidbody to move... Enable if wanted.
 		//cam.GetComponent<TransformComponent>().SetTransformation(glm::vec3(m_car->GetPosition().x, 0.f, 100.f), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
@@ -405,7 +426,7 @@ namespace game
 
 	void Game::OnInputRegistered(InputEvent& event)
 	{
-		RigidbodyComponent& cubeRigidbody = wheel2.GetComponent<RigidbodyComponent>();
+		RigidbodyComponent& cubeRigidbody = wheel_2.GetComponent<RigidbodyComponent>();
 		switch (event.action)
 		{
 		case InputEvent::Action::QUIT:
@@ -415,21 +436,21 @@ namespace game
 			/*m_car_container_joint_motor->SetMotorSpeed(20.0f);*/
 			break;
 		case InputEvent::Action::BACKWARDS:
-			/*m_spring1->SetMotorSpeed(-1 * m_spring1->GetMotorSpeed());
-			m_spring2->SetMotorSpeed(-1 * m_spring2->GetMotorSpeed());
-			if(m_spring1->GetMotorSpeed() < 1.f)
+			back_wheel_motor.SetMotorSpeed(-1 * back_wheel_motor.GetMotorSpeed());
+			front_wheel_motor.SetMotorSpeed(-1 * front_wheel_motor.GetMotorSpeed());
+			if(back_wheel_motor.GetMotorSpeed() < 1.f)
 			{
-				m_spring1->SetMotorSpeed(0);
-				m_spring2->SetMotorSpeed(0);
-			}*/
+				back_wheel_motor.SetMotorSpeed(0);
+				front_wheel_motor.SetMotorSpeed(0);
+			}
 			break;
 		case InputEvent::Action::LEFT:
-			/*m_spring1->SetMotorSpeed(m_speed);
-			m_spring2->SetMotorSpeed(m_speed);*/
+			back_wheel_motor.SetMotorSpeed(m_speed);
+			front_wheel_motor.SetMotorSpeed(m_speed);
 			break;
 		case InputEvent::Action::RIGHT:
-			/*m_spring1->SetMotorSpeed(-m_speed);
-			m_spring2->SetMotorSpeed(-m_speed);*/
+			back_wheel_motor.SetMotorSpeed(-m_speed);
+			front_wheel_motor.SetMotorSpeed(-m_speed);
 			break;
 		}
 	}

@@ -43,9 +43,13 @@ int main(int args, char* argv[])
 
 	//We initialize all scene specific tasks to add them to the kernel...
 	game.SetupScene();
+
+	//Just in case the user needs post-initialization manipulation.
+	kernel.InitializeTask(game);
+
 	//Then start the kernel loop.
 	kernel.AddPriorizedRunningTask(inputPoller);
-	kernel.AddPriorizedRunningTask(game);
+	kernel.AddRunningTask(game);
 
 	kernel.Execute();
 	return 0;

@@ -17,7 +17,8 @@ namespace engine
 	};
 
 	/// <summary>
-	/// Holds the physics object
+	/// Holds the physics object. Needs a collider component to work properly!
+	/// (There can't be any physics without a shape/object to apply them to)
 	/// </summary>
 	struct RigidbodyComponent
 	{
