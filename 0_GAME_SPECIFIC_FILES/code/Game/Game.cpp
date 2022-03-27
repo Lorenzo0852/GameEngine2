@@ -87,229 +87,6 @@ namespace game
 		death = Mix_LoadWAV("../../../assets/sounds/death.wav");
 		Mix_Volume(-1, 60);*/
 		
-	/*Ported box2D stuff*/
-	//{
-	//	m_speed = 200.0f;
-
-	//	b2Body* ground = NULL;
-	//	{
-	//		b2BodyDef bd;
-	//		ground = m_world->CreateBody(&bd);
-
-	//		b2EdgeShape shape;
-
-	//		b2FixtureDef fd;
-	//		fd.shape = &shape;
-	//		fd.density = 0.0f;
-	//		fd.friction = 0.6f;
-	//		shape.SetTwoSided(b2Vec2(-10.0f, 30.0f), b2Vec2(10.0f, 30.0f));
-	//		ground->CreateFixture(&fd);
-
-	//		float heights[10] = { 30.0f, 30.0f, 28.0f, 24.0f, 16.0f, 14.0f, 12.0f, 14.0f, 16.0f, 18.0f };
-
-
-	//		float runningX = 0.0f, startingY = 30.0f, dx = 8.0f;
-
-	//		for (int32 i = 0; i < 10; ++i)
-	//		{
-	//			float y2 = heights[i];
-	//			shape.SetTwoSided(b2Vec2(runningX, startingY), b2Vec2(runningX + dx, y2));
-	//			ground->CreateFixture(&fd);
-	//			startingY = y2;
-	//			runningX += dx;
-	//		}
-
-	//		float second_line_heights[10] = { 0.0f, 0.0f, 1.0f, 2.0f, 4.0f, 4.0f, 4.0f, 4.0f, 4.0f, 128.f };
-	//		runningX += dx * 5;
-	//		startingY = 0.0f;
-	//		for (int32 i = 0; i < 10; ++i)
-	//		{
-	//			float y2 = second_line_heights[i];
-	//			shape.SetTwoSided(b2Vec2(runningX, startingY), b2Vec2(runningX + dx, y2));
-	//			ground->CreateFixture(&fd);
-	//			startingY = y2;
-	//			runningX += dx;
-	//		}
-
-	//		shape.SetTwoSided(b2Vec2(-10.0f, 30.0f), b2Vec2(10.0f, 30.0f));
-	//		ground->CreateFixture(&fd);
-	//	}
-
-	//	// Boxes
-	//	{
-	//		b2PolygonShape box;
-	//		box.SetAsBox(0.5f, 0.5f);
-
-	//		b2Body* body = NULL;
-	//		b2BodyDef bd;
-	//		bd.type = b2_dynamicBody;
-
-	//		bd.position.Set(230.0f, 0.5f);
-	//		body = m_world->CreateBody(&bd);
-	//		body->CreateFixture(&box, 0.5f);
-
-	//		bd.position.Set(230.0f, 1.5f);
-	//		body = m_world->CreateBody(&bd);
-	//		body->CreateFixture(&box, 0.5f);
-
-	//		bd.position.Set(230.0f, 2.5f);
-	//		body = m_world->CreateBody(&bd);
-	//		body->CreateFixture(&box, 0.5f);
-
-	//		bd.position.Set(230.0f, 3.5f);
-	//		body = m_world->CreateBody(&bd);
-	//		body->CreateFixture(&box, 0.5f);
-
-	//		bd.position.Set(230.0f, 4.5f);
-	//		body = m_world->CreateBody(&bd);
-	//		body->CreateFixture(&box, 0.5f);
-	//	}
-
-	//	// Car
-	//	{
-	//		b2PolygonShape chassis;
-	//		chassis.SetAsBox(4.f, 0.4f);
-
-	//		b2CircleShape circle;
-	//		circle.m_radius = 0.8f;
-
-	//		b2BodyDef bd;
-	//		bd.type = b2_dynamicBody;
-	//		bd.position.Set(0.0f, 41.0f);
-	//		m_car = m_world->CreateBody(&bd);
-	//		m_car->CreateFixture(&chassis, 1.0f);
-
-	//		/* CAR_CONTAINER */
-	//		{
-	//			b2Body* car_container_bot;
-	//			bd.type = b2_dynamicBody;
-	//			bd.position.Set(m_car->GetPosition().x, m_car->GetPosition().y + 0.6f);
-	//			car_container_bot = m_world->CreateBody(&bd);
-	//			chassis.SetAsBox(4.f, 0.2f);
-	//			car_container_bot->CreateFixture(&chassis, 1.0f);
-
-	//			chassis.SetAsBox(0.2f, .7f);
-	//			b2Body* car_container_left;
-	//			bd.type = b2_dynamicBody;
-	//			bd.position.Set(car_container_bot->GetPosition().x - 4.f, car_container_bot->GetPosition().y + .5f);
-	//			car_container_left = m_world->CreateBody(&bd);
-	//			car_container_left->CreateFixture(&chassis, 1.0f);
-
-	//			b2Body* car_container_right;
-	//			bd.type = b2_dynamicBody;
-	//			bd.position.Set(car_container_bot->GetPosition().x + 4.f, car_container_bot->GetPosition().y + .5f);
-	//			car_container_right = m_world->CreateBody(&bd);
-	//			car_container_right->CreateFixture(&chassis, 1.0f);
-
-	//			/* Welding them together... */
-	//			{
-	//				b2WeldJointDef jd;
-	//				jd.Initialize(car_container_bot,
-	//					car_container_left,
-	//					{ car_container_bot->GetPosition() });
-	//				m_world->CreateJoint(&jd);
-
-	//				jd.Initialize(car_container_bot,
-	//					car_container_right,
-	//					{ car_container_bot->GetPosition() });
-	//				m_world->CreateJoint(&jd);
-
-	//				b2RevoluteJointDef container_motor;
-	//				container_motor.bodyA = m_car;
-	//				container_motor.localAnchorB = { -4.f, 0.f };
-	//				container_motor.enableMotor = true;
-	//				container_motor.maxMotorTorque = 500.0f;
-	//				container_motor.enableLimit = true;
-
-	//				container_motor.motorSpeed = 0.0f;
-	//				container_motor.localAnchorA = { -4.f, 0.6f };
-	//				container_motor.bodyB = car_container_bot;
-	//				container_motor.lowerAngle = -100.0f * b2_pi / 180.0f;
-	//				container_motor.upperAngle = 50.f * b2_pi / 180.0f;
-	//				m_car_container_joint_motor = (b2RevoluteJoint*)m_world->CreateJoint(&container_motor);
-
-	//			}
-
-	//		}
-
-	//		/* WHEELS */
-	//		{
-	//			b2FixtureDef fd;
-	//			fd.shape = &circle;
-	//			fd.density = 1.0f;
-	//			fd.friction = 0.9f;
-
-	//			bd.position.Set(m_car->GetPosition().x - 3.5, m_car->GetPosition().y - 0.6f);
-	//			m_wheel1 = m_world->CreateBody(&bd);
-	//			m_wheel1->CreateFixture(&fd);
-
-	//			bd.position.Set(m_car->GetPosition().x + 3.5, m_car->GetPosition().y - 0.6f);
-	//			m_wheel2 = m_world->CreateBody(&bd);
-	//			m_wheel2->CreateFixture(&fd);
-
-	//			b2WheelJointDef jd;
-	//			b2Vec2 axis(0.0f, 1.0f);
-
-	//			float mass1 = m_wheel1->GetMass();
-	//			float mass2 = m_wheel2->GetMass();
-
-	//			float hertz = 4.0f;
-	//			float dampingRatio = 0.7f;
-	//			float omega = 2.0f * b2_pi * hertz;
-
-	//			jd.Initialize(m_car, m_wheel1, m_wheel1->GetPosition(), axis);
-	//			jd.motorSpeed = 0.0f;
-	//			jd.maxMotorTorque = 15.0f;
-	//			jd.enableMotor = true;
-	//			jd.stiffness = mass1 * omega * omega;
-	//			jd.damping = 2.0f * mass1 * dampingRatio * omega;
-	//			jd.lowerTranslation = -0.25f;
-	//			jd.upperTranslation = 0.25f;
-	//			jd.enableLimit = true;
-	//			m_spring1 = (b2WheelJoint*)m_world->CreateJoint(&jd);
-
-	//			jd.Initialize(m_car, m_wheel2, m_wheel2->GetPosition(), axis);
-	//			jd.motorSpeed = 0.0f;
-	//			jd.maxMotorTorque = 15.0f;
-	//			jd.enableMotor = true;
-	//			jd.stiffness = mass2 * omega * omega;
-	//			jd.damping = 2.0f * mass2 * dampingRatio * omega;
-	//			jd.lowerTranslation = -0.25f;
-	//			jd.upperTranslation = 0.25f;
-	//			jd.enableLimit = true;
-	//			m_spring2 = (b2WheelJoint*)m_world->CreateJoint(&jd);
-	//		}
-
-	//		{
-	//			b2Body* left_arm;
-	//			//We can reuse the body definition
-	//			bd.type = b2_kinematicBody;
-	//			bd.position.Set(m_car->GetPosition().x + 10, m_car->GetPosition().y + 0.6f);
-	//			left_arm = m_world->CreateBody(&bd);
-	//			chassis.SetAsBox(2.f, 0.2f);
-	//			left_arm->CreateFixture(&chassis, 1.0f);
-	//			left_arm->SetTransform(left_arm->GetPosition(), 100);
-
-	//			b2Body* right_arm;
-	//			bd.type = b2_kinematicBody;
-	//			bd.position.Set(left_arm->GetPosition().x + 3.f, left_arm->GetPosition().y);
-	//			right_arm = m_world->CreateBody(&bd);
-	//			right_arm->CreateFixture(&chassis, 1.0f);
-	//			right_arm->SetTransform(right_arm->GetPosition(), -100);
-
-	//			/* Welding them together... */
-	//			{
-	//				b2WeldJointDef jd;
-	//				jd.Initialize(left_arm,
-	//					right_arm,
-	//					{ left_arm->GetPosition() });
-	//				m_world->CreateJoint(&jd);
-	//			}
-	//		}
-
-	//	}
-	//}
-	/**/
 		// ... do stuff ...
 
 		//To destroy joints:
@@ -327,7 +104,7 @@ namespace game
 		car_base = registry->CreateEntity();
 		std::shared_ptr< glt::Model  > carBaseCubeModel(new glt::Model);
 		carBaseCubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-		car_base.AddComponent<TransformComponent>(glm::vec3(-90.f, 60.f, 0.f), glm::vec3(0, 0, 0), glm::vec3(8.f, 0.5f, 0.5f));
+		car_base.AddComponent<TransformComponent>(glm::vec3(-90.f, 60.f, 0.f), glm::vec3(0, 0, 0), glm::vec3(7.f, 0.5f, 0.5f));
 		car_base.AddComponent<RigidbodyComponent>();
 		car_base.AddComponent<Node3DComponent>("car_base", carBaseCubeModel);
 		car_base.AddComponent<BoxColliderComponent>(false, 4.f, 0.5f, 1.0f, 0.9f);
@@ -354,6 +131,32 @@ namespace game
 		wheel_2.AddComponent<RigidbodyComponent>();
 		wheel_2.AddComponent<Node3DComponent>("wheel_2", cubeModel);
 		wheel_2.AddComponent<CircleColliderComponent>(false);
+
+		//car container
+		car_container[0] = registry->CreateEntity();
+		std::shared_ptr< glt::Model  > carContainerBottomCubeModel(new glt::Model);
+		carContainerBottomCubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+		car_container[0].AddComponent<TransformComponent>(glm::vec3(-90.f, 61.5f, 0.f), glm::vec3(0, 0, 0), glm::vec3(8.f, 0.5f, 0.5f));
+		car_container[0].AddComponent<RigidbodyComponent>();
+		car_container[0].AddComponent<Node3DComponent>("car_container_bot", carContainerBottomCubeModel);
+		car_container[0].AddComponent<BoxColliderComponent>(false, 8.f, 0.5f, 0.2f, 0.9f);
+
+		car_container[1] = registry->CreateEntity();
+		std::shared_ptr< glt::Model  > carContainerLeftCubeModel(new glt::Model);
+		carContainerLeftCubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+		car_container[1].AddComponent<TransformComponent>(glm::vec3(-97.f, 63.5f, 0.f), glm::vec3(0, 0, 0), glm::vec3(.5f, 2.f, 1.f));
+		car_container[1].AddComponent<RigidbodyComponent>();
+		car_container[1].AddComponent<Node3DComponent>("car_container_left", carContainerLeftCubeModel);
+		car_container[1].AddComponent<BoxColliderComponent>(false, .5f, 2.f, 0.2f, 0.9f);
+
+		car_container[2] = registry->CreateEntity();
+		std::shared_ptr< glt::Model  > carContainerRightCubeModel(new glt::Model);
+		carContainerRightCubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+		car_container[2].AddComponent<TransformComponent>(glm::vec3(-83.f, 63.5f, 0.f), glm::vec3(0, 0, 0), glm::vec3(.5f, 2.f, 1.f));
+		car_container[2].AddComponent<RigidbodyComponent>();
+		car_container[2].AddComponent<Node3DComponent>("car_container_right", carContainerRightCubeModel);
+		car_container[2].AddComponent<BoxColliderComponent>(false, .5f, 2.f, 0.2f, 0.9f);
+
 
 		Entity ground = registry->CreateEntity();
 		std::shared_ptr< glt::Model  > groundCubeModel(new glt::Model);
@@ -403,6 +206,70 @@ namespace game
 		finish_wall.AddComponent<Node3DComponent>("finish_wall", finishWallCubeModel);
 		finish_wall.AddComponent<BoxColliderComponent>(false, 0.f, 10.f);
 
+		right_trigger = registry->CreateEntity();
+		right_trigger.AddComponent<TransformComponent>(glm::vec3(80.f, -5.f, 0.f), glm::vec3(0, 0, 0), glm::vec3(8.f, 4.f, 1.f));
+		right_trigger.AddComponent<RigidbodyComponent>(staticBody);
+		right_trigger.AddComponent<BoxColliderComponent>(true, 8.f, 4.f);
+
+		platform = registry->CreateEntity();
+		std::shared_ptr< glt::Model  > platformCubeModel(new glt::Model);
+		platformCubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+		platform.AddComponent<TransformComponent>(glm::vec3(12.f, -75.f, 0.f), glm::vec3(0, 0, 0), glm::vec3(15.f, 1, 1));
+		platform.AddComponent<RigidbodyComponent>();
+		platform.AddComponent<Node3DComponent>("platform", platformCubeModel);
+		platform.AddComponent<BoxColliderComponent>(false, 15.f, 1);
+
+		platform_trigger = registry->CreateEntity();
+		std::shared_ptr< glt::Model  > platformTriggerModel(new glt::Model);
+		platformTriggerModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+		platform_trigger.AddComponent<TransformComponent>(glm::vec3(12.f, -70.f, 0.f), glm::vec3(0, 0, 0), glm::vec3(12.f, 4, 1));
+		platform_trigger.AddComponent<RigidbodyComponent>();
+		platform_trigger.AddComponent<BoxColliderComponent>(true, 12.f, 4.f, 0.01f);
+
+		prismatic = registry->CreateEntity();
+		std::shared_ptr< glt::Model  > prismaticCubeModel(new glt::Model);
+		prismaticCubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+		prismatic.AddComponent<TransformComponent>(glm::vec3(12.f, -90.f, 0.f), glm::vec3(0, 0, 0), glm::vec3(1.f, 15.f, 1));
+		prismatic.AddComponent<RigidbodyComponent>();
+		prismatic.AddComponent<Node3DComponent>("prismatic", prismaticCubeModel);
+		prismatic.AddComponent<BoxColliderComponent>(false, 12.f, 1);
+		
+		container_left = registry->CreateEntity();
+		std::shared_ptr< glt::Model  > containerLeftCubeModel(new glt::Model);
+		containerLeftCubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+		container_left.AddComponent<TransformComponent>(glm::vec3(70.f, 10.f, 0.f), glm::vec3(0, 0, 3.14 / 4), glm::vec3(6.f, 1, 1));
+		container_left.AddComponent<RigidbodyComponent>();
+		container_left.AddComponent<Node3DComponent>("container_left", containerLeftCubeModel);
+		container_left.AddComponent<BoxColliderComponent>(false, 6.f, 1);
+
+		container_right = registry->CreateEntity();
+		std::shared_ptr< glt::Model  > containerRightCubeModel(new glt::Model);
+		containerRightCubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+		container_right.AddComponent<TransformComponent>(glm::vec3(63.f, 10.f, 0.f), glm::vec3(0, 0, - 3.14 / 4), glm::vec3(6.f, 1, 1));
+		container_right.AddComponent<RigidbodyComponent>();
+		container_right.AddComponent<Node3DComponent>("container_right", containerRightCubeModel);
+		container_right.AddComponent<BoxColliderComponent>(false, 6.f, 1);
+
+		container_base = registry->CreateEntity();
+		container_base.AddComponent<TransformComponent>(glm::vec3(90.f, 11.f, 0.f), glm::vec3(0, 0, 0), glm::vec3(1.f, 1.f, 1));
+		container_base.AddComponent<RigidbodyComponent>(staticBody);
+		container_base.AddComponent<BoxColliderComponent>(true, 1, 1.f);
+
+		for (int i = 0; i < 10; i++)
+		{
+			Entity entity = registry->CreateEntity();
+			std::shared_ptr< glt::Model  > model(new glt::Model);
+			model->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+			entity.AddComponent<TransformComponent>
+				(glm::vec3(90.f, 14.f, 0.f),
+					glm::vec3(0, 0, -3.14 / 4),
+					glm::vec3(.7f, .7f, 1));
+			entity.AddComponent<RigidbodyComponent>();
+			entity.AddComponent<Node3DComponent>("cargo" + std::to_string(i), model);
+			entity.AddComponent<CircleColliderComponent>(false, .7f);
+		}
+
+		/* Lights, cam, FX, etc */
 
 		Entity light = registry->CreateEntity();
 		std::shared_ptr< glt::Light  > lightNode(new glt::Light);
@@ -437,8 +304,71 @@ namespace game
 
 	bool Game::Initialize()
 	{
-		back_wheel_motor  = registry->GetSystem<PhysicsSystem>().MotorizeAsWheel(&wheel_1, &car_base, 1500.f, {0, -1});
-		front_wheel_motor = registry->GetSystem<PhysicsSystem>().MotorizeAsWheel(&wheel_2, &car_base, 1500.f, {0, -1});
+		PhysicsSystem& physicsSystem = registry->GetSystem<PhysicsSystem>();
+
+		back_wheel_motor  = physicsSystem.MotorizeAsWheel(
+				&wheel_1,
+				&car_base,
+				1500.f,
+				{0, -1}
+		);
+
+		front_wheel_motor = physicsSystem.MotorizeAsWheel(
+				&wheel_2,
+				&car_base,
+				1500.f,
+				{0, -1}
+		);
+		
+		prismaticJoint = physicsSystem.MotorizedPrismaticJoint(
+				&prismatic,
+				&right_trigger,
+				1500.f,
+				-10.f,
+				+65.f,
+				{ 0, 1 }
+			);
+
+		physicsSystem.Weld(
+				&platform,
+				&prismatic
+			);
+
+		physicsSystem.Weld(
+				&platform_trigger,
+				&platform
+			);
+
+		car_container_motor = physicsSystem.Motorize(
+				&car_container[0],
+				&car_base,
+				10000,
+				{ -8.f, 1.f }
+		);
+
+		physicsSystem.Weld(
+			&container_left,
+			&container_right
+		);
+
+		container_motor = physicsSystem.Motorize(
+		
+			&container_left,
+			&container_base,
+			10000,
+			{0,0},
+				0,
+				3.1415
+		);
+
+		//welding the sides of the vehicle container
+		for (int i = 1; i < 3; i++)
+		{
+			physicsSystem.Weld(
+					&car_container[i],
+					&car_container[0]
+				);
+		}
 
 		return true;
 	}
@@ -484,27 +414,89 @@ namespace game
 			/*m_car_container_joint_motor->SetMotorSpeed(20.0f);*/
 			break;
 		case InputEvent::Action::BACKWARDS:
-			back_wheel_motor.SetMotorSpeed(-1 * back_wheel_motor.GetMotorSpeed());
-			front_wheel_motor.SetMotorSpeed(-1 * front_wheel_motor.GetMotorSpeed());
-			if(back_wheel_motor.GetMotorSpeed() < 1.f)
+			if (event.value == 1)
 			{
-				back_wheel_motor.SetMotorSpeed(0);
-				front_wheel_motor.SetMotorSpeed(0);
+				back_wheel_motor.EnableMotor(true);
+				front_wheel_motor.EnableMotor(true);
+				back_wheel_motor.SetMotorSpeed(-1 * back_wheel_motor.GetMotorSpeed());
+				front_wheel_motor.SetMotorSpeed(-1 * front_wheel_motor.GetMotorSpeed());
+				if (back_wheel_motor.GetMotorSpeed() < 1.f)
+				{
+					back_wheel_motor.SetMotorSpeed(0);
+					front_wheel_motor.SetMotorSpeed(0);
+				}
+			}
+			else
+			{
+				back_wheel_motor.EnableMotor(false);
+				front_wheel_motor.EnableMotor(false);
 			}
 			break;
 		case InputEvent::Action::LEFT:
-			back_wheel_motor.SetMotorSpeed(m_speed);
-			front_wheel_motor.SetMotorSpeed(m_speed);
+			if (event.value == 1)
+			{
+				back_wheel_motor.EnableMotor(true);
+				front_wheel_motor.EnableMotor(true);
+				back_wheel_motor.SetMotorSpeed(m_speed);
+				front_wheel_motor.SetMotorSpeed(m_speed);
+			}
+			else
+			{
+				back_wheel_motor.EnableMotor(false);
+				front_wheel_motor.EnableMotor(false);
+			}
 			break;
 		case InputEvent::Action::RIGHT:
-			back_wheel_motor.SetMotorSpeed(-m_speed);
-			front_wheel_motor.SetMotorSpeed(-m_speed);
+			if (event.value == 1)
+			{
+				back_wheel_motor.EnableMotor(true);
+				front_wheel_motor.EnableMotor(true);
+				back_wheel_motor.SetMotorSpeed(-m_speed);
+				front_wheel_motor.SetMotorSpeed(-m_speed);
+			}
+			else
+			{
+				back_wheel_motor.EnableMotor(false);
+				front_wheel_motor.EnableMotor(false);
+			}
+			break;
+		case InputEvent::Action::Q:
+			if (event.value == 1)
+			{
+				car_container_motor.SetMotorSpeed(0.2f);
+			}
+			else
+			{
+				car_container_motor.SetMotorSpeed(0);
+			}
+			break;
+		case InputEvent::Action::E:
+			if (event.value == 1)
+			{
+				car_container_motor.SetMotorSpeed(-0.2f);
+			}
+			else
+			{
+				car_container_motor.SetMotorSpeed(0);
+			}
 			break;
 		}
 	}
 
 	void Game::OnTriggerEntry(OnTriggerEntryEvent& event)
 	{
-		spdlog::info("TRIGGER ENTRY");
+		if (event.triggerFixture->GetBody() == right_trigger.GetComponent<RigidbodyComponent>().body
+			&&
+			event.otherFixture->GetBody() == wheel_2.GetComponent<RigidbodyComponent>().body)
+		{
+			prismaticJoint.SetMotorSpeed(15.f);
+			container_motor.SetMotorSpeed(15.f);
+		}
+
+		if (event.triggerFixture->GetBody() == platform_trigger.GetComponent<RigidbodyComponent>().body)
+		{
+			prismaticJoint.SetLimits(0.f, 120.f);
+			prismaticJoint.SetMotorSpeed(5.f);
+		}
 	}
 }

@@ -22,6 +22,7 @@ namespace engine
 		{
 			// We specify the components that our system is interested in.
 			RequireComponent<TransformComponent>();
+			RequireComponent<Node3DComponent>();
 		}
 
 

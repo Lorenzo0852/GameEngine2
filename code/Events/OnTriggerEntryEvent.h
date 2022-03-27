@@ -13,9 +13,9 @@ namespace engine
 	class OnTriggerEntryEvent : public Event
 	{
 	public:
-		b2Fixture * entityA;
-		b2Fixture * entityB;
+		b2Fixture * triggerFixture;
+		b2Fixture * otherFixture;
 
-		OnTriggerEntryEvent(b2Fixture * entityA, b2Fixture* entityB) : entityA(entityA), entityB(entityB) {}
+		OnTriggerEntryEvent(b2Fixture * entityA, b2Fixture* entityB) : triggerFixture(entityA), otherFixture(entityB) {}
 	};
 }

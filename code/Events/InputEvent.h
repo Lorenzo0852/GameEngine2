@@ -29,7 +29,9 @@ namespace engine
 			UPWARD_ROTATION,
 			DOWNWARD_ROTATION,
 			FIRE1,
-			FIRE2
+			FIRE2,
+			Q,
+			E
 		};
 
 		enum Action action;

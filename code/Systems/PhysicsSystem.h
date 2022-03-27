@@ -156,6 +156,13 @@ namespace engine
 			b2RevoluteJoint* revoluteJoint;
 
 		public:
+
+			/// Set the motor speed in radians per second.
+			void EnableMotor(bool flag)
+			{
+				revoluteJoint->EnableMotor(flag);
+			}
+
 			/// Set the motor speed in radians per second.
 			void SetMotorSpeed(float speed)
 			{
@@ -173,7 +180,12 @@ namespace engine
 			Motor() = default;
 		};
 
-		Motor Motorize(Entity* entityA, Entity* entityB, float maxMotorTorque, glm::vec2 relativePosition = glm::vec2(0))
+		Motor Motorize(Entity* entityA,
+			Entity* entityB,
+			float maxMotorTorque,
+			glm::vec2 relativePosition = glm::vec2(0),
+			float lowerAngleLimit = 0,
+			float upperAngleLimit = 2 * 3.614159)
 		{
 			b2RevoluteJointDef revJoint;
 			revJoint.enableMotor = true;
@@ -181,6 +193,10 @@ namespace engine
 			revJoint.bodyB = entityA->GetComponent<RigidbodyComponent>().body;
 			revJoint.bodyA = entityB->GetComponent<RigidbodyComponent>().body;
 			revJoint.localAnchorA = { relativePosition.x, relativePosition.y };
+			revJoint.localAnchorB = { relativePosition.x, -relativePosition.y };
+			revJoint.enableLimit = true;
+			revJoint.lowerAngle = lowerAngleLimit;
+			revJoint.upperAngle = upperAngleLimit;
 
 			return Motor((b2RevoluteJoint*)world->CreateJoint(&revJoint));
 		}
@@ -190,6 +206,13 @@ namespace engine
 		private:
 			b2WheelJoint* wheelJoint;
 		public:
+
+			/// Set the motor speed in radians per second.
+			void EnableMotor(bool flag)
+			{
+				wheelJoint->EnableMotor(flag);
+			}
+
 			/// Set the motor speed in radians per second.
 			void SetMotorSpeed(float speed)
 			{
@@ -241,6 +264,11 @@ namespace engine
 			b2PrismaticJoint* prismaticJoint;
 		
 		public:
+			void SetLimits(float lower, float upper)
+			{
+				prismaticJoint->SetLimits(lower, upper);
+			}
+
 			void EnableMotor(bool flag)
 			{
 				prismaticJoint->EnableMotor(flag);
@@ -293,7 +321,11 @@ namespace engine
 			b2Fixture* fixtureA = contact->GetFixtureA();
 			b2Fixture* fixtureB = contact->GetFixtureB();
 
-			eventBus->FireEvent<OnTriggerEntryEvent>(fixtureA, fixtureB);
+			//Just in case someone tries to collide two trigger/sensor objects (which shouldn't invoke the event)
+			if (fixtureA->IsSensor() ^ fixtureB->IsSensor())
+			{
+				eventBus->FireEvent<OnTriggerEntryEvent>(fixtureA, fixtureB);
+			}
 		}
 
 		void EndContact(b2Contact* contact) override {

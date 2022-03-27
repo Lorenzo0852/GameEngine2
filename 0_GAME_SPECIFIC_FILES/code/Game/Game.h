@@ -35,22 +35,32 @@ namespace game
 
 	private:
 		Entity car_base;
+		//Bottom and both sides of the container on top of the car.
+		Entity car_container[3];
 		Entity wheel_1;
 		Entity wheel_2;
+
+		Entity platform;
+		Entity right_trigger, platform_trigger;
+		Entity prismatic;
+
+		Entity container_base, container_left, container_right;
+
 		Entity cam;
 
 		PhysicsSystem::Wheel back_wheel_motor, front_wheel_motor;
+		PhysicsSystem::Motor car_container_motor;
+		PhysicsSystem::Motor container_motor;
+		PhysicsSystem::PrismaticJoint prismaticJoint;
 
 		float m_speed;
-
-		b2RevoluteJoint* m_car_container_joint_motor;
 
 	public:
 		Game(Window& window, Kernel& kernel, std::shared_ptr<EventBus> eventBus);
 		~Game() = default;
 
 		void SetupScene();
-		/* Post-initialization stuff */
+		/* Post-setup stuff */
 		bool Initialize();
 		virtual void Run(float deltaTime);
 		void OnInputRegistered(InputEvent& event);

@@ -48,6 +48,12 @@ namespace engine
                     case SDLK_RIGHT:
                         eventBus->FireEvent<InputEvent>(InputEvent::Action::RIGHT_ROTATION, 1);
                         break;
+                    case SDLK_q:
+                        eventBus->FireEvent<InputEvent>(InputEvent::Action::Q, 1);
+                        break;
+                    case SDLK_e:
+                        eventBus->FireEvent<InputEvent>(InputEvent::Action::E, 1);
+                        break;
                     }
                 }
                 //If != 0, the key is repeated
@@ -75,6 +81,12 @@ namespace engine
                         break;
                     case SDLK_RIGHT:
                         eventBus->FireEvent<InputEvent>(InputEvent::Action::RIGHT_ROTATION, 0);
+                        break;
+                    case SDLK_q:
+                        eventBus->FireEvent<InputEvent>(InputEvent::Action::Q, 0);
+                        break;
+                    case SDLK_e:
+                        eventBus->FireEvent<InputEvent>(InputEvent::Action::E, 0);
                         break;
                     }
                 }
