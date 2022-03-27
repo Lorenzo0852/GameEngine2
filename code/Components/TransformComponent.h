@@ -16,7 +16,7 @@ namespace engine
 /// </summary>
 	struct TransformComponent {
 
-		Entity* parent = NULL;
+		Entity* parent = nullptr;
 		glm::vec3 position;
 		glm::vec3 rotation;
 		glm::vec3 scale;
@@ -32,6 +32,7 @@ namespace engine
 			glm::vec3 scale = glm::vec3(0, 0, 0),
 			Entity* parent = nullptr) {
 
+			this->parent = parent;
 			SetTransformation(position, rotation, scale);
 		}
 

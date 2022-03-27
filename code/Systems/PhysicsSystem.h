@@ -8,22 +8,23 @@
 #include <Components/RigidbodyComponent.h>
 #include <Components/BoxColliderComponent.h>
 #include <Components/CircleColliderComponent.h>
-
 #include <b2_world.h>
 #include <spdlog/spdlog.h>
+#include <EventBus/EventBus.h>
+#include <Events/OnTriggerEntryEvent.h>
 
 #include <assert.h>
 
 namespace engine
 {
-	class PhysicsSystem : public System
+	class PhysicsSystem : public System, b2ContactListener
 	{
 	private:
 		float timeStep;
 		int32 velocityIterations, positionIterations;
 
 	public:
-
+		std::shared_ptr<EventBus> eventBus;
 		glm::vec2 gravity;
 		b2World* world;
 
@@ -33,6 +34,7 @@ namespace engine
 		/// @param velocityIterations for the velocity constraint solver.
 		/// @param positionIterations for the position constraint solver.
 		PhysicsSystem(
+			std::shared_ptr<EventBus> eventBus,
 			glm::vec2 gravity = glm::vec2(0.0f, -9.8f),
 			float timeStep = 1.f / 60.0f,
 			int32 velocityIterations = 8,
@@ -41,9 +43,10 @@ namespace engine
 			RequireComponent<TransformComponent>();
 			RequireComponent<RigidbodyComponent>();
 
+			this->eventBus = eventBus;
 			this->gravity = gravity;
 			world = new b2World({ gravity.x, gravity.y });
-
+			world->SetContactListener(this);
 			this->timeStep = timeStep;
 			this->velocityIterations = velocityIterations;
 			this->positionIterations = positionIterations;
@@ -85,6 +88,8 @@ namespace engine
 					fd.shape = &box;
 					fd.density = density;
 					fd.friction = friction;
+					fd.isSensor = bcc.isTrigger;
+
 					rb.body->CreateFixture(&fd);
 				}
 				else if (entity.HasComponent<CircleColliderComponent>())
@@ -97,6 +102,7 @@ namespace engine
 					fd.shape = &circle;
 					fd.density = density;
 					fd.friction = friction;
+					fd.isSensor = ccc.isTrigger;
 					rb.body->CreateFixture(&fd);
 				}
 				else
@@ -146,9 +152,10 @@ namespace engine
 
 		class Motor
 		{
-		public:
+		private:
 			b2RevoluteJoint* revoluteJoint;
 
+		public:
 			/// Set the motor speed in radians per second.
 			void SetMotorSpeed(float speed)
 			{
@@ -160,26 +167,29 @@ namespace engine
 			{
 				return revoluteJoint->GetMotorSpeed();
 			}
+
+			Motor(b2RevoluteJoint* b2rj) : revoluteJoint(b2rj) {}
+
+			Motor() = default;
 		};
 
 		Motor Motorize(Entity* entityA, Entity* entityB, float maxMotorTorque, glm::vec2 relativePosition = glm::vec2(0))
 		{
 			b2RevoluteJointDef revJoint;
-			Motor motor;
 			revJoint.enableMotor = true;
 			revJoint.maxMotorTorque = maxMotorTorque;
 			revJoint.bodyB = entityA->GetComponent<RigidbodyComponent>().body;
 			revJoint.bodyA = entityB->GetComponent<RigidbodyComponent>().body;
 			revJoint.localAnchorA = { relativePosition.x, relativePosition.y };
-			motor.revoluteJoint = (b2RevoluteJoint*)world->CreateJoint(&revJoint);
-			return motor;
+
+			return Motor((b2RevoluteJoint*)world->CreateJoint(&revJoint));
 		}
 
 		class Wheel
 		{
-		public:
+		private:
 			b2WheelJoint* wheelJoint;
-
+		public:
 			/// Set the motor speed in radians per second.
 			void SetMotorSpeed(float speed)
 			{
@@ -191,12 +201,15 @@ namespace engine
 			{
 				return wheelJoint->GetMotorSpeed();
 			}
+
+			Wheel(b2WheelJoint* b2wj) : wheelJoint(b2wj) {}
+
+			Wheel() = default;
 		};
 
 		Wheel MotorizeAsWheel(Entity* entityA, Entity* entityB, float maxMotorTorque, glm::vec2 axis = glm::vec2(0))
 		{
 			b2WheelJointDef jd;
-			Wheel wheel;
 			jd.Initialize(entityB->GetComponent<RigidbodyComponent>().body,
 				entityA->GetComponent<RigidbodyComponent>().body,
 				entityA->GetComponent<RigidbodyComponent>().body->GetPosition(),
@@ -217,8 +230,75 @@ namespace engine
 			jd.lowerTranslation = -0.25f;
 			jd.upperTranslation = 0.25f;
 			jd.enableLimit = true;
-			wheel.wheelJoint = (b2WheelJoint*)world->CreateJoint(&jd);
-			return wheel;
+
+			return Wheel((b2WheelJoint*)world->CreateJoint(&jd));
 		}
+
+		class PrismaticJoint
+		{
+
+		private:
+			b2PrismaticJoint* prismaticJoint;
+		
+		public:
+			void EnableMotor(bool flag)
+			{
+				prismaticJoint->EnableMotor(flag);
+			}
+
+			/// Set the motor speed in radians per second.
+			void SetMotorSpeed(float speed)
+			{
+				prismaticJoint->SetMotorSpeed(speed);
+			}
+
+			/// Get the motor speed in radians per second.
+			float GetMotorSpeed() const
+			{
+				return prismaticJoint->GetMotorSpeed();
+			}
+
+			PrismaticJoint(b2PrismaticJoint * b2pj) : prismaticJoint(b2pj) {}
+
+			PrismaticJoint() = default;
+		};
+
+		PrismaticJoint MotorizedPrismaticJoint(
+			Entity* entityA,
+			Entity* entityB,
+			float maxMotorForce,
+			float lowerTranslation,
+			float upperTranslation,
+			glm::vec2 axis = glm::vec2(0))
+		{
+			b2PrismaticJointDef pjd;
+
+			pjd.Initialize(entityB->GetComponent<RigidbodyComponent>().body,
+				entityA->GetComponent<RigidbodyComponent>().body,
+				entityA->GetComponent<RigidbodyComponent>().body->GetPosition(),
+				{ axis.x, axis.y });
+
+			pjd.motorSpeed = 0;
+			pjd.maxMotorForce = maxMotorForce;
+			pjd.enableMotor = true;
+			pjd.lowerTranslation = lowerTranslation;
+			pjd.upperTranslation = upperTranslation;
+			pjd.enableLimit = true;
+
+			return PrismaticJoint((b2PrismaticJoint*)world->CreateJoint(&pjd));
+		}
+
+		void BeginContact(b2Contact* contact) override
+		{
+			b2Fixture* fixtureA = contact->GetFixtureA();
+			b2Fixture* fixtureB = contact->GetFixtureB();
+
+			eventBus->FireEvent<OnTriggerEntryEvent>(fixtureA, fixtureB);
+		}
+
+		void EndContact(b2Contact* contact) override {
+
+		}
+
 	};
 }

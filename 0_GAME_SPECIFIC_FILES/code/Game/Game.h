@@ -12,6 +12,7 @@
 #include <Kernel/Kernel.h>
 #include <EventBus/EventBus.h>
 #include <Events/InputEvent.h>
+#include <Events/OnTriggerEntryEvent.h>
 
 #include <b2_world.h>
 #include <b2_body.h>
@@ -53,5 +54,6 @@ namespace game
 		bool Initialize();
 		virtual void Run(float deltaTime);
 		void OnInputRegistered(InputEvent& event);
+		void OnTriggerEntry(OnTriggerEntryEvent& event);
 	};
 }

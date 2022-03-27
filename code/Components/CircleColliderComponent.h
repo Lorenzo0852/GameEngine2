@@ -12,11 +12,13 @@ namespace engine
 	{
 		float radius, density, friction;
 		b2CircleShape shape;
+		bool isTrigger;
 
-		CircleColliderComponent(float radius = 1.0f, float density = 1.0f, float friction = 0.5f) {
+		CircleColliderComponent(bool isTrigger = false, float radius = 1.0f, float density = 1.0f, float friction = .5f) {
 			this->radius = radius;
 			this->density = density;
 			this->friction = friction;
+			this->isTrigger = isTrigger;
 
 			shape.m_radius = radius;
 		}

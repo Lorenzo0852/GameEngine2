@@ -56,7 +56,6 @@ namespace game
 		spdlog::info("Game constructor called");
 	}
 
-
 	void Game::SetupScene()
 	{
 		/*
@@ -64,6 +63,8 @@ namespace game
 		*	eventBus will call the function we pass as parameter whenever the event is fired.
 		*/
 		eventBus->AddEventListener<InputEvent>(this, &Game::OnInputRegistered);
+		eventBus->AddEventListener<OnTriggerEntryEvent>(this, &Game::OnTriggerEntry);
+
 		/*
 		*	Deserializes and spawns all static objects - not used for now...
 		*/
@@ -73,7 +74,7 @@ namespace game
 		registry->AddSystem<Movement3DSystem>();
 		registry->AddSystem<ModelRender3DSystem>(*window);
 		registry->AddSystem<EntityStartup3DSystem>();
-		registry->AddSystem<PhysicsSystem>();
+		registry->AddSystem<PhysicsSystem>(eventBus);
 
 		/*
 		*	We load up the .wav sounds we want to use in this demo.
@@ -321,40 +322,87 @@ namespace game
 		*	We start up and add all needed components to the dynamic (moving) entities.
 		*/
 
-		m_speed = 10.0f;
+		m_speed = 30.0f;
 
 		car_base = registry->CreateEntity();
 		std::shared_ptr< glt::Model  > carBaseCubeModel(new glt::Model);
 		carBaseCubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-		car_base.AddComponent<TransformComponent>(glm::vec3(0, 1.f, 0.f), glm::vec3(0, 0, 0), glm::vec3(4.f, 0.5f, 0.5f));
+		car_base.AddComponent<TransformComponent>(glm::vec3(-90.f, 60.f, 0.f), glm::vec3(0, 0, 0), glm::vec3(8.f, 0.5f, 0.5f));
 		car_base.AddComponent<RigidbodyComponent>();
 		car_base.AddComponent<Node3DComponent>("car_base", carBaseCubeModel);
-		car_base.AddComponent<BoxColliderComponent>(4.f, 0.5f);
+		car_base.AddComponent<BoxColliderComponent>(false, 4.f, 0.5f, 1.0f, 0.9f);
 
-
+		TransformComponent & carbaseTransform = car_base.GetComponent<TransformComponent>();
 		wheel_1 = registry->CreateEntity();
 		std::shared_ptr< glt::Model  > wheelCubeModel(new glt::Model);
 		wheelCubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-		wheel_1.AddComponent<TransformComponent>(glm::vec3(0, 0, 0.f), glm::vec3(0, 0, 0), glm::vec3(1,1,1));
+		wheel_1.AddComponent<TransformComponent>(
+			glm::vec3(carbaseTransform.position.x -5,
+			carbaseTransform.position.y -1, 0.f),
+			glm::vec3(0, 0, 0), glm::vec3(1,1,1));
 		wheel_1.AddComponent<RigidbodyComponent>();
 		wheel_1.AddComponent<Node3DComponent>("wheel_1", wheelCubeModel);
-		wheel_1.AddComponent<CircleColliderComponent>();
+		wheel_1.AddComponent<CircleColliderComponent>(false);
 
 		wheel_2 = registry->CreateEntity();
 		std::shared_ptr< glt::Model  > cubeModel(new glt::Model);
 		cubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-		wheel_2.AddComponent<TransformComponent>(glm::vec3(10, 0, 0.f), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
+		wheel_2.AddComponent<TransformComponent>(
+			glm::vec3(carbaseTransform.position.x + 5,
+				carbaseTransform.position.y + -1, 0.f),
+			glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
 		wheel_2.AddComponent<RigidbodyComponent>();
 		wheel_2.AddComponent<Node3DComponent>("wheel_2", cubeModel);
-		wheel_2.AddComponent<CircleColliderComponent>();
+		wheel_2.AddComponent<CircleColliderComponent>(false);
 
 		Entity ground = registry->CreateEntity();
 		std::shared_ptr< glt::Model  > groundCubeModel(new glt::Model);
 		groundCubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-		ground.AddComponent<TransformComponent>(glm::vec3(0.f, -60, 0.f), glm::vec3(0, 0, 0), glm::vec3(90.f, 1, 1));
+		ground.AddComponent<TransformComponent>(glm::vec3(-100.f, 50.f, 0.f), glm::vec3(0, 0, 0), glm::vec3(20.f, 1, 1));
 		ground.AddComponent<RigidbodyComponent>(staticBody);
 		ground.AddComponent<Node3DComponent>("ground", groundCubeModel);
-		ground.AddComponent<BoxColliderComponent>(90.f, 1);
+		ground.AddComponent<BoxColliderComponent>(false, 20.f, 1);
+
+		Entity down_ramp = registry->CreateEntity();
+		std::shared_ptr< glt::Model  > downRampCubeModel(new glt::Model);
+		downRampCubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+		down_ramp.AddComponent<TransformComponent>(glm::vec3(-52.f, 21.f, 0.f), glm::vec3(0, 0, -0.8f), glm::vec3(40.f, 1, 1));
+		down_ramp.AddComponent<RigidbodyComponent>(staticBody);
+		down_ramp.AddComponent<Node3DComponent>("down_ramp", downRampCubeModel);
+		down_ramp.AddComponent<BoxColliderComponent>(false, 40.f, 1);
+
+		Entity down_ground = registry->CreateEntity();
+		std::shared_ptr< glt::Model  > downgroundCubeModel(new glt::Model);
+		downgroundCubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+		down_ground.AddComponent<TransformComponent>(glm::vec3(-20.f, -8.f, 0.f), glm::vec3(0, 0, 0), glm::vec3(5.f, 1, 1));
+		down_ground.AddComponent<RigidbodyComponent>(staticBody);
+		down_ground.AddComponent<Node3DComponent>("down_ground", downgroundCubeModel);
+		down_ground.AddComponent<BoxColliderComponent>(false, 5.f, 1);
+
+		Entity up_ramp = registry->CreateEntity();
+		std::shared_ptr< glt::Model  > upRampCubeModel(new glt::Model);
+		upRampCubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+		up_ramp.AddComponent<TransformComponent>(glm::vec3(-11.f, -6.3f, 0.f), glm::vec3(0, 0, 0.3f), glm::vec3(5.f, 1, 1));
+		up_ramp.AddComponent<RigidbodyComponent>(staticBody);
+		up_ramp.AddComponent<Node3DComponent>("up_ramp", upRampCubeModel);
+		up_ramp.AddComponent<BoxColliderComponent>(false, 5.f, 1);
+
+		Entity right_ground = registry->CreateEntity();
+		std::shared_ptr< glt::Model  > rightGroundCubeModel(new glt::Model);
+		rightGroundCubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+		right_ground.AddComponent<TransformComponent>(glm::vec3(60.f, -10.f, 0.f), glm::vec3(0, 0, 0), glm::vec3(30.f, 1, 1));
+		right_ground.AddComponent<RigidbodyComponent>(staticBody);
+		right_ground.AddComponent<Node3DComponent>("right_ground", rightGroundCubeModel);
+		right_ground.AddComponent<BoxColliderComponent>(false, 30.f, 1, 1, 0.1f);
+
+		Entity finish_wall = registry->CreateEntity();
+		std::shared_ptr< glt::Model  > finishWallCubeModel(new glt::Model);
+		finishWallCubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+		finish_wall.AddComponent<TransformComponent>(glm::vec3(90.f, -10.f, 0.f), glm::vec3(0, 0, 0), glm::vec3(1.f, -10.f, 1));
+		finish_wall.AddComponent<RigidbodyComponent>(staticBody);
+		finish_wall.AddComponent<Node3DComponent>("finish_wall", finishWallCubeModel);
+		finish_wall.AddComponent<BoxColliderComponent>(false, 0.f, 10.f);
+
 
 		Entity light = registry->CreateEntity();
 		std::shared_ptr< glt::Light  > lightNode(new glt::Light);
@@ -389,8 +437,8 @@ namespace game
 
 	bool Game::Initialize()
 	{
-		back_wheel_motor  = registry->GetSystem<PhysicsSystem>().MotorizeAsWheel(&wheel_1, &car_base, 500.f, {0, -1});
-		front_wheel_motor = registry->GetSystem<PhysicsSystem>().MotorizeAsWheel(&wheel_2, &car_base, 500.f, {0, -1});
+		back_wheel_motor  = registry->GetSystem<PhysicsSystem>().MotorizeAsWheel(&wheel_1, &car_base, 1500.f, {0, -1});
+		front_wheel_motor = registry->GetSystem<PhysicsSystem>().MotorizeAsWheel(&wheel_2, &car_base, 1500.f, {0, -1});
 
 		return true;
 	}
@@ -453,5 +501,10 @@ namespace game
 			front_wheel_motor.SetMotorSpeed(-m_speed);
 			break;
 		}
+	}
+
+	void Game::OnTriggerEntry(OnTriggerEntryEvent& event)
+	{
+		spdlog::info("TRIGGER ENTRY");
 	}
 }

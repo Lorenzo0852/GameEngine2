@@ -149,5 +149,8 @@
     <ClInclude Include="..\..\code\Systems\PhysicsSystem.h">
       <Filter>Header Files\Systems\2D</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\code\Events\OnTriggerEntryEvent.h">
+      <Filter>Header Files\EventTypes</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

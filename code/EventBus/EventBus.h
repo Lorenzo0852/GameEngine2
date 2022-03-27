@@ -1,4 +1,9 @@
 #pragma once
+
+/******************************************\
+ *  Copyright (c) Lorenzo Herran - 2021   *
+\******************************************/
+
 #include <spdlog/spdlog.h>
 #include <map>
 #include <typeindex>
