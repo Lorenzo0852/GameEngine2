@@ -50,7 +50,7 @@ namespace game
 		this->kernel = &kernel;
 		this->window = &window;
 
-		window.SetWindowedFullscreen();
+		//window.SetWindowedFullscreen();
 		window.SetVsync(true);
 
 		spdlog::info("Game constructor called");
