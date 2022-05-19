@@ -23,14 +23,8 @@ namespace engine
 			RequireComponent<Node3DComponent>();
 
 			this->glRenderer.reset(new glt::Render_Node);
-			//glRenderer = new glt::Render_Node;
 			this->window = &window;
 		}
-
-		//static std::shared_ptr< System > CreateInstance(glt::Render_Node& glRenderer, Window& window)
-		//{
-		//	return std::make_shared<ModelRender3DSystem>(glRenderer, window);
-		//}
 
 		bool Initialize()
 		{

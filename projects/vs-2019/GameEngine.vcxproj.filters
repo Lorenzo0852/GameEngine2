@@ -78,6 +78,9 @@
     <ClCompile Include="..\..\code\Deserializer\Scene3DDeserializer.cpp">
       <Filter>Source Files\Core\3D</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\code\Systems\Physics3DSystem.cpp">
+      <Filter>Source Files\Core\3D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\code\Systems\EntityStartup3DSystem.h">
@@ -151,6 +154,15 @@
     </ClInclude>
     <ClInclude Include="..\..\code\Events\OnTriggerEntryEvent.h">
       <Filter>Header Files\EventTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\Systems\Physics3DSystem.h">
+      <Filter>Header Files\Systems\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\Components\Rigidbody3DComponent.h">
+      <Filter>Header Files\Components\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\Components\BoxCollider3DComponent.h">
+      <Filter>Header Files\Components\3D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -61,7 +61,7 @@
       <PreprocessorDefinitions>_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../../include/gltk;../../include/;../../code;../../include/rapidjson;../../include/box2d;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../include/bullet3-3.17;../../include/gltk;../../include/;../../code;../../include/rapidjson;../../include/box2d;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard_C>Default</LanguageStandard_C>
     </ClCompile>
     <Link>
@@ -81,7 +81,7 @@
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../../include/gltk;../../include/;../../code;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../include/bullet3-3.24;../../include/gltk;../../include/;../../code;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard_C>Default</LanguageStandard_C>
     </ClCompile>
     <Link>
@@ -99,13 +99,16 @@
     <ClCompile Include="..\..\code\Deserializer\Scene3DDeserializer.cpp" />
     <ClCompile Include="..\..\code\ECS\ECS.cpp" />
     <ClCompile Include="..\..\code\Kernel\Kernel.cpp" />
+    <ClCompile Include="..\..\code\Systems\Physics3DSystem.cpp" />
     <ClCompile Include="..\..\code\Window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\code\AssetManager\AssetManager.h" />
+    <ClInclude Include="..\..\code\Components\BoxCollider3DComponent.h" />
     <ClInclude Include="..\..\code\Components\BoxColliderComponent.h" />
     <ClInclude Include="..\..\code\Components\CircleColliderComponent.h" />
     <ClInclude Include="..\..\code\Components\Node3DComponent.h" />
+    <ClInclude Include="..\..\code\Components\Rigidbody3DComponent.h" />
     <ClInclude Include="..\..\code\Components\RigidbodyComponent.h" />
     <ClInclude Include="..\..\code\Components\SpriteComponent.h" />
     <ClInclude Include="..\..\code\Components\TransformComponent.h" />
@@ -122,6 +125,7 @@
     <ClInclude Include="..\..\code\Systems\Movement3DSystem.h" />
     <ClInclude Include="..\..\code\Systems\MovementSystem.h" />
     <ClInclude Include="..\..\code\Systems\ModelRender3DSystem.h" />
+    <ClInclude Include="..\..\code\Systems\Physics3DSystem.h" />
     <ClInclude Include="..\..\code\Systems\PhysicsSystem.h" />
     <ClInclude Include="..\..\code\Systems\RenderSystem.h" />
     <ClInclude Include="..\..\code\Task\Task.h" />

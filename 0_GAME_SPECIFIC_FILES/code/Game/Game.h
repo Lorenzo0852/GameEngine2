@@ -18,6 +18,7 @@
 #include <b2_body.h>
 
 #include <Systems/PhysicsSystem.h>
+#include <Systems/Physics3DSystem.h>
 
 using namespace engine;
 namespace game
@@ -34,24 +35,11 @@ namespace game
 		std::shared_ptr<EventBus> eventBus;
 
 	private:
+		Entity floor;
 		Entity car_base;
 		//Bottom and both sides of the container on top of the car.
-		Entity car_container[3];
-		Entity wheel_1;
-		Entity wheel_2;
-
-		Entity platform;
-		Entity right_trigger, platform_trigger;
-		Entity prismatic;
-
-		Entity container_base, container_left, container_right;
 
 		Entity cam;
-
-		PhysicsSystem::Wheel back_wheel_motor, front_wheel_motor;
-		PhysicsSystem::Motor car_container_motor;
-		PhysicsSystem::Motor container_motor;
-		PhysicsSystem::PrismaticJoint prismaticJoint;
 
 		float m_speed;
 
