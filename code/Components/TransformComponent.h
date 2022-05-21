@@ -16,6 +16,11 @@ namespace engine
 /// </summary>
 	struct TransformComponent {
 
+	private:
+
+
+	public:
+
 		Entity* parent = nullptr;
 		glm::vec3 position;
 		glm::vec3 rotation;

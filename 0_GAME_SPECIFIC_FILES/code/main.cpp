@@ -45,7 +45,7 @@ int main(int args, char* argv[])
 	game.SetupScene();
 
 	//Just in case the user needs post-initialization manipulation.
-	kernel.InitializeTask(game);
+	game.Initialize();
 
 	//Then start the kernel loop.
 	kernel.AddPriorizedRunningTask(inputPoller);

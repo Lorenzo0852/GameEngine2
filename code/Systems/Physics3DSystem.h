@@ -9,8 +9,8 @@
 #include <Components/TransformComponent.h>
 #include <Components/Rigidbody3DComponent.h>
 #include <Components/BoxCollider3DComponent.h>
-
-
+#include <Components/SphereCollider3DComponent.h>
+#include <Components/RaycastVehicle3DComponent.h>
 
 namespace engine
 {

@@ -61,6 +61,9 @@
     <Filter Include="Source Files\Core\3D">
       <UniqueIdentifier>{425ab217-f23e-428f-80d3-8eb2b06f105c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Systems\Common">
+      <UniqueIdentifier>{71925879-7b4c-4ce3-93ab-97056e806b10}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\code\ECS\ECS.cpp">
@@ -162,6 +165,15 @@
       <Filter>Header Files\Components\3D</Filter>
     </ClInclude>
     <ClInclude Include="..\..\code\Components\BoxCollider3DComponent.h">
+      <Filter>Header Files\Components\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\Systems\PositionUpdater.h">
+      <Filter>Header Files\Systems\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\Components\SphereCollider3DComponent.h">
+      <Filter>Header Files\Components\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\Components\RaycastVehicle3DComponent.h">
       <Filter>Header Files\Components\3D</Filter>
     </ClInclude>
   </ItemGroup>

@@ -25,11 +25,14 @@
 #include <Components/TransformComponent.h>
 #include <Components/RigidbodyComponent.h>
 #include <Components/Node3DComponent.h>
+#include <Components/SphereCollider3DComponent.h>
+#include <Components/RaycastVehicle3DComponent.h>
 
 #include <Systems/Movement3DSystem.h>
 #include <Systems/ModelRender3DSystem.h>
 #include <Systems/EntityStartup3DSystem.h>
 #include <Systems/PhysicsSystem.h>
+#include <Systems/PositionUpdater.h>
 
 #include <box2d/b2_polygon_shape.h>
 #include <box2d/b2_fixture.h>
@@ -76,6 +79,7 @@ namespace game
 		registry->AddSystem<EntityStartup3DSystem>();
 		registry->AddSystem<PhysicsSystem>(eventBus);
 		registry->AddSystem<Physics3DSystem>();
+		registry->AddSystem<PositionUpdater>();
 
 		/*
 		*	We load up the .wav sounds we want to use in this demo.
@@ -100,24 +104,56 @@ namespace game
 		*	We start up and add all needed components to the dynamic (moving) entities.
 		*/
 
-		m_speed = 30.0f;
-
-		car_base = registry->CreateEntity();
-		std::shared_ptr< glt::Model  > carBaseCubeModel(new glt::Model);
-		carBaseCubeModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-		car_base.AddComponent<TransformComponent>(glm::vec3(-90.f, 60.f, 0.f), glm::vec3(0, 0, 0), glm::vec3(7.f, 0.5f, 0.5f));
-		car_base.AddComponent<RigidbodyComponent>();
-		car_base.AddComponent<Node3DComponent>("car_base", carBaseCubeModel);
-		car_base.AddComponent<BoxColliderComponent>(false, 4.f, 0.5f, 1.0f, 0.9f);
-
-		Entity test = registry->CreateEntity();
+		test = registry->CreateEntity();
 		std::shared_ptr<glt::Model> testModel(new glt::Model);
 		testModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
-		test.AddComponent<TransformComponent>(glm::vec3(-90.f, 60.f, 0.f), glm::vec3(0, 0, 0), glm::vec3(3, 3, 3));
-		test.AddComponent<BoxCollider3DComponent>(glm::vec3(3,3,3), 10);
+		test.AddComponent<TransformComponent>(glm::vec3(0.f, -50.f, 0.f), glm::vec3(0, -3.14159 / 2, 0), glm::vec3(6, 1, 6));
+		test.AddComponent<BoxCollider3DComponent>(glm::vec3(6, 1, 3), 200);
 		test.AddComponent<Rigidbody3DComponent>();
 		test.AddComponent<Node3DComponent>("test", testModel);
+		//finally we add the vehicle component, that needs wheels added to it once the registry is updated and knows of its existance...
+		test.AddComponent<RaycastVehicle3DComponent>();
+
+		Entity ball = registry->CreateEntity();
+		std::shared_ptr<glt::Model> ballModel(new glt::Model_Obj("../../../assets/models/sphere.obj"));
+		//ballModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+		ball.AddComponent<TransformComponent>(glm::vec3(-90.f, 80.f, 0.f), glm::vec3(0, 0, 0), glm::vec3(3, 3, 3));
+		ball.AddComponent<SphereCollider3DComponent>(1, 5);
+		ball.AddComponent<Rigidbody3DComponent>();
+		ball.AddComponent<Node3DComponent>("ball", ballModel);
+
+		Entity ground = registry->CreateEntity();
+		std::shared_ptr<glt::Model> groundModel(new glt::Model);
+		groundModel->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+		ground.AddComponent<TransformComponent>(glm::vec3(0.f, -60.f, 0.f), glm::vec3(0, 0, 0), glm::vec3(200, 3, 200));
+		ground.AddComponent<BoxCollider3DComponent>(glm::vec3(200, 3, 200));
+		ground.AddComponent<Rigidbody3DComponent>();
+		ground.AddComponent<Node3DComponent>("ground", groundModel);
 		
+		wheel1 = registry->CreateEntity();
+		std::shared_ptr<glt::Model> wheel1Model(new glt::Model);
+		wheel1Model->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+		wheel1.AddComponent<TransformComponent>();
+		wheel1.AddComponent<Node3DComponent>("wheel1", wheel1Model);
+
+		wheel2 = registry->CreateEntity();
+		wheel2.AddComponent<TransformComponent>();
+		std::shared_ptr<glt::Model> wheel2Model(new glt::Model);
+		wheel2Model->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+		wheel2.AddComponent<Node3DComponent>("wheel2", wheel2Model);
+
+		wheel3 = registry->CreateEntity();
+		wheel3.AddComponent<TransformComponent>();
+		std::shared_ptr<glt::Model> wheel3Model(new glt::Model);
+		wheel3Model->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+		wheel3.AddComponent<Node3DComponent>("wheel3", wheel3Model);
+
+		wheel4 = registry->CreateEntity();
+		wheel4.AddComponent<TransformComponent>();
+		std::shared_ptr<glt::Model> wheel4Model(new glt::Model);
+		wheel4Model->add(std::shared_ptr<glt::Drawable>(new glt::Cube), glt::Material::default_material());
+		wheel4.AddComponent<Node3DComponent>("wheel4", wheel4Model);
+
 
 		/* Lights, cam, FX, etc */
 
@@ -151,11 +187,34 @@ namespace game
 		kernel->AddPriorizedRunningTask(registry->GetSystem<PhysicsSystem>());
 
 		kernel->AddRunningTask(registry->GetSystem<Movement3DSystem>());
+		kernel->AddRunningTask(registry->GetSystem<PositionUpdater>());
 		kernel->AddRunningTask(registry->GetSystem<ModelRender3DSystem>());
 	}
 
 	bool Game::Initialize()
 	{
+		RaycastVehicle3DComponent& rv3d = test.GetComponent<RaycastVehicle3DComponent>();
+		float wheelWidth = 1.f;
+		float wheelRadius = 1.f;
+
+		//Total of 4 wheels
+
+		//Front wheels...
+		glm::vec3 connectionPoint;
+
+		connectionPoint = { glm::vec3(5, -3, 3 )};
+		rv3d.AddWheel(RaycastVehicleWheel(connectionPoint, wheelRadius, wheelWidth, true, wheel1));
+
+		connectionPoint = { glm::vec3(-5, -3, 3 )};
+		rv3d.AddWheel(RaycastVehicleWheel(connectionPoint, wheelRadius, wheelWidth, true, wheel2));
+
+		//Back wheels...
+		connectionPoint = { glm::vec3(5, -3, -3 )};
+		rv3d.AddWheel(RaycastVehicleWheel(connectionPoint, wheelRadius, wheelWidth, false, wheel3));
+
+		connectionPoint = { glm::vec3(-5, -3, -3 )};
+		rv3d.AddWheel(RaycastVehicleWheel(connectionPoint, wheelRadius, wheelWidth, false, wheel4));
+
 		return true;
 	}
 
@@ -164,6 +223,12 @@ namespace game
 	*/
 	void Game::Run(float deltaTime)
 	{
+		glm::vec3 refPos = test.GetComponent<TransformComponent>().position;
+		cam.GetComponent<TransformComponent>().SetTransformation({ refPos.x + 50, refPos.y + 10, refPos.z}, { 0, -80, 0 }, {1,1,1});
+
+		auto & rv3d = test.GetComponent< RaycastVehicle3DComponent >();
+		rv3d.vehicle->applyEngineForce(100, 2);
+		rv3d.vehicle->applyEngineForce(100, 3);
 
 		//Movement3DSystem& movement3DSystem = registry->GetSystem<Movement3DSystem>();
 
@@ -187,6 +252,8 @@ namespace game
 		{
 		case InputEvent::Action::QUIT:
 			kernel->Stop();
+			break;
+		case InputEvent::Action::FORWARD:
 			break;
 		}
 	}

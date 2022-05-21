@@ -8,12 +8,16 @@
 #include <Components/TransformComponent.h>
 #include <Components/RigidbodyComponent.h>
 #include <Components/Rigidbody3DComponent.h>
+#include <Components/RaycastVehicle3DComponent.h>
 
 #include <Components/Node3DComponent.h>
 #include <gltk/Node.hpp>
 
 namespace engine
 {
+	/// <summary>
+	/// Physics-based transform synchronization
+	/// </summary>
 	class Movement3DSystem : public System
 	{
 	public:
@@ -43,7 +47,6 @@ namespace engine
 						{ 0, 0, angle },
 						{ transform.scale.x,transform.scale.y,transform.scale.z });
 
-					node->set_transformation(transform.GetTransformation());
 				}
 				
 				//3D
@@ -54,16 +57,40 @@ namespace engine
 					const auto& rigidbody3d = entity.GetComponent<Rigidbody3DComponent>();
 
 					btVector3 position = rigidbody3d.rigidbody->getCenterOfMassPosition();
+					transform.position = { position.x(), position.y(), position.z() };
 
-					transform.SetTransformation(
-						{position.x(), position.y(), position.z()},
-						{0,0,0},
-						{transform.scale.x, transform.scale.y, transform.scale.z});
+					btTransform physics_transform;
+					rigidbody3d.rigidbody->getMotionState()->getWorldTransform(physics_transform);
+					glm::mat4 graphics_transform;
+					physics_transform.getOpenGLMatrix(glm::value_ptr(graphics_transform));
 
-					spdlog::info(std::to_string(position.y()));
-
-					node->set_transformation(transform.GetTransformation());
+					transform.SetTransformation(glm::scale(graphics_transform, transform.scale));
 				}
+
+				
+				//Special case for vehicle wheels...
+				if (entity.HasComponent< RaycastVehicle3DComponent >())
+				{
+					RaycastVehicle3DComponent& rv3d = entity.GetComponent< RaycastVehicle3DComponent >();
+
+					int i = 0;
+					for (const RaycastVehicleWheel & wheel : rv3d.wheels)
+					{
+						TransformComponent& transform = wheel.wheelEntity->GetComponent<TransformComponent>();
+						const btTransform& physicsTransform = rv3d.vehicle->getWheelInfo(i).m_worldTransform;
+
+						glm::mat4 graphics_transform;
+						physicsTransform.getOpenGLMatrix(glm::value_ptr(graphics_transform));
+
+						const btVector3 & origin = physicsTransform.getOrigin();
+						transform.position = { origin.x(), origin.y(), origin.z() };
+						transform.scale = glm::vec3(wheel.wheelRadius);
+						transform.SetTransformation(glm::scale(graphics_transform, transform.scale));
+
+						++i;
+					}
+				}
+				
 
 			}
 		}

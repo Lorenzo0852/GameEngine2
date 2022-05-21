@@ -32,7 +32,7 @@ namespace engine
             {
                 task->Run(deltaTime);
             }
-            deltaTime = (SDL_GetTicks64() - millisecondsPreviousFrame) * 0.001f;
+            deltaTime = (SDL_GetTicks64() - millisecondsPreviousFrame) * double(0.001f);
         } while (!exit);
     }
 }

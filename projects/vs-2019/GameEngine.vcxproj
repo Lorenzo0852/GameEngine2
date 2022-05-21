@@ -108,8 +108,10 @@
     <ClInclude Include="..\..\code\Components\BoxColliderComponent.h" />
     <ClInclude Include="..\..\code\Components\CircleColliderComponent.h" />
     <ClInclude Include="..\..\code\Components\Node3DComponent.h" />
+    <ClInclude Include="..\..\code\Components\RaycastVehicle3DComponent.h" />
     <ClInclude Include="..\..\code\Components\Rigidbody3DComponent.h" />
     <ClInclude Include="..\..\code\Components\RigidbodyComponent.h" />
+    <ClInclude Include="..\..\code\Components\SphereCollider3DComponent.h" />
     <ClInclude Include="..\..\code\Components\SpriteComponent.h" />
     <ClInclude Include="..\..\code\Components\TransformComponent.h" />
     <ClInclude Include="..\..\code\Deserializer\Scene3DDeserializer.h" />
@@ -127,6 +129,7 @@
     <ClInclude Include="..\..\code\Systems\ModelRender3DSystem.h" />
     <ClInclude Include="..\..\code\Systems\Physics3DSystem.h" />
     <ClInclude Include="..\..\code\Systems\PhysicsSystem.h" />
+    <ClInclude Include="..\..\code\Systems\PositionUpdater.h" />
     <ClInclude Include="..\..\code\Systems\RenderSystem.h" />
     <ClInclude Include="..\..\code\Task\Task.h" />
     <ClInclude Include="..\..\code\Window\Window.h" />

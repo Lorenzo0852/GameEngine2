@@ -29,19 +29,17 @@ namespace game
 		Window* window;
 		SDL_Renderer* renderer;
 		Kernel* kernel;
+		
 
 		std::unique_ptr<Registry> registry;
 		std::unique_ptr<AssetManager> assetManager;
 		std::shared_ptr<EventBus> eventBus;
 
 	private:
-		Entity floor;
-		Entity car_base;
-		//Bottom and both sides of the container on top of the car.
+		Entity test;
+		Entity wheel1, wheel2, wheel3, wheel4;
 
 		Entity cam;
-
-		float m_speed;
 
 	public:
 		Game(Window& window, Kernel& kernel, std::shared_ptr<EventBus> eventBus);

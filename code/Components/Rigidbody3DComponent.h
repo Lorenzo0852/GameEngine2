@@ -15,10 +15,13 @@ namespace engine
 
 		Rigidbody3DComponent() = default;
 
-		void SetTransformOrigin(glm::vec3 origin)
+		void SetTransformOrigin(glm::vec3 origin, glm::vec3 originRotation)
 		{
 			transform.setIdentity();
 			transform.setOrigin(btVector3{origin.x, origin.y, origin.z});
+			btQuaternion rot;
+			rot.setEulerZYX(originRotation.z, originRotation.y, originRotation.x);
+			transform.setRotation(rot);
 		}
 	};
 }
