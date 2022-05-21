@@ -78,7 +78,7 @@ namespace game
 		registry->AddSystem<ModelRender3DSystem>(*window);
 		registry->AddSystem<EntityStartup3DSystem>();
 		registry->AddSystem<PhysicsSystem>(eventBus);
-		registry->AddSystem<Physics3DSystem>();
+		registry->AddSystem<Physics3DSystem>(eventBus);
 		registry->AddSystem<PositionUpdater>();
 
 		/*
@@ -196,23 +196,24 @@ namespace game
 		RaycastVehicle3DComponent& rv3d = test.GetComponent<RaycastVehicle3DComponent>();
 		float wheelWidth = 1.f;
 		float wheelRadius = 1.f;
+		float wheelSuspensionHeight = -3.f;
 
 		//Total of 4 wheels
 
 		//Front wheels...
 		glm::vec3 connectionPoint;
 
-		connectionPoint = { glm::vec3(5, -3, 3 )};
+		connectionPoint = { glm::vec3(5, wheelSuspensionHeight, 3 )};
 		rv3d.AddWheel(RaycastVehicleWheel(connectionPoint, wheelRadius, wheelWidth, true, wheel1));
 
-		connectionPoint = { glm::vec3(-5, -3, 3 )};
+		connectionPoint = { glm::vec3(-5, wheelSuspensionHeight, 3 )};
 		rv3d.AddWheel(RaycastVehicleWheel(connectionPoint, wheelRadius, wheelWidth, true, wheel2));
 
 		//Back wheels...
-		connectionPoint = { glm::vec3(5, -3, -3 )};
+		connectionPoint = { glm::vec3(5, wheelSuspensionHeight, -3 )};
 		rv3d.AddWheel(RaycastVehicleWheel(connectionPoint, wheelRadius, wheelWidth, false, wheel3));
 
-		connectionPoint = { glm::vec3(-5, -3, -3 )};
+		connectionPoint = { glm::vec3(-5, wheelSuspensionHeight, -3 )};
 		rv3d.AddWheel(RaycastVehicleWheel(connectionPoint, wheelRadius, wheelWidth, false, wheel4));
 
 		return true;

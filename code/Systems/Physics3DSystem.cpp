@@ -2,7 +2,7 @@
 
 namespace engine
 {
-	Physics3DSystem::Physics3DSystem(glm::vec3 gravity)
+	Physics3DSystem::Physics3DSystem(std::shared_ptr<EventBus> eventBus, glm::vec3 gravity)
 	{
 		RequireComponent<TransformComponent>();
 		RequireComponent<Rigidbody3DComponent>();
@@ -12,7 +12,12 @@ namespace engine
 		overlappingPairCache = new btDbvtBroadphase();
 		solver = new btSequentialImpulseConstraintSolver;
 		dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfiguration);
+		collisionWorld = dynamicsWorld->getCollisionWorld();
 		SetGravity(gravity);
+
+		dispatcher->setNearCallback(MyNearCallback);
+
+		this->eventBus = eventBus;
 
 		spdlog::info("BULLET SDK world successfully created.");
 	}
@@ -34,13 +39,55 @@ namespace engine
 		dynamicsWorld->setGravity({ gravity.x, gravity.y, gravity.z });
 	}
 
+	void Physics3DSystem::MyNearCallback(btBroadphasePair& collisionPair, btCollisionDispatcher& dispatcher, const btDispatcherInfo& dispatchInfo)
+	{
+		dispatcher.defaultNearCallback(collisionPair, dispatcher, dispatchInfo);
+	}
+
 	void Physics3DSystem::Run(float dt)
 	{
 		//Has a internal fixed timestep of 1/60 (60Hz) applied to steps that are smaller.
 		dynamicsWorld->stepSimulation(dt);
 
+		int numManifolds = dynamicsWorld->getDispatcher()->getNumManifolds();
+		for (int i = 0; i < numManifolds; i++)
+		{
+			btPersistentManifold* contactManifold = dynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
+			const btCollisionObject* obA = contactManifold->getBody0();
+			const btCollisionObject* obB = contactManifold->getBody1();
+
+			btAlignedObjectArray rbArray = dynamicsWorld->getNonStaticRigidBodies();
+
+			for (int i = 0; i < rbArray.size(); i++)
+			{
+				btRigidBody * rb = static_cast<btRigidBody *>(rbArray[i]);
+
+				if (rb->getWorldArrayIndex() == obA->getWorldArrayIndex())
+				{
+					//dispatch collision event. User can see what Rigidbody is held by which entity.
+					//std::string debug_breakpoint_ref;
+
+					//This is a costly way of doing it, but the end user only receives verified contacting rigidbodies.
+					for (int j = 0; j < rbArray.size(); j++)
+					{
+						btRigidBody* otherRb = static_cast<btRigidBody*>(rbArray[j]);
+						if (otherRb->getWorldArrayIndex() == obB->getWorldArrayIndex())
+						{
+							//Will only return if two non-static objects collide (ignoring static)
+							eventBus->FireEvent<OnCollisionEnter3DEvent>(rb, otherRb);
+						}
+					}
+					
+
+				}
+			}
+		}
+
 		for (Entity& entity : GetSystemEntities())
 		{
+
+
+			//Constraint stuff
 			if(entity.HasComponent< RaycastVehicle3DComponent >())
 			{
 				auto& rv3d = entity.GetComponent< RaycastVehicle3DComponent >();

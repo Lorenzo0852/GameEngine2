@@ -176,5 +176,8 @@
     <ClInclude Include="..\..\code\Components\RaycastVehicle3DComponent.h">
       <Filter>Header Files\Components\3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\code\Events\OnCollisionEnter3DEvent.h">
+      <Filter>Header Files\EventTypes</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

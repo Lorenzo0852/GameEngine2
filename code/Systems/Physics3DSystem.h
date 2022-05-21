@@ -1,6 +1,9 @@
 #pragma once
 
 #include <ECS/ECS.h>
+#include <EventBus/EventBus.h>
+#include <Events/OnCollisionEnter3DEvent.h>
+
 #include <spdlog/spdlog.h>
 #include <EventBus/EventBus.h>
 #include <btBulletDynamicsCommon.h>
@@ -11,6 +14,10 @@
 #include <Components/BoxCollider3DComponent.h>
 #include <Components/SphereCollider3DComponent.h>
 #include <Components/RaycastVehicle3DComponent.h>
+
+
+
+
 
 namespace engine
 {
@@ -26,17 +33,22 @@ namespace engine
 		btBroadphaseInterface* overlappingPairCache;
 		btSequentialImpulseConstraintSolver* solver;
 		btDiscreteDynamicsWorld* dynamicsWorld;
+		btCollisionWorld* collisionWorld;
+
+		std::shared_ptr<EventBus> eventBus;
 
 		//We don't need to keep track of states, rigidbodies and shapes as we have access to all the Rigidbody3DComponents affected by the system,
 		//where we already have all that data.
 
 	public:
-		Physics3DSystem(glm::vec3 gravity = { 0, -9.8f, 0 });
+		Physics3DSystem(std::shared_ptr<EventBus> eventBus, glm::vec3 gravity = { 0, -9.8f, 0 });
 		~Physics3DSystem();
 
 		void SetGravity(glm::vec3 gravity);
 
 		bool Initialize() override;
 		void Run(float deltaTime) override; //pure virtual
+
+		static void MyNearCallback(btBroadphasePair& collisionPair, btCollisionDispatcher& dispatcher, const btDispatcherInfo& dispatchInfo);
 	};
 }

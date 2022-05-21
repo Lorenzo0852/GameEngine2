@@ -119,6 +119,7 @@
     <ClInclude Include="..\..\code\EventBus\Event.h" />
     <ClInclude Include="..\..\code\EventBus\EventBus.h" />
     <ClInclude Include="..\..\code\Events\InputEvent.h" />
+    <ClInclude Include="..\..\code\Events\OnCollisionEnter3DEvent.h" />
     <ClInclude Include="..\..\code\Events\OnTriggerEntryEvent.h" />
     <ClInclude Include="..\..\code\Input\InputPollingTask.h" />
     <ClInclude Include="..\..\code\Kernel\Kernel.h" />
