@@ -64,6 +64,13 @@ namespace engine
 					glm::mat4 graphics_transform;
 					physics_transform.getOpenGLMatrix(glm::value_ptr(graphics_transform));
 
+
+					float xRot = 0;
+					float yRot = 0;
+					float zRot = 0;
+					physics_transform.getRotation().getEulerZYX(zRot, yRot, xRot);
+					transform.rotation = { xRot, yRot, zRot };
+
 					transform.SetTransformation(glm::scale(graphics_transform, transform.scale));
 				}
 
@@ -84,6 +91,11 @@ namespace engine
 
 						const btVector3 & origin = physicsTransform.getOrigin();
 						transform.position = { origin.x(), origin.y(), origin.z() };
+						float xRot = 0;
+						float yRot = 0;
+						float zRot = 0;
+						physicsTransform.getRotation().getEulerZYX(zRot, yRot, xRot);
+						transform.rotation = {xRot, yRot, zRot};
 						transform.scale = glm::vec3(wheel.wheelRadius);
 						transform.SetTransformation(glm::scale(graphics_transform, transform.scale));
 

@@ -224,11 +224,12 @@ namespace game
 	void Game::Run(float deltaTime)
 	{
 		glm::vec3 refPos = test.GetComponent<TransformComponent>().position;
-		cam.GetComponent<TransformComponent>().SetTransformation({ refPos.x + 50, refPos.y + 10, refPos.z}, { 0, -80, 0 }, {1,1,1});
+		glm::vec3 refRot = test.GetComponent<TransformComponent>().rotation;
+		cam.GetComponent<TransformComponent>().SetTransformation({ refPos.x + 50, refPos.y + 10, refPos.z}, { 0, (3.14159 / 2), 0 }, {1,1,1});
 
-		auto & rv3d = test.GetComponent< RaycastVehicle3DComponent >();
-		rv3d.vehicle->applyEngineForce(100, 2);
-		rv3d.vehicle->applyEngineForce(100, 3);
+		//Steering
+		/*rv3d.vehicle->setSteeringValue(.14f, 0);
+		rv3d.vehicle->setSteeringValue(.14f, 1);*/
 
 		//Movement3DSystem& movement3DSystem = registry->GetSystem<Movement3DSystem>();
 
@@ -248,12 +249,30 @@ namespace game
 
 	void Game::OnInputRegistered(InputEvent& event)
 	{
+		auto& rv3d = test.GetComponent< RaycastVehicle3DComponent >();
+
 		switch (event.action)
 		{
 		case InputEvent::Action::QUIT:
 			kernel->Stop();
 			break;
 		case InputEvent::Action::FORWARD:
+			rv3d.vehicle->applyEngineForce(200 * event.value, 2);
+			rv3d.vehicle->applyEngineForce(200 * event.value, 3);
+			break;
+		case InputEvent::Action::BACKWARDS:
+			rv3d.vehicle->applyEngineForce(-200 * event.value, 2);
+			rv3d.vehicle->applyEngineForce(-200 * event.value, 3);
+			break;
+		case InputEvent::Action::RIGHT:
+			rv3d.vehicle->setSteeringValue(-.3f * event.value, 0);
+			rv3d.vehicle->setSteeringValue(-.3f * event.value, 1);
+			break;
+		case InputEvent::Action::LEFT:
+			rv3d.vehicle->setSteeringValue(.4f * event.value, 0);
+			rv3d.vehicle->setSteeringValue(.4f * event.value, 1);
+			break;
+		default:
 			break;
 		}
 	}
