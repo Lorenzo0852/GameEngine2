@@ -14,8 +14,11 @@ namespace engine
 		glm::vec3 localInertia = glm::vec3(0);
 		float radius = 1;
 
-		SphereCollider3DComponent(float radius = 1, float mass = 0, glm::vec3 localInertia = glm::vec3(0))
+		bool isTrigger = false;
+
+		SphereCollider3DComponent(bool isTrigger = false, float radius = 1, float mass = 0, glm::vec3 localInertia = glm::vec3(0))
 			:
+			isTrigger(isTrigger),
 			radius(radius),
 			mass(mass),
 			localInertia(localInertia)

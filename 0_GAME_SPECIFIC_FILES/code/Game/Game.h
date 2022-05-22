@@ -13,6 +13,7 @@
 #include <EventBus/EventBus.h>
 #include <Events/InputEvent.h>
 #include <Events/OnTriggerEntryEvent.h>
+#include <Events/OnCollisionEnter3DEvent.h>
 
 #include <b2_world.h>
 #include <b2_body.h>
@@ -36,7 +37,11 @@ namespace game
 		std::shared_ptr<EventBus> eventBus;
 
 	private:
+		bool playerHasKey = false;
+
 		Entity test;
+		Entity key;
+
 		Entity wheel1, wheel2, wheel3, wheel4;
 
 		Entity cam;
@@ -49,7 +54,9 @@ namespace game
 		/* Post-setup stuff */
 		bool Initialize();
 		virtual void Run(float deltaTime);
-		void OnInputRegistered(InputEvent& event);
-		void OnTriggerEntry(OnTriggerEntryEvent& event);
+
+		void OnInputRegistered(InputEvent & event);
+		void OnCollisionEnter3D(OnCollisionEnter3DEvent & event);
+		void OnTriggerEntry(OnTriggerEntryEvent & event);
 	};
 }

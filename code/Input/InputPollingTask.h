@@ -54,6 +54,9 @@ namespace engine
                     case SDLK_e:
                         eventBus->FireEvent<InputEvent>(InputEvent::Action::E, 1);
                         break;
+                    case SDLK_SPACE:
+                        eventBus->FireEvent<InputEvent>(InputEvent::Action::JUMP, 1);
+                        break;
                     }
                 }
                 //If != 0, the key is repeated
@@ -87,6 +90,9 @@ namespace engine
                         break;
                     case SDLK_e:
                         eventBus->FireEvent<InputEvent>(InputEvent::Action::E, 0);
+                        break;
+                    case SDLK_SPACE:
+                        eventBus->FireEvent<InputEvent>(InputEvent::Action::JUMP, 0);
                         break;
                     }
                 }

@@ -15,8 +15,11 @@ namespace engine
 
 		glm::vec3 size = glm::vec3(1);
 
-		BoxCollider3DComponent(glm::vec3 halfExtents = { 1,1,1 }, float mass = 0, glm::vec3 localInertia = glm::vec3(0))
+		bool isTrigger = false;
+
+		BoxCollider3DComponent(bool isTrigger = false, glm::vec3 halfExtents = { 1,1,1 }, float mass = 0, glm::vec3 localInertia = glm::vec3(0))
 			:
+			isTrigger(isTrigger),
 			size(halfExtents),
 			mass(mass),
 			localInertia(localInertia)

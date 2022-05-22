@@ -13,9 +13,9 @@ namespace engine
 	class OnCollisionEnter3DEvent : public Event
 	{
 	public:
-		btRigidBody* collisionRigidbody;
-		btRigidBody* otherRigidbody;
+		const btCollisionObject* collisionObj;
+		const btCollisionObject* otherObj;
 
-		OnCollisionEnter3DEvent(btRigidBody* entityA, btRigidBody* entityB) : collisionRigidbody(entityA), otherRigidbody(entityB) {}
+		OnCollisionEnter3DEvent(const btCollisionObject* entityA, const btCollisionObject* entityB) : collisionObj(entityA), otherObj(entityB) {}
 	};
 }
